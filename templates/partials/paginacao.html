@@ -1,0 +1,11 @@
+{% if page_obj.has_other_pages %}
+<nav class="flex items-center justify-center gap-4 mt-12">
+    {% if page_obj.has_previous %}
+    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" class="lw-filter-btn">&larr; Anterior</a>
+    {% endif %}
+    <span class="lw-muted text-sm">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" class="lw-filter-btn">Próxima &rarr;</a>
+    {% endif %}
+</nav>
+{% endif %}

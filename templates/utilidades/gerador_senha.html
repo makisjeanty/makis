@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerador de senha segura · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Gere senhas aleatórias fortes direto no navegador, sem enviar nada para nenhum servidor.{% endblock %}
+{% block og_title %}Gerador de senha segura · Makis Digital{% endblock %}
+{% block og_description %}Gere senhas aleatórias fortes direto no navegador, sem enviar nada para nenhum servidor.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Gerador de senha</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Utilidades</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Gerador de senha segura</h1>
+        <p class="lw-muted mb-8">A senha é gerada localmente no seu navegador — nada é enviado para nenhum servidor.</p>
+
+        <div class="lw-card flex flex-col gap-6">
+            <div>
+                <label for="tamanho" class="text-sm font-semibold mb-2 block">Tamanho: <span id="tamanhoValor">16</span> caracteres</label>
+                <input type="range" id="tamanho" min="8" max="64" value="16" class="w-full" oninput="document.getElementById('tamanhoValor').textContent = this.value">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-sm">
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" id="maiusculas" checked> Letras maiúsculas
+                </label>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" id="minusculas" checked> Letras minúsculas
+                </label>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" id="numeros" checked> Números
+                </label>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" id="simbolos" checked> Símbolos
+                </label>
+            </div>
+
+            <p id="senhaErro" class="text-sm hidden" style="color: var(--danger);"></p>
+
+            <button type="button" onclick="gerarSenha()" class="lw-btn lw-btn--primary self-start">Gerar senha</button>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input type="text" id="resultado" class="lw-input lw-mono" readonly placeholder="Sua senha vai aparecer aqui">
+                <button type="button" onclick="copiarTexto('resultado', this)" class="lw-copy-btn">Copiar</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function gerarSenha() {
+    const tamanho = parseInt(document.getElementById('tamanho').value, 10);
+    const maiusculas = document.getElementById('maiusculas').checked;
+    const minusculas = document.getElementById('minusculas').checked;
+    const numeros = document.getElementById('numeros').checked;
+    const simbolos = document.getElementById('simbolos').checked;
+    const erro = document.getElementById('senhaErro');
+
+    let charset = '';
+    if (maiusculas) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if (minusculas) charset += 'abcdefghijklmnopqrstuvwxyz';
+    if (numeros) charset += '0123456789';
+    if (simbolos) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+    if (!charset) {
+        erro.textContent = 'Selecione ao menos um tipo de caractere.';
+        erro.classList.remove('hidden');
+        return;
+    }
+    erro.classList.add('hidden');
+
+    const valores = new Uint32Array(tamanho);
+    crypto.getRandomValues(valores);
+    let senha = '';
+    for (let i = 0; i < tamanho; i++) {
+        senha += charset[valores[i] % charset.length];
+    }
+
+    document.getElementById('resultado').value = senha;
+}
+</script>
+{% endblock %}

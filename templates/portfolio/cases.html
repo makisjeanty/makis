@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cases de sucesso · Makis Digital{% endblock %}
+{% block meta_description %}Projetos que mais geraram impacto real para os clientes da Makis Digital.{% endblock %}
+{% block og_title %}Cases de sucesso · Makis Digital{% endblock %}
+{% block og_description %}Projetos que mais geraram impacto real para os clientes da Makis Digital.{% endblock %}
+
+{% block content %}
+<section class="lw-section lwh-grid-bg" style="padding-top: 7rem;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lw-section__header">
+            <span class="lw-pill mb-4">Cases</span>
+            <h1 class="lw-section__title">Estudos de caso em destaque</h1>
+            <p class="lw-section__subtitle">Projetos que mais geraram impacto real para os clientes.</p>
+        </div>
+
+        {% if projetos %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for projeto in projetos %}
+            <a href="{% url 'portfolio:detalhe' projeto.slug %}" class="lw-media-card md:flex-row">
+                {% if projeto.imagem_principal %}
+                <img src="{{ projeto.imagem_principal.url }}" alt="{{ projeto.titulo }}" class="lw-media-card__img md:w-2/5">
+                {% endif %}
+                <div class="lw-media-card__body">
+                    <span class="lw-badge">{{ projeto.get_categoria_display }}</span>
+                    <h3 class="lw-media-card__title text-xl">{{ projeto.titulo }}</h3>
+                    <p class="lw-muted text-sm leading-relaxed">{{ projeto.descricao_curta }}</p>
+                    <span class="text-sm font-semibold" style="color: var(--accent)">Ver case completo &rarr;</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="lw-empty-state">
+            <p>Nenhum case em destaque no momento.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

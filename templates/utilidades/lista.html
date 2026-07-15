@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Ferramentas gratuitas: gerador de senha, validador de CPF/CNPJ, formatador de JSON e conversor Base64.{% endblock %}
+{% block og_title %}Utilidades · Makis Digital{% endblock %}
+{% block og_description %}Ferramentas gratuitas: gerador de senha, validador de CPF/CNPJ, formatador de JSON e conversor Base64.{% endblock %}
+
+{% block content %}
+<section class="lw-section lwh-grid-bg" style="padding-top: 7rem;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lw-section__header">
+            <span class="lw-pill mb-4">Utilidades</span>
+            <h1 class="lw-section__title">Ferramentas gratuitas</h1>
+            <p class="lw-section__subtitle">Pequenas ferramentas do dia a dia, rodando direto no seu navegador — nada é enviado para nenhum servidor.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <a href="{% url 'utilidades:gerador_senha' %}" class="lw-card">
+                <span class="lw-icon-tile">
+                    <svg class="w-6 h-6" style="color: var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </span>
+                <h3 class="text-lg font-bold mb-2">Gerador de senha segura</h3>
+                <p class="lw-muted text-sm leading-relaxed">Gera senhas aleatórias fortes, com letras, números e símbolos.</p>
+            </a>
+            <a href="{% url 'utilidades:validador_documento' %}" class="lw-card">
+                <span class="lw-icon-tile">
+                    <svg class="w-6 h-6" style="color: var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </span>
+                <h3 class="text-lg font-bold mb-2">Validador de CPF/CNPJ</h3>
+                <p class="lw-muted text-sm leading-relaxed">Verifica se um CPF ou CNPJ digitado é válido.</p>
+            </a>
+            <a href="{% url 'utilidades:formatador_json' %}" class="lw-card">
+                <span class="lw-icon-tile">
+                    <svg class="w-6 h-6" style="color: var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                    </svg>
+                </span>
+                <h3 class="text-lg font-bold mb-2">Formatador de JSON</h3>
+                <p class="lw-muted text-sm leading-relaxed">Formata e valida um JSON, apontando erros de sintaxe.</p>
+            </a>
+            <a href="{% url 'utilidades:conversor_base64' %}" class="lw-card">
+                <span class="lw-icon-tile">
+                    <svg class="w-6 h-6" style="color: var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4M16 17H4m0 0l4 4m-4-4l4-4"/>
+                    </svg>
+                </span>
+                <h3 class="text-lg font-bold mb-2">Conversor Base64</h3>
+                <p class="lw-muted text-sm leading-relaxed">Codifica ou decodifica texto em Base64.</p>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

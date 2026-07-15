@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Makis Digital{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Desenvolvimento web, mobile, automação e dados sob medida, com foco em performance, escalabilidade e experiência do usuário.{% endblock %}">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <meta property="og:site_name" content="Makis Digital">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Makis Digital{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Desenvolvimento web, mobile, automação e dados sob medida, com foco em performance e resultados.{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% if og_image_url %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ og_image_url }}">
+    {% endif %}
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="alternate" type="application/rss+xml" title="Makis Digital — Blog" href="{% url 'blog:rss' %}">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="lw-nav sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="{% url 'home' %}" class="lw-nav__logo flex items-center gap-2">
+                    <span>Makis<span class="lw-nav__logo-accent">Digital</span></span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="{% url 'home' %}" class="lw-nav__link {% if request.path == '/' %}active{% endif %}">Início</a>
+
+                    <!-- Portfolio dropdown -->
+                    <div class="lw-nav__dropdown relative">
+                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)">
+                            Portfolio
+                            <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="lw-nav__dropdown-menu absolute left-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                            <a href="{% url 'portfolio:lista' %}" class="lw-nav__dropdown-item">Projetos</a>
+                            <a href="{% url 'portfolio:cases' %}" class="lw-nav__dropdown-item">Cases</a>
+                        </div>
+                    </div>
+
+                    <!-- Blog dropdown -->
+                    <div class="lw-nav__dropdown relative">
+                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)">
+                            Blog
+                            <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="lw-nav__dropdown-menu absolute left-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                            <a href="{% url 'blog:lista' %}" class="lw-nav__dropdown-item">Artigos</a>
+                            <a href="{% url 'blog:categorias' %}" class="lw-nav__dropdown-item">Categorias</a>
+                        </div>
+                    </div>
+
+                    <!-- Utilidades dropdown -->
+                    <div class="lw-nav__dropdown relative">
+                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)">
+                            Utilidades
+                            <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="lw-nav__dropdown-menu absolute left-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                            <a href="{% url 'utilidades:gerador_senha' %}" class="lw-nav__dropdown-item">Gerador de senha</a>
+                            <a href="{% url 'utilidades:validador_documento' %}" class="lw-nav__dropdown-item">Validador de CPF/CNPJ</a>
+                            <a href="{% url 'utilidades:formatador_json' %}" class="lw-nav__dropdown-item">Formatador de JSON</a>
+                            <a href="{% url 'utilidades:conversor_base64' %}" class="lw-nav__dropdown-item">Conversor Base64</a>
+                        </div>
+                    </div>
+
+                    <!-- Comunidade dropdown -->
+                    <div class="lw-nav__dropdown relative">
+                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)">
+                            Comunidade
+                            <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="lw-nav__dropdown-menu absolute left-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                            <a href="{% url 'comunidade:lista' %}" class="lw-nav__dropdown-item">Fórum</a>
+                            <a href="{% url 'chat:sala' %}" class="lw-nav__dropdown-item">Chat ao vivo</a>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'accounts:sobre' %}" class="lw-nav__link {% if request.resolver_match.view_name == 'accounts:sobre' %}active{% endif %}">Sobre</a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-btn" class="lw-nav__mobile-toggle md:hidden p-2" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        <path id="close-icon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4">
+                <div class="flex flex-col gap-2">
+                    <a href="{% url 'home' %}" class="lw-nav__link">Início</a>
+                    <a href="{% url 'portfolio:lista' %}" class="lw-nav__link">Portfolio</a>
+                    <a href="{% url 'blog:lista' %}" class="lw-nav__link">Blog</a>
+                    <a href="{% url 'utilidades:lista' %}" class="lw-nav__link">Utilidades</a>
+                    <a href="{% url 'comunidade:lista' %}" class="lw-nav__link">Fórum</a>
+                    <a href="{% url 'chat:sala' %}" class="lw-nav__link">Chat ao vivo</a>
+                    <a href="{% url 'accounts:sobre' %}" class="lw-nav__link">Sobre</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 relative z-10">
+        {% if messages %}
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
+            {% for message in messages %}
+            <div class="lw-card mb-4" style="border-color: rgba(204, 120, 92, 0.4);">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="lw-footer relative z-10 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                <div>
+                    <span class="text-xl font-bold">Makis<span class="text-[var(--accent)]">Digital</span></span>
+                    <p class="lw-muted text-sm mt-3 leading-relaxed">Soluções digitais sob medida para pequenas e médias empresas: sites, sistemas, e-commerce e APIs.</p>
+                    <div class="flex items-center gap-3 mt-5">
+                        <a href="mailto:contato@makisdigital.com" class="lw-footer__icon" aria-label="E-mail" title="E-mail">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </a>
+                        <a href="https://wa.me/5551993692512" target="_blank" rel="noopener" class="lw-footer__icon" aria-label="WhatsApp" title="WhatsApp">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: var(--text)">Navegação</h3>
+                    <div class="flex flex-col gap-2 text-sm">
+                        <a href="{% url 'home' %}" class="lw-nav__link">Início</a>
+                        <a href="{% url 'portfolio:lista' %}" class="lw-nav__link">Portfolio</a>
+                        <a href="{% url 'blog:lista' %}" class="lw-nav__link">Blog</a>
+                        <a href="{% url 'utilidades:lista' %}" class="lw-nav__link">Utilidades</a>
+                        <a href="{% url 'comunidade:lista' %}" class="lw-nav__link">Fórum</a>
+                        <a href="{% url 'chat:sala' %}" class="lw-nav__link">Chat ao vivo</a>
+                        <a href="{% url 'accounts:sobre' %}" class="lw-nav__link">Sobre</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: var(--text)">Serviços</h3>
+                    <div class="flex flex-col gap-2 text-sm">
+                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">Sites Institucionais</a>
+                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">Sistemas Web</a>
+                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">E-commerce</a>
+                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">APIs e Integrações</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: var(--text)">Contato</h3>
+                    <div class="flex flex-col gap-2 text-sm lw-muted">
+                        <a href="mailto:contato@makisdigital.com" class="lw-nav__link">contato@makisdigital.com</a>
+                        <a href="https://wa.me/5551993692512" target="_blank" rel="noopener" class="lw-nav__link">(51) 99369-2512</a>
+                        <span>Canoas, RS - Brasil</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm opacity-70" style="border-top: 1px solid var(--line);">
+                <span>&copy; {% now 'Y' %} Makis Digital. Todos os direitos reservados.</span>
+                <a href="{% url 'blog:rss' %}" class="lw-nav__link">RSS</a>
+            </div>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/5551993692512" target="_blank" rel="noopener" class="lw-whatsapp-fab" aria-label="Falar no WhatsApp" title="Falar no WhatsApp">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+    </a>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

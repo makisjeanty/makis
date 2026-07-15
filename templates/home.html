@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Makis Digital — Soluções digitais para pequenas e médias empresas{% endblock %}
+{% block meta_description %}Analista de Sistemas especializado em sites institucionais, sistemas web, web apps, e-commerce e APIs para pequenas e médias empresas.{% endblock %}
+{% block og_title %}Makis Digital — Soluções digitais para pequenas e médias empresas{% endblock %}
+{% block og_description %}Analista de Sistemas especializado em sites institucionais, sistemas web, web apps, e-commerce e APIs para pequenas e médias empresas.{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="lwh-hero">
+    <div class="lwh-hero__bg" aria-hidden="true">
+        <span class="lwh-blob lwh-blob--1"></span>
+        <span class="lwh-blob lwh-blob--2"></span>
+    </div>
+    <div class="lwh-hero__content">
+        <span class="lw-pill lwh-rise">Soluções para Pequenas e Médias Empresas</span>
+        <h1 class="lw-display text-4xl md:text-5xl lg:text-6xl mb-6 lwh-rise" style="animation-delay: 0.1s">
+            Transformamos ideias em produtos digitais
+        </h1>
+        <p class="text-lg md:text-xl lw-muted mb-8 max-w-2xl mx-auto lwh-rise" style="animation-delay: 0.2s">
+            Sou Analista de Sistemas e desenvolvo sites institucionais, sistemas web, web apps, e-commerce e APIs sob medida para pequenas e médias empresas.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center lwh-rise" style="animation-delay: 0.3s">
+            <a href="mailto:contato@makisdigital.com" class="lw-btn lw-btn--primary">Entre em contato</a>
+            <a href="https://wa.me/5551993692512" target="_blank" rel="noopener" class="lw-btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--line);">Falar no WhatsApp</a>
+        </div>
+    </div>
+</section>
+
+<!-- Services -->
+<section id="servicos" class="lw-section lwh-grid-bg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lw-section__header">
+            <span class="lw-pill mb-4">O que fazemos</span>
+            <h2 class="lw-section__title">Nossos serviços</h2>
+            <p class="lw-section__subtitle">Soluções completas para digitalizar o seu negócio, do site institucional ao sistema sob medida.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="lw-card">
+                <span class="lw-icon-tile">
+                    <svg class="w-6 h-6" style="color: var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                    </svg>
+                </span>
+                <h3 class="text-lg font-bold mb-2">Sites Institucionais e Comerciais</h3>
+                <p class="lw-muted text-sm leading-relaxed">Sites profissionais para apresentar sua empresa, gerar credibilidade e conquistar novos clientes.</p>
+            </div>
+            <div class="lw-card">
+                <span class="lw-icon-tile">
+                    <svg class="w-6 h-6" style="color: var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/>
+                    </svg>
+                </span>
+                <h3 class="text-lg font-bold mb-2">Sistemas Web sob Medida</h3>
+                <p class="lw-muted text-sm leading-relaxed">Sistemas web personalizados para automatizar processos e atender às necessidades específicas do seu negócio.</p>
+            </div>
+            <div class="lw-card">
+                <span class="lw-icon-tile">
+                    <svg class="w-6 h-6" style="color: var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </span>
+                <h3 class="text-lg font-bold mb-2">Web Apps</h3>
+                <p class="lw-muted text-sm leading-relaxed">Aplicações web modernas e responsivas, acessíveis de qualquer dispositivo, sem necessidade de instalação.</p>
+            </div>
+            <div class="lw-card">
+                <span class="lw-icon-tile">
+                    <svg class="w-6 h-6" style="color: var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </span>
+                <h3 class="text-lg font-bold mb-2">E-commerce</h3>
+                <p class="lw-muted text-sm leading-relaxed">Lojas virtuais completas para vender seus produtos online com segurança e praticidade.</p>
+            </div>
+            <div class="lw-card">
+                <span class="lw-icon-tile">
+                    <svg class="w-6 h-6" style="color: var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                    </svg>
+                </span>
+                <h3 class="text-lg font-bold mb-2">APIs e Integrações</h3>
+                <p class="lw-muted text-sm leading-relaxed">Desenvolvimento de APIs para integrar sistemas, aplicativos e serviços externos ao seu negócio.</p>
+            </div>
+            <div class="lw-card">
+                <span class="lw-icon-tile">
+                    <svg class="w-6 h-6" style="color: var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </span>
+                <h3 class="text-lg font-bold mb-2">Automação de Processos</h3>
+                <p class="lw-muted text-sm leading-relaxed">Automatização de tarefas repetitivas e integração de sistemas para aumentar a produtividade da sua equipe.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contato -->
+<section class="lw-section">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="lw-pill mb-4">Vamos conversar?</span>
+        <h2 class="lw-section__title">Pronto para começar seu projeto?</h2>
+        <p class="lw-section__subtitle mb-8">Entre em contato e descubra como podemos ajudar a transformar sua ideia em realidade.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+            <a href="mailto:contato@makisdigital.com" class="lw-btn lw-btn--primary">Fale conosco</a>
+            <a href="https://wa.me/5551993692512" target="_blank" rel="noopener" class="lw-btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--line);">WhatsApp</a>
+        </div>
+        <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 lw-muted text-sm">
+            <span>contato@makisdigital.com</span>
+            <span>(51) 99369-2512</span>
+            <span>Canoas, Rio Grande do Sul, Brasil</span>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chat ao vivo · Comunidade · Makis Digital{% endblock %}
+{% block meta_description %}Converse em tempo real com a comunidade Makis Digital.{% endblock %}
+{% block og_title %}Chat ao vivo · Makis Digital{% endblock %}
+{% block og_description %}Converse em tempo real com a comunidade Makis Digital.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'comunidade:lista' %}">Comunidade</a>
+            <span>/</span>
+            <span>Chat ao vivo</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Comunidade</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Chat ao vivo</h1>
+        <p class="lw-muted mb-8">
+            <span id="statusConexao" class="lw-badge lw-badge--danger">conectando…</span>
+            Sala geral, aberta pra todo mundo.
+        </p>
+
+        <div class="lw-card">
+            <div id="chatMensagens" class="flex flex-col gap-3 mb-4" style="height: 420px; overflow-y: auto;">
+                {% for mensagem in mensagens %}
+                <div class="chat-msg">
+                    <span class="font-semibold">{{ mensagem.nome }}</span>
+                    <span class="lw-muted text-xs">{{ mensagem.criado_em|date:"H:i" }}</span>
+                    <p>{{ mensagem.texto }}</p>
+                </div>
+                {% empty %}
+                <p class="lw-muted text-sm" id="chatVazio">Nenhuma mensagem ainda. Comece a conversa!</p>
+                {% endfor %}
+            </div>
+
+            <div id="chatNomeWrapper" class="flex flex-col gap-3">
+                <label for="chatNome" class="text-sm font-semibold">Como podemos te chamar?</label>
+                <input type="text" id="chatNome" class="lw-input" maxlength="50" placeholder="Seu nome">
+                <button type="button" onclick="entrarNoChat()" class="lw-btn lw-btn--primary self-start">Entrar no chat</button>
+            </div>
+
+            <div id="chatFormWrapper" class="hidden flex-col sm:flex-row gap-3">
+                <input type="text" id="chatTexto" class="lw-input" maxlength="500" placeholder="Digite sua mensagem">
+                <button type="button" onclick="enviarMensagem()" class="lw-btn lw-btn--primary">Enviar</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+let socket = null;
+let nomeUsuario = localStorage.getItem('chat_nome') || '';
+
+function escaparHtml(texto) {
+    const div = document.createElement('div');
+    div.textContent = texto;
+    return div.innerHTML;
+}
+
+function adicionarMensagem(nome, texto, hora) {
+    const lista = document.getElementById('chatMensagens');
+    const vazio = document.getElementById('chatVazio');
+    if (vazio) vazio.remove();
+
+    const item = document.createElement('div');
+    item.className = 'chat-msg';
+    item.innerHTML = '<span class="font-semibold">' + escaparHtml(nome) + '</span> ' +
+        '<span class="lw-muted text-xs">' + escaparHtml(hora) + '</span>' +
+        '<p>' + escaparHtml(texto) + '</p>';
+    lista.appendChild(item);
+    lista.scrollTop = lista.scrollHeight;
+}
+
+function conectar() {
+    const protocolo = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    socket = new WebSocket(protocolo + window.location.host + '/ws/chat/');
+    const status = document.getElementById('statusConexao');
+
+    socket.onopen = () => {
+        status.textContent = 'conectado';
+        status.classList.remove('lw-badge--danger');
+        status.classList.add('lw-badge--success');
+    };
+
+    socket.onclose = () => {
+        status.textContent = 'desconectado';
+        status.classList.remove('lw-badge--success');
+        status.classList.add('lw-badge--danger');
+    };
+
+    socket.onmessage = (evento) => {
+        const dados = JSON.parse(evento.data);
+        adicionarMensagem(dados.nome, dados.texto, dados.criado_em);
+    };
+}
+
+function entrarNoChat() {
+    const campoNome = document.getElementById('chatNome');
+    const nome = campoNome.value.trim();
+    if (!nome) return;
+
+    nomeUsuario = nome;
+    localStorage.setItem('chat_nome', nome);
+
+    document.getElementById('chatNomeWrapper').classList.add('hidden');
+    const formWrapper = document.getElementById('chatFormWrapper');
+    formWrapper.classList.remove('hidden');
+    formWrapper.classList.add('flex');
+    document.getElementById('chatTexto').focus();
+}
+
+function enviarMensagem() {
+    const campoTexto = document.getElementById('chatTexto');
+    const texto = campoTexto.value.trim();
+    if (!texto || !socket || socket.readyState !== WebSocket.OPEN) return;
+
+    socket.send(JSON.stringify({ nome: nomeUsuario, texto: texto }));
+    campoTexto.value = '';
+}
+
+document.getElementById('chatNome').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') entrarNoChat();
+});
+
+document.getElementById('chatTexto').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') enviarMensagem();
+});
+
+if (nomeUsuario) {
+    document.getElementById('chatNome').value = nomeUsuario;
+    entrarNoChat();
+}
+
+conectar();
+</script>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Comunidade · Makis Digital{% endblock %}
+{% block meta_description %}Fórum aberto para tirar dúvidas, trocar ideias e discutir tecnologia com a comunidade Makis Digital.{% endblock %}
+{% block og_title %}Comunidade · Makis Digital{% endblock %}
+{% block og_description %}Fórum aberto para tirar dúvidas, trocar ideias e discutir tecnologia com a comunidade Makis Digital.{% endblock %}
+
+{% block content %}
+<section class="lw-section lwh-grid-bg" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lw-section__header">
+            <span class="lw-pill mb-4">Comunidade</span>
+            <h1 class="lw-section__title">Fórum</h1>
+            <p class="lw-section__subtitle">Tire dúvidas, compartilhe projetos e converse com outras pessoas. Aberto pra todo mundo, sem cadastro.</p>
+        </div>
+
+        <details class="lw-card mb-10">
+            <summary class="font-semibold cursor-pointer">+ Novo tópico</summary>
+            <form method="post" class="flex flex-col gap-4 mt-6">
+                {% csrf_token %}
+                {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="text-sm font-semibold mb-1 block">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                    <p class="text-sm mt-1" style="color: var(--danger);">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="lw-btn lw-btn--primary self-start">Publicar tópico</button>
+            </form>
+        </details>
+
+        {% if topicos %}
+        <div class="flex flex-col gap-4">
+            {% for topico in topicos %}
+            <a href="{% url 'comunidade:detalhe' topico.slug %}" class="lw-card">
+                {% if topico.fixado %}<span class="lw-badge mb-2">Fixado</span>{% endif %}
+                <h3 class="text-lg font-bold mb-2">{{ topico.titulo }}</h3>
+                <p class="lw-muted text-sm leading-relaxed mb-3">{{ topico.conteudo|truncatewords:30 }}</p>
+                <div class="lw-media-card__meta">
+                    <span>{{ topico.autor_nome }}</span>
+                    <span>&middot;</span>
+                    <span>{{ topico.data_criacao|date:"d/m/Y" }}</span>
+                    <span>&middot;</span>
+                    <span>{{ topico.respostas.count }} resposta{{ topico.respostas.count|pluralize }}</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% include 'partials/paginacao.html' %}
+        {% else %}
+        <div class="lw-empty-state">
+            <p>Nenhum tópico ainda. Seja o primeiro a começar uma conversa.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

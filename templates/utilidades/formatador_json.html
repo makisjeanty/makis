@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Formatador de JSON · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Formate e valide JSON direto no navegador, sem enviar nada para nenhum servidor.{% endblock %}
+{% block og_title %}Formatador de JSON · Makis Digital{% endblock %}
+{% block og_description %}Formate e valide JSON direto no navegador, sem enviar nada para nenhum servidor.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Formatador de JSON</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Utilidades</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Formatador de JSON</h1>
+        <p class="lw-muted mb-8">A formatação acontece localmente no seu navegador — nenhum dado é enviado para nenhum servidor.</p>
+
+        <div class="lw-card flex flex-col gap-4">
+            <label for="jsonInput" class="text-sm font-semibold">JSON de entrada</label>
+            <textarea id="jsonInput" class="lw-input lw-mono" rows="8" placeholder='{"exemplo": "cole seu JSON aqui"}'></textarea>
+
+            <button type="button" onclick="formatarJSON()" class="lw-btn lw-btn--primary self-start">Formatar</button>
+
+            <p id="jsonErro" class="text-sm hidden" style="color: var(--danger);"></p>
+
+            <div id="jsonSaidaWrapper" class="hidden space-y-3">
+                <label for="jsonSaida" class="text-sm font-semibold">Resultado</label>
+                <textarea id="jsonSaida" class="lw-input lw-mono" rows="10" readonly></textarea>
+                <button type="button" onclick="copiarTexto('jsonSaida', this)" class="lw-copy-btn self-start">Copiar</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function formatarJSON() {
+    const input = document.getElementById('jsonInput').value;
+    const erro = document.getElementById('jsonErro');
+    const wrapper = document.getElementById('jsonSaidaWrapper');
+    const saida = document.getElementById('jsonSaida');
+
+    try {
+        const obj = JSON.parse(input);
+        saida.value = JSON.stringify(obj, null, 2);
+        erro.classList.add('hidden');
+        wrapper.classList.remove('hidden');
+    } catch (e) {
+        erro.textContent = 'JSON inválido: ' + e.message;
+        erro.classList.remove('hidden');
+        wrapper.classList.add('hidden');
+    }
+}
+</script>
+{% endblock %}

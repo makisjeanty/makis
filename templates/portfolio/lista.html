@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Portfolio · Makis Digital{% endblock %}
+{% block meta_description %}Uma seleção de projetos entregues em desenvolvimento web, mobile, automação e análise de dados.{% endblock %}
+{% block og_title %}Portfolio · Makis Digital{% endblock %}
+{% block og_description %}Uma seleção de projetos entregues em desenvolvimento web, mobile, automação e análise de dados.{% endblock %}
+
+{% block content %}
+<section class="lw-section lwh-grid-bg" style="padding-top: 7rem;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lw-section__header">
+            <span class="lw-pill mb-4">Portfolio</span>
+            <h1 class="lw-section__title">Projetos que já entregamos</h1>
+            <p class="lw-section__subtitle">Uma seleção de trabalhos em desenvolvimento web, mobile, automação e dados.</p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 justify-center mb-10">
+            <a href="{% url 'portfolio:lista' %}" class="lw-filter-btn {% if not categoria_ativa %}active{% endif %}">Todos</a>
+            {% for valor, rotulo in categorias %}
+                <a href="?categoria={{ valor }}" class="lw-filter-btn {% if categoria_ativa == valor %}active{% endif %}">{{ rotulo }}</a>
+            {% endfor %}
+        </div>
+
+        {% if projetos %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for projeto in projetos %}
+            <a href="{% url 'portfolio:detalhe' projeto.slug %}" class="lw-media-card">
+                {% if projeto.imagem_principal %}
+                <img src="{{ projeto.imagem_principal.url }}" alt="{{ projeto.titulo }}" class="lw-media-card__img">
+                {% endif %}
+                <div class="lw-media-card__body">
+                    <span class="lw-badge">{{ projeto.get_categoria_display }}</span>
+                    <h3 class="lw-media-card__title">{{ projeto.titulo }}</h3>
+                    <p class="lw-muted text-sm leading-relaxed">{{ projeto.descricao_curta }}</p>
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                        {% for tech in projeto.get_tecnologias_list|slice:":4" %}
+                        <span class="lw-tag">{{ tech }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% include 'partials/paginacao.html' %}
+        {% else %}
+        <div class="lw-empty-state">
+            <p>Nenhum projeto encontrado nessa categoria.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

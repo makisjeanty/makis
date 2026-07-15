@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Conversor Base64 · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Codifique ou decodifique texto em Base64 direto no navegador, sem enviar nada para nenhum servidor.{% endblock %}
+{% block og_title %}Conversor Base64 · Makis Digital{% endblock %}
+{% block og_description %}Codifique ou decodifique texto em Base64 direto no navegador, sem enviar nada para nenhum servidor.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Conversor Base64</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Utilidades</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Conversor Base64</h1>
+        <p class="lw-muted mb-8">A conversão acontece localmente no seu navegador — nenhum dado é enviado para nenhum servidor.</p>
+
+        <div class="lw-card space-y-4">
+            <label for="base64Input" class="text-sm font-semibold block">Texto de entrada</label>
+            <textarea id="base64Input" class="lw-input lw-mono" rows="6" placeholder="Digite ou cole o texto aqui"></textarea>
+
+            <div class="flex flex-wrap gap-3">
+                <button type="button" onclick="converterBase64('codificar')" class="lw-btn lw-btn--primary">Codificar</button>
+                <button type="button" onclick="converterBase64('decodificar')" class="lw-btn" style="background: var(--surface-2); color: var(--text); border: 1px solid var(--line);">Decodificar</button>
+            </div>
+
+            <p id="base64Erro" class="text-sm hidden" style="color: var(--danger);"></p>
+
+            <label for="base64Saida" class="text-sm font-semibold block">Resultado</label>
+            <textarea id="base64Saida" class="lw-input lw-mono" rows="6" readonly></textarea>
+            <button type="button" onclick="copiarTexto('base64Saida', this)" class="lw-copy-btn">Copiar</button>
+        </div>
+    </div>
+</section>
+
+<script>
+function converterBase64(modo) {
+    const input = document.getElementById('base64Input').value;
+    const saida = document.getElementById('base64Saida');
+    const erro = document.getElementById('base64Erro');
+
+    try {
+        if (modo === 'codificar') {
+            saida.value = btoa(unescape(encodeURIComponent(input)));
+        } else {
+            saida.value = decodeURIComponent(escape(atob(input)));
+        }
+        erro.classList.add('hidden');
+    } catch (e) {
+        erro.textContent = 'Não foi possível converter: texto ou Base64 inválido.';
+        erro.classList.remove('hidden');
+        saida.value = '';
+    }
+}
+</script>
+{% endblock %}

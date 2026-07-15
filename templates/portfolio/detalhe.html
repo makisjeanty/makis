@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ projeto.titulo }} · Makis Digital{% endblock %}
+{% block meta_description %}{{ projeto.descricao_curta }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ projeto.titulo }} · Makis Digital{% endblock %}
+{% block og_description %}{{ projeto.descricao_curta }}{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'portfolio:lista' %}">Portfolio</a>
+            <span>/</span>
+            <span>{{ projeto.titulo }}</span>
+        </nav>
+
+        <span class="lw-badge mb-4">{{ projeto.get_categoria_display }}</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">{{ projeto.titulo }}</h1>
+        <p class="lw-muted text-lg mb-6">{{ projeto.descricao_curta }}</p>
+
+        <div class="flex flex-wrap gap-3 mb-8">
+            {% if projeto.link_demo %}
+            <a href="{{ projeto.link_demo }}" target="_blank" rel="noopener" class="lw-btn lw-btn--primary">Ver demo</a>
+            {% endif %}
+            {% if projeto.link_github %}
+            <a href="{{ projeto.link_github }}" target="_blank" rel="noopener" class="lw-btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--line);">Ver código</a>
+            {% endif %}
+        </div>
+
+        {% if projeto.imagem_principal %}
+        <img src="{{ projeto.imagem_principal.url }}" alt="{{ projeto.titulo }}" class="w-full rounded-2xl mb-8" style="border: 1px solid var(--line);">
+        {% endif %}
+
+        <div class="lw-prose">
+            {{ projeto.descricao_completa|linebreaks }}
+        </div>
+
+        <div class="flex flex-wrap gap-2 mt-8 mb-12">
+            {% for tech in projeto.get_tecnologias_list %}
+            <span class="lw-tag">{{ tech }}</span>
+            {% endfor %}
+        </div>
+
+        {% if projeto.imagens.all %}
+        <div class="lw-section__header" style="margin-bottom: 1.5rem;">
+            <h2 class="lw-section__title" style="font-size: 1.5rem;">Galeria</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+            {% for imagem in projeto.imagens.all %}
+            <figure>
+                <img src="{{ imagem.imagem.url }}" alt="{{ imagem.legenda|default:projeto.titulo }}" class="w-full rounded-xl" style="border: 1px solid var(--line);">
+                {% if imagem.legenda %}
+                <figcaption class="lw-muted text-sm mt-2">{{ imagem.legenda }}</figcaption>
+                {% endif %}
+            </figure>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% if outros_projetos %}
+<section class="lw-section lwh-grid-bg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lw-section__header">
+            <h2 class="lw-section__title" style="font-size: 1.75rem;">Outros projetos</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for outro in outros_projetos %}
+            <a href="{% url 'portfolio:detalhe' outro.slug %}" class="lw-media-card">
+                {% if outro.imagem_principal %}
+                <img src="{{ outro.imagem_principal.url }}" alt="{{ outro.titulo }}" class="lw-media-card__img">
+                {% endif %}
+                <div class="lw-media-card__body">
+                    <h3 class="lw-media-card__title">{{ outro.titulo }}</h3>
+                    <p class="lw-muted text-sm">{{ outro.descricao_curta }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

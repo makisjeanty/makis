@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="lwh-hero">
+    <div class="lwh-hero__bg" aria-hidden="true">
+        <span class="lwh-blob lwh-blob--1"></span>
+        <span class="lwh-blob lwh-blob--2"></span>
+    </div>
+    <div class="lwh-hero__content">
+        <div class="lw-pill lwh-rise">Erro 500</div>
+        <h1 class="lw-display text-5xl md:text-6xl lg:text-7xl mb-6 lwh-rise" style="animation-delay: 0.1s">Algo deu errado</h1>
+        <p class="text-lg lw-muted mb-8 lwh-rise" style="animation-delay: 0.2s">
+            Erro temporário no servidor. Tente novamente em instantes.
+        </p>
+        <a href="/" class="lw-btn lw-btn--primary lwh-rise" style="animation-delay: 0.3s">Voltar ao início</a>
+    </div>
+</section>
+{% endblock %}

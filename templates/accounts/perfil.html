@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if perfil %}{{ perfil.get_full_name|default:perfil.username }} · {% endif %}Makis Digital{% endblock %}
+{% block meta_description %}{% if perfil %}{{ perfil.cargo }}{% if perfil.bio %} — {{ perfil.bio|truncatewords:25 }}{% endif %}{% else %}Perfil profissional · Makis Digital{% endif %}{% endblock %}
+{% block og_title %}{% if perfil %}{{ perfil.get_full_name|default:perfil.username }} · {% endif %}Makis Digital{% endblock %}
+{% block og_description %}{% if perfil %}{{ perfil.cargo }}{% if perfil.bio %} — {{ perfil.bio|truncatewords:25 }}{% endif %}{% else %}Perfil profissional · Makis Digital{% endif %}{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if perfil %}
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <span>{{ perfil.get_full_name|default:perfil.username }}</span>
+        </nav>
+
+        <div class="flex flex-col md:flex-row gap-8 items-start">
+            <div class="flex-shrink-0">
+                {% if perfil.avatar %}
+                <img src="{{ perfil.avatar.url }}" alt="{{ perfil.get_full_name }}" class="rounded-2xl" style="width: 160px; height: 160px; object-fit: cover; border: 1px solid var(--line);">
+                {% else %}
+                <div class="rounded-2xl flex items-center justify-center" style="width: 160px; height: 160px; background: var(--surface); border: 1px solid var(--line); font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: var(--accent);">
+                    {{ perfil.get_full_name|default:perfil.username|slice:":1"|upper }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <h1 class="lw-display text-3xl md:text-4xl mb-2">{{ perfil.get_full_name|default:perfil.username }}</h1>
+                <p class="mb-1" style="color: var(--accent); font-weight: 600;">{{ perfil.cargo }}</p>
+                {% if perfil.localizacao %}
+                <p class="lw-muted text-sm mb-4">{{ perfil.localizacao }}</p>
+                {% endif %}
+
+                {% if perfil.disponivel_para_trabalho %}
+                <span class="lw-badge mb-4">Disponível para novos projetos</span>
+                {% endif %}
+
+                {% if perfil.bio %}
+                <div class="lw-prose mt-4">
+                    {{ perfil.bio|linebreaks }}
+                </div>
+                {% endif %}
+
+                {% if perfil.get_habilidades_list %}
+                <div class="flex flex-wrap gap-2 mt-6">
+                    {% for habilidade in perfil.get_habilidades_list %}
+                    <span class="lw-tag">{{ habilidade }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="flex flex-wrap gap-3 mt-8">
+                    {% if perfil.linkedin %}
+                    <a href="{{ perfil.linkedin }}" target="_blank" rel="noopener" class="lw-btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--line);">LinkedIn</a>
+                    {% endif %}
+                    {% if perfil.github %}
+                    <a href="{{ perfil.github }}" target="_blank" rel="noopener" class="lw-btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--line);">GitHub</a>
+                    {% endif %}
+                    {% if perfil.site_pessoal %}
+                    <a href="{{ perfil.site_pessoal }}" target="_blank" rel="noopener" class="lw-btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--line);">Site pessoal</a>
+                    {% endif %}
+                    {% if perfil.whatsapp %}
+                    <a href="https://wa.me/{{ perfil.whatsapp }}" target="_blank" rel="noopener" class="lw-btn lw-btn--primary">WhatsApp</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="lw-empty-state">
+            <p>Nenhum perfil publicado ainda.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

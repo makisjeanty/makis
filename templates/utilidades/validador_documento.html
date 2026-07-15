@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Validador de CPF/CNPJ · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Verifique se um CPF ou CNPJ é válido direto no navegador, sem enviar nada para nenhum servidor.{% endblock %}
+{% block og_title %}Validador de CPF/CNPJ · Makis Digital{% endblock %}
+{% block og_description %}Verifique se um CPF ou CNPJ é válido direto no navegador, sem enviar nada para nenhum servidor.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Validador de CPF/CNPJ</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Utilidades</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Validador de CPF/CNPJ</h1>
+        <p class="lw-muted mb-8">A validação é feita localmente no seu navegador — nenhum documento é enviado para nenhum servidor.</p>
+
+        <div class="lw-card flex flex-col gap-6">
+            <div>
+                <label for="documento" class="text-sm font-semibold mb-2 block">CPF ou CNPJ</label>
+                <input type="text" id="documento" class="lw-input" placeholder="Digite apenas os números ou já formatado" oninput="validarDocumento()">
+            </div>
+            <div id="resultado"></div>
+        </div>
+    </div>
+</section>
+
+<script>
+function limparDocumento(doc) {
+    return doc.replace(/[^\d]/g, '');
+}
+
+function validarCPF(cpf) {
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+    let soma = 0;
+    for (let i = 0; i < 9; i++) soma += parseInt(cpf[i], 10) * (10 - i);
+    let resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf[9], 10)) return false;
+    soma = 0;
+    for (let i = 0; i < 10; i++) soma += parseInt(cpf[i], 10) * (11 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    return resto === parseInt(cpf[10], 10);
+}
+
+function validarCNPJ(cnpj) {
+    if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
+    let tamanho = cnpj.length - 2;
+    let numeros = cnpj.substring(0, tamanho);
+    const digitos = cnpj.substring(tamanho);
+    let soma = 0;
+    let pos = tamanho - 7;
+    for (let i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2) pos = 9;
+    }
+    let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+    if (resultado !== parseInt(digitos.charAt(0), 10)) return false;
+
+    tamanho += 1;
+    numeros = cnpj.substring(0, tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+    for (let i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2) pos = 9;
+    }
+    resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+    return resultado === parseInt(digitos.charAt(1), 10);
+}
+
+function formatarCPF(cpf) {
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+}
+
+function formatarCNPJ(cnpj) {
+    return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+}
+
+function validarDocumento() {
+    const bruto = limparDocumento(document.getElementById('documento').value);
+    const resultado = document.getElementById('resultado');
+
+    if (!bruto) {
+        resultado.innerHTML = '';
+        return;
+    }
+
+    if (bruto.length === 11) {
+        const valido = validarCPF(bruto);
+        resultado.innerHTML = '<span class="lw-badge ' + (valido ? 'lw-badge--success' : 'lw-badge--danger') + '">CPF ' + formatarCPF(bruto) + ' — ' + (valido ? 'válido' : 'inválido') + '</span>';
+    } else if (bruto.length === 14) {
+        const valido = validarCNPJ(bruto);
+        resultado.innerHTML = '<span class="lw-badge ' + (valido ? 'lw-badge--success' : 'lw-badge--danger') + '">CNPJ ' + formatarCNPJ(bruto) + ' — ' + (valido ? 'válido' : 'inválido') + '</span>';
+    } else {
+        resultado.innerHTML = '<span class="lw-badge lw-badge--danger">Digite os 11 dígitos de um CPF ou os 14 de um CNPJ</span>';
+    }
+}
+</script>
+{% endblock %}

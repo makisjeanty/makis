@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.titulo }} · Makis Digital{% endblock %}
+{% block meta_description %}{{ post.resumo }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ post.titulo }} · Makis Digital{% endblock %}
+{% block og_description %}{{ post.resumo }}{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'blog:lista' %}">Blog</a>
+            <span>/</span>
+            <span>{{ post.titulo }}</span>
+        </nav>
+
+        {% if post.categoria %}
+        <a href="{% url 'blog:categoria' post.categoria.slug %}" class="lw-badge mb-4">{{ post.categoria.nome }}</a>
+        {% endif %}
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">{{ post.titulo }}</h1>
+        <div class="lw-media-card__meta mb-8">
+            <a href="{% url 'accounts:perfil' post.autor.username %}" style="color: inherit; text-decoration: none;">{{ post.autor.get_full_name|default:post.autor.username }}</a>
+            {% if post.data_publicacao %}
+            <span>&middot;</span>
+            <span>{{ post.data_publicacao|date:"d \d\e F \d\e Y" }}</span>
+            {% endif %}
+        </div>
+
+        {% if post.imagem_capa %}
+        <img src="{{ post.imagem_capa.url }}" alt="{{ post.titulo }}" class="w-full rounded-2xl mb-8" style="border: 1px solid var(--line);">
+        {% endif %}
+
+        <div class="lw-prose">
+            {{ post.conteudo|linebreaks }}
+        </div>
+
+        {% if post.tags.all %}
+        <div class="flex flex-wrap gap-2 mt-8 mb-4">
+            {% for tag in post.tags.all %}
+            <a href="?tag={{ tag.slug }}" class="lw-tag">#{{ tag.nome }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="mt-12">
+            <h2 class="lw-section__title" style="font-size: 1.4rem; text-align: left; margin-bottom: 1.5rem;">Comentários</h2>
+
+            {% if comentarios %}
+            <div class="flex flex-col gap-4 mb-10">
+                {% for comentario in comentarios %}
+                <div class="lw-card">
+                    <p class="font-semibold mb-1">{{ comentario.nome }}</p>
+                    <p class="lw-muted text-sm mb-2">{{ comentario.data_criacao|date:"d/m/Y" }}</p>
+                    <p>{{ comentario.conteudo }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="lw-muted mb-10">Seja o primeiro a comentar.</p>
+            {% endif %}
+
+            <form method="post" class="lw-card flex flex-col gap-4">
+                {% csrf_token %}
+                {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="text-sm font-semibold mb-1 block">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                    <p class="text-sm mt-1" style="color: var(--accent);">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="lw-btn lw-btn--primary self-start">Enviar comentário</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% if posts_relacionados %}
+<section class="lw-section lwh-grid-bg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lw-section__header">
+            <h2 class="lw-section__title" style="font-size: 1.75rem;">Artigos relacionados</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for outro in posts_relacionados %}
+            <a href="{% url 'blog:detalhe' outro.slug %}" class="lw-media-card">
+                {% if outro.imagem_capa %}
+                <img src="{{ outro.imagem_capa.url }}" alt="{{ outro.titulo }}" class="lw-media-card__img">
+                {% endif %}
+                <div class="lw-media-card__body">
+                    <h3 class="lw-media-card__title">{{ outro.titulo }}</h3>
+                    <p class="lw-muted text-sm">{{ outro.resumo }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

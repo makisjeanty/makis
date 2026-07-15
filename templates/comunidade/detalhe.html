@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ topico.titulo }} · Comunidade · Makis Digital{% endblock %}
+{% block meta_description %}{{ topico.conteudo|truncatewords:25 }}{% endblock %}
+{% block og_title %}{{ topico.titulo }} · Comunidade · Makis Digital{% endblock %}
+{% block og_description %}{{ topico.conteudo|truncatewords:25 }}{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'comunidade:lista' %}">Comunidade</a>
+            <span>/</span>
+            <span>{{ topico.titulo }}</span>
+        </nav>
+
+        {% if topico.fixado %}<span class="lw-badge mb-4">Fixado</span>{% endif %}
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">{{ topico.titulo }}</h1>
+        <div class="lw-media-card__meta mb-8">
+            <span>{{ topico.autor_nome }}</span>
+            <span>&middot;</span>
+            <span>{{ topico.data_criacao|date:"d/m/Y \à\s H:i" }}</span>
+        </div>
+
+        <div class="lw-prose mb-12">
+            {{ topico.conteudo|linebreaks }}
+        </div>
+
+        <div class="mt-12">
+            <h2 class="lw-section__title" style="font-size: 1.4rem; text-align: left; margin-bottom: 1.5rem;">
+                {{ respostas.count }} resposta{{ respostas.count|pluralize }}
+            </h2>
+
+            {% if respostas %}
+            <div class="flex flex-col gap-4 mb-10">
+                {% for resposta in respostas %}
+                <div class="lw-card">
+                    <p class="font-semibold mb-1">{{ resposta.autor_nome }}</p>
+                    <p class="lw-muted text-sm mb-2">{{ resposta.data_criacao|date:"d/m/Y H:i" }}</p>
+                    <p>{{ resposta.conteudo|linebreaks }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="lw-muted mb-10">Nenhuma resposta ainda.</p>
+            {% endif %}
+
+            <form method="post" class="lw-card flex flex-col gap-4">
+                {% csrf_token %}
+                {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="text-sm font-semibold mb-1 block">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                    <p class="text-sm mt-1" style="color: var(--danger);">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="lw-btn lw-btn--primary self-start">Responder</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
