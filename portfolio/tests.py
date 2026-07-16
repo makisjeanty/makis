@@ -3,7 +3,8 @@ import io
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import IntegrityError, transaction
-from django.test import TestCase
+from django.test import Client, TestCase
+from django.urls import reverse
 from PIL import Image
 
 from .models import ImagemProjeto, Projeto
@@ -98,3 +99,78 @@ class ImagemProjetoModelTests(TestCase):
         self.assertEqual(ImagemProjeto.objects.count(), 2)
         self.projeto.delete()
         self.assertEqual(ImagemProjeto.objects.count(), 0)
+
+
+class PortfolioViewsTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.projeto_publico = Projeto.objects.create(
+            titulo='Projeto Público',
+            descricao_curta='desc',
+            descricao_completa='desc completa',
+            imagem_principal=_imagem_valida(),
+            tecnologias='Python, Django',
+            categoria='web',
+            tipo='pessoal',
+            publico=True,
+            destaque=True,
+        )
+        self.projeto_privado = Projeto.objects.create(
+            titulo='Projeto Privado',
+            descricao_curta='desc',
+            descricao_completa='desc completa',
+            imagem_principal=_imagem_valida(),
+            tecnologias='Python',
+            publico=False,
+        )
+
+    def test_lista_projetos_retorna_200_e_template_correto(self):
+        response = self.client.get(reverse('portfolio:lista'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'portfolio/lista.html')
+
+    def test_lista_projetos_mostra_apenas_publicos(self):
+        response = self.client.get(reverse('portfolio:lista'))
+        projetos = list(response.context['projetos'])
+        self.assertIn(self.projeto_publico, projetos)
+        self.assertNotIn(self.projeto_privado, projetos)
+
+    def test_lista_projetos_filtra_por_categoria_e_tipo(self):
+        outro = Projeto.objects.create(
+            titulo='Projeto Mobile Fork', descricao_curta='d', descricao_completa='d',
+            imagem_principal=_imagem_valida(), tecnologias='Kotlin',
+            categoria='mobile', tipo='fork', publico=True,
+        )
+        response = self.client.get(reverse('portfolio:lista'), {'categoria': 'web', 'tipo': 'pessoal'})
+        projetos = list(response.context['projetos'])
+        self.assertIn(self.projeto_publico, projetos)
+        self.assertNotIn(outro, projetos)
+        self.assertEqual(response.context['categoria_ativa'], 'web')
+        self.assertEqual(response.context['tipo_ativo'], 'pessoal')
+
+    def test_cases_retorna_200_e_apenas_destaques(self):
+        Projeto.objects.create(
+            titulo='Projeto Sem Destaque', descricao_curta='d', descricao_completa='d',
+            imagem_principal=_imagem_valida(), tecnologias='Python',
+            publico=True, destaque=False,
+        )
+        response = self.client.get(reverse('portfolio:cases'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'portfolio/cases.html')
+        projetos = list(response.context['projetos'])
+        self.assertIn(self.projeto_publico, projetos)
+        self.assertEqual(len(projetos), 1)
+
+    def test_detalhe_projeto_retorna_200_e_template_correto(self):
+        response = self.client.get(reverse('portfolio:detalhe', args=[self.projeto_publico.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'portfolio/detalhe.html')
+        self.assertEqual(response.context['projeto'], self.projeto_publico)
+
+    def test_detalhe_projeto_privado_retorna_404(self):
+        response = self.client.get(reverse('portfolio:detalhe', args=[self.projeto_privado.slug]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_detalhe_projeto_inexistente_retorna_404(self):
+        response = self.client.get(reverse('portfolio:detalhe', args=['slug-que-nao-existe']))
+        self.assertEqual(response.status_code, 404)

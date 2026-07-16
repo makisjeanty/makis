@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
-from django.test import TestCase
+from django.test import Client, TestCase
+from django.urls import reverse
+from django.utils import timezone
 
 from accounts.models import PerfilUsuario
 
@@ -96,3 +98,80 @@ class ComentarioModelTests(TestCase):
         self.assertEqual(Comentario.objects.count(), 2)
         self.post.delete()
         self.assertEqual(Comentario.objects.count(), 0)
+
+
+class BlogViewsTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.autor = PerfilUsuario.objects.create_user(username='makis', password='senha123')
+        self.categoria = Categoria.objects.create(nome='Categoria de Teste')
+        self.post_publicado = Post.objects.create(
+            titulo='Post Publicado',
+            autor=self.autor,
+            categoria=self.categoria,
+            resumo='resumo',
+            conteudo='conteudo',
+            publicado=True,
+            data_publicacao=timezone.now(),
+        )
+        self.post_rascunho = Post.objects.create(
+            titulo='Post Rascunho',
+            autor=self.autor,
+            resumo='resumo',
+            conteudo='conteudo',
+            publicado=False,
+        )
+
+    def test_lista_posts_retorna_200_e_template_correto(self):
+        response = self.client.get(reverse('blog:lista'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/lista.html')
+
+    def test_lista_posts_mostra_apenas_publicados(self):
+        response = self.client.get(reverse('blog:lista'))
+        posts = list(response.context['posts'])
+        self.assertIn(self.post_publicado, posts)
+        self.assertNotIn(self.post_rascunho, posts)
+
+    def test_lista_posts_filtra_por_categoria(self):
+        outra_categoria = Categoria.objects.create(nome='Outra Categoria')
+        outro_post = Post.objects.create(
+            titulo='Post de Outra Categoria', autor=self.autor, categoria=outra_categoria,
+            resumo='r', conteudo='c', publicado=True, data_publicacao=timezone.now(),
+        )
+        response = self.client.get(reverse('blog:lista'), {'categoria': self.categoria.slug})
+        posts = list(response.context['posts'])
+        self.assertIn(self.post_publicado, posts)
+        self.assertNotIn(outro_post, posts)
+        self.assertEqual(response.context['categoria_ativa'], self.categoria.slug)
+
+    def test_detalhe_post_retorna_200_e_template_correto(self):
+        response = self.client.get(reverse('blog:detalhe', args=[self.post_publicado.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/detalhe.html')
+        self.assertEqual(response.context['post'], self.post_publicado)
+
+    def test_detalhe_post_rascunho_retorna_404(self):
+        response = self.client.get(reverse('blog:detalhe', args=[self.post_rascunho.slug]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_detalhe_post_inexistente_retorna_404(self):
+        response = self.client.get(reverse('blog:detalhe', args=['slug-que-nao-existe']))
+        self.assertEqual(response.status_code, 404)
+
+    def test_lista_categorias_retorna_200_e_template_correto(self):
+        response = self.client.get(reverse('blog:categorias'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/categorias.html')
+        self.assertIn(self.categoria, response.context['categorias'])
+
+    def test_posts_por_categoria_retorna_200_e_filtra_corretamente(self):
+        response = self.client.get(reverse('blog:categoria', args=[self.categoria.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/lista.html')
+        self.assertEqual(response.context['categoria_obj'], self.categoria)
+        self.assertIn(self.post_publicado, list(response.context['posts']))
+
+    def test_posts_por_categoria_slug_inexistente_retorna_404(self):
+        response = self.client.get(reverse('blog:categoria', args=['categoria-que-nao-existe']))
+        self.assertEqual(response.status_code, 404)
