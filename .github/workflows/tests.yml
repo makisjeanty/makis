@@ -1,0 +1,66 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ci_root_password
+          MYSQL_DATABASE: base_central
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      SECRET_KEY: ci-only-secret-key-not-used-anywhere-real
+      DEBUG: 'True'
+      ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+      DB_NAME: base_central
+      DB_USER: root
+      DB_PASSWORD: ci_root_password
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      EMAIL_HOST: smtp.example.com
+      EMAIL_PORT: 587
+      EMAIL_HOST_USER: ci@example.com
+      EMAIL_HOST_PASSWORD: unused-in-ci
+      # user_central (o usuário real de produção) não tem privilégio CREATE
+      # DATABASE, então manage.py test não consegue criar test_base_central
+      # com ele — nesse container descartável usamos root, que pode.
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Aguardar MySQL ficar pronto
+        run: |
+          for i in $(seq 1 30); do
+            mysqladmin ping -h 127.0.0.1 -P 3306 -u root -pci_root_password --silent && break
+            sleep 1
+          done
+
+      - name: Checar configuração do Django
+        run: python manage.py check
+
+      - name: Rodar testes
+        run: python manage.py test
