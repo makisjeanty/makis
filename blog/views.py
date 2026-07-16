@@ -3,6 +3,8 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django_ratelimit.decorators import ratelimit
 
+from core.antispam import formulario_parece_bot, gerar_timestamp_assinado
+
 from .forms import ComentarioForm
 from .models import Categoria, Post
 
@@ -38,6 +40,8 @@ def detalhe_post(request, slug):
     if request.method == 'POST':
         if getattr(request, 'limited', False):
             messages.error(request, 'Muitos comentários em pouco tempo. Aguarde alguns minutos e tente novamente.')
+        elif formulario_parece_bot(request):
+            messages.error(request, 'Não foi possível processar seu envio. Tente novamente.')
         elif form.is_valid():
             comentario = form.save(commit=False)
             comentario.post = post
@@ -54,6 +58,7 @@ def detalhe_post(request, slug):
         'comentarios': comentarios,
         'posts_relacionados': posts_relacionados,
         'form': form,
+        'antispam_ts': gerar_timestamp_assinado(),
         'og_image_url': post.imagem_capa.url if post.imagem_capa else None,
     })
 

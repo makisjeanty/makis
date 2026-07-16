@@ -81,6 +81,7 @@
 
             <form method="post" class="lw-card flex flex-col gap-4">
                 {% csrf_token %}
+                {% include 'partials/antispam_campos.html' %}
                 {% for field in form %}
                 <div>
                     <label for="{{ field.id_for_label }}" class="text-sm font-semibold mb-1 block">{{ field.label }}</label>

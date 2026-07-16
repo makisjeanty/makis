@@ -1,3 +1,6 @@
+import time
+
+from django.core import signing
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
@@ -6,8 +9,13 @@ from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import PerfilUsuario
+from core.antispam import SALT
 
 from .models import Categoria, Comentario, Post, Tag
+
+
+def antispam_ok():
+    return {'website': '', 'ts_form': signing.dumps(time.time() - 5, salt=SALT)}
 
 
 class PostModelTests(TestCase):
@@ -194,11 +202,49 @@ class BlogRateLimitTests(TestCase):
         for i in range(10):
             response = self.client.post(url, {
                 'nome': 'V', 'email': f'v{i}@example.com', 'conteudo': 'ótimo post',
+                **antispam_ok(),
             })
             self.assertEqual(response.status_code, 302, f'requisição {i} deveria ter passado')
 
         response = self.client.post(url, {
             'nome': 'V', 'email': 'v10@example.com', 'conteudo': 'ótimo post',
+            **antispam_ok(),
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Comentario.objects.filter(email='v10@example.com').count(), 0)
+
+
+class BlogAntiSpamTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.client = Client()
+        self.autor = PerfilUsuario.objects.create_user(username='makis2', password='senha123')
+        self.post = Post.objects.create(
+            titulo='Post para antispam', autor=self.autor,
+            resumo='r', conteudo='c', publicado=True, data_publicacao=timezone.now(),
+        )
+
+    def test_honeypot_preenchido_bloqueia_comentario(self):
+        response = self.client.post(reverse('blog:detalhe', args=[self.post.slug]), {
+            'nome': 'Bot', 'email': 'bot@example.com', 'conteudo': 'spam',
+            'website': 'http://spam.example.com',
+            'ts_form': signing.dumps(time.time() - 5, salt=SALT),
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Comentario.objects.filter(email='bot@example.com').count(), 0)
+
+    def test_envio_rapido_demais_bloqueia_comentario(self):
+        response = self.client.post(reverse('blog:detalhe', args=[self.post.slug]), {
+            'nome': 'Bot', 'email': 'bot2@example.com', 'conteudo': 'spam',
+            'website': '', 'ts_form': signing.dumps(time.time(), salt=SALT),
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Comentario.objects.filter(email='bot2@example.com').count(), 0)
+
+    def test_envio_normal_com_antispam_ok_e_aceito(self):
+        response = self.client.post(reverse('blog:detalhe', args=[self.post.slug]), {
+            'nome': 'Visitante', 'email': 'v@example.com', 'conteudo': 'ótimo post',
+            **antispam_ok(),
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Comentario.objects.filter(email='v@example.com').count(), 1)

@@ -1,8 +1,19 @@
+import time
+
+from django.core import signing
 from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
+from core.antispam import SALT
+
 from .models import Resposta, Topico
+
+
+def antispam_ok():
+    """Campos que fazem o formulário parecer preenchido por um humano:
+    honeypot vazio + timestamp assinado de alguns segundos atrás."""
+    return {'website': '', 'ts_form': signing.dumps(time.time() - 5, salt=SALT)}
 
 
 class ComunidadeViewsTests(TestCase):
@@ -45,6 +56,7 @@ class ComunidadeViewsTests(TestCase):
             'autor_nome': 'Visitante',
             'autor_email': 'novo@example.com',
             'conteudo': 'Conteúdo do novo tópico.',
+            **antispam_ok(),
         })
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Topico.objects.filter(titulo='Novo Tópico de Teste').exists())
@@ -91,6 +103,7 @@ class ComunidadeRateLimitTests(TestCase):
         return {
             'titulo': f'Tópico {i}', 'autor_nome': 'V', 'autor_email': f'v{i}@example.com',
             'conteudo': 'conteúdo',
+            **antispam_ok(),
         }
 
     def test_criacao_de_topico_e_bloqueada_apos_5_por_minuto(self):
@@ -110,11 +123,53 @@ class ComunidadeRateLimitTests(TestCase):
         for i in range(10):
             response = self.client.post(url, {
                 'autor_nome': 'V', 'autor_email': f'v{i}@example.com', 'conteudo': 'c',
+                **antispam_ok(),
             })
             self.assertEqual(response.status_code, 302, f'requisição {i} deveria ter passado')
 
         response = self.client.post(url, {
             'autor_nome': 'V', 'autor_email': 'v10@example.com', 'conteudo': 'c',
+            **antispam_ok(),
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Resposta.objects.filter(autor_email='v10@example.com').count(), 0)
+
+
+class ComunidadeAntiSpamTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.client = Client()
+
+    def test_honeypot_preenchido_bloqueia_criacao_de_topico(self):
+        response = self.client.post(reverse('comunidade:lista'), {
+            'titulo': 'Tópico de bot', 'autor_nome': 'Bot', 'autor_email': 'bot@example.com',
+            'conteudo': 'spam', 'website': 'http://spam.example.com',
+            'ts_form': signing.dumps(time.time() - 5, salt=SALT),
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Topico.objects.filter(titulo='Tópico de bot').exists())
+
+    def test_envio_rapido_demais_bloqueia_criacao_de_topico(self):
+        response = self.client.post(reverse('comunidade:lista'), {
+            'titulo': 'Tópico rápido', 'autor_nome': 'Bot', 'autor_email': 'bot2@example.com',
+            'conteudo': 'spam', 'website': '',
+            'ts_form': signing.dumps(time.time(), salt=SALT),  # "agora", sem tempo de preencher
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Topico.objects.filter(titulo='Tópico rápido').exists())
+
+    def test_timestamp_ausente_ou_adulterado_bloqueia(self):
+        response = self.client.post(reverse('comunidade:lista'), {
+            'titulo': 'Tópico sem timestamp', 'autor_nome': 'Bot', 'autor_email': 'bot3@example.com',
+            'conteudo': 'spam', 'website': '', 'ts_form': 'valor-forjado-invalido',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Topico.objects.filter(titulo='Tópico sem timestamp').exists())
+
+    def test_envio_normal_com_antispam_ok_e_aceito(self):
+        response = self.client.post(reverse('comunidade:lista'), {
+            'titulo': 'Tópico legítimo', 'autor_nome': 'Visitante', 'autor_email': 'v@example.com',
+            'conteudo': 'conteúdo real', **antispam_ok(),
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Topico.objects.filter(titulo='Tópico legítimo').exists())

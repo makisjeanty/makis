@@ -674,6 +674,15 @@ body {
     }
 }
 
+/* Honeypot anti-spam — escondido fora da tela e da ordem de tab, não
+   display:none/visibility:hidden (bots checam por isso) nem sr-only
+   (leitor de tela leria e um usuário cego poderia preencher por engano). */
+.hp-field {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+}
+
 /* Animations */
 .lwh-rise {
     animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;

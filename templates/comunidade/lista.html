@@ -19,6 +19,7 @@
             <summary class="font-semibold cursor-pointer">+ Novo tópico</summary>
             <form method="post" class="flex flex-col gap-4 mt-6">
                 {% csrf_token %}
+                {% include 'partials/antispam_campos.html' %}
                 {% for field in form %}
                 <div>
                     <label for="{{ field.id_for_label }}" class="text-sm font-semibold mb-1 block">{{ field.label }}</label>
