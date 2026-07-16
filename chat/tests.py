@@ -1,6 +1,6 @@
 from channels.testing import WebsocketCommunicator
 from django.core.cache import cache
-from django.test import Client, TestCase
+from django.test import Client, TestCase, TransactionTestCase
 from django.urls import reverse
 
 from .consumers import ChatConsumer, RATE_LIMIT_MAX, SALA_PADRAO
@@ -42,7 +42,7 @@ class ChatViewsTests(TestCase):
         self.assertEqual(mensagens[-1].texto, 'mensagem 54')
 
 
-class ChatConsumerRateLimitTests(TestCase):
+class ChatConsumerRateLimitTests(TransactionTestCase):
     def setUp(self):
         cache.clear()
 
