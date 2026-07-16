@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.test import Client, TestCase
@@ -102,6 +103,7 @@ class ComentarioModelTests(TestCase):
 
 class BlogViewsTests(TestCase):
     def setUp(self):
+        cache.clear()  # isola o contador de rate-limit entre testes
         self.client = Client()
         self.autor = PerfilUsuario.objects.create_user(username='makis', password='senha123')
         self.categoria = Categoria.objects.create(nome='Categoria de Teste')
@@ -175,3 +177,28 @@ class BlogViewsTests(TestCase):
     def test_posts_por_categoria_slug_inexistente_retorna_404(self):
         response = self.client.get(reverse('blog:categoria', args=['categoria-que-nao-existe']))
         self.assertEqual(response.status_code, 404)
+
+
+class BlogRateLimitTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.client = Client()
+        self.autor = PerfilUsuario.objects.create_user(username='makis', password='senha123')
+        self.post = Post.objects.create(
+            titulo='Post para comentários', autor=self.autor,
+            resumo='r', conteudo='c', publicado=True, data_publicacao=timezone.now(),
+        )
+
+    def test_criacao_de_comentario_e_bloqueada_apos_10_por_minuto(self):
+        url = reverse('blog:detalhe', args=[self.post.slug])
+        for i in range(10):
+            response = self.client.post(url, {
+                'nome': 'V', 'email': f'v{i}@example.com', 'conteudo': 'ótimo post',
+            })
+            self.assertEqual(response.status_code, 302, f'requisição {i} deveria ter passado')
+
+        response = self.client.post(url, {
+            'nome': 'V', 'email': 'v10@example.com', 'conteudo': 'ótimo post',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Comentario.objects.filter(email='v10@example.com').count(), 0)

@@ -14,6 +14,15 @@ class PerfilUsuarioAdmin(UserAdmin):
     list_filter = ('disponivel_para_trabalho', 'cargo')
     search_fields = ('username', 'email', 'cargo')
     inlines = [HabilidadeInline]
+    actions = ['marcar_disponivel', 'marcar_indisponivel']
+
+    @admin.action(description='Marcar como disponível para trabalho')
+    def marcar_disponivel(self, request, queryset):
+        queryset.update(disponivel_para_trabalho=True)
+
+    @admin.action(description='Marcar como indisponível para trabalho')
+    def marcar_indisponivel(self, request, queryset):
+        queryset.update(disponivel_para_trabalho=False)
 
     fieldsets = UserAdmin.fieldsets + (
         ('Informações Profissionais', {

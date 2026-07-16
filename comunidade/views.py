@@ -1,22 +1,26 @@
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
+from django_ratelimit.decorators import ratelimit
 
 from .forms import RespostaForm, TopicoForm
 from .models import Topico
 
 POR_PAGINA = 10
 
+MENSAGEM_LIMITE = 'Muitas publicações em pouco tempo. Aguarde alguns minutos e tente novamente.'
 
+
+@ratelimit(key='ip', rate='5/m', method='POST', block=False)
 def lista(request):
+    form = TopicoForm(request.POST or None)
     if request.method == 'POST':
-        form = TopicoForm(request.POST)
-        if form.is_valid():
+        if getattr(request, 'limited', False):
+            messages.error(request, MENSAGEM_LIMITE)
+        elif form.is_valid():
             topico = form.save()
             messages.success(request, 'Tópico publicado!')
             return redirect('comunidade:detalhe', slug=topico.slug)
-    else:
-        form = TopicoForm()
 
     topicos = Topico.objects.filter(aprovado=True)
     page_obj = Paginator(topicos, POR_PAGINA).get_page(request.GET.get('page'))
@@ -28,19 +32,20 @@ def lista(request):
     })
 
 
+@ratelimit(key='ip', rate='10/m', method='POST', block=False)
 def detalhe(request, slug):
     topico = get_object_or_404(Topico, slug=slug, aprovado=True)
 
+    form = RespostaForm(request.POST or None)
     if request.method == 'POST':
-        form = RespostaForm(request.POST)
-        if form.is_valid():
+        if getattr(request, 'limited', False):
+            messages.error(request, MENSAGEM_LIMITE)
+        elif form.is_valid():
             resposta = form.save(commit=False)
             resposta.topico = topico
             resposta.save()
             messages.success(request, 'Resposta publicada!')
             return redirect('comunidade:detalhe', slug=topico.slug)
-    else:
-        form = RespostaForm()
 
     respostas = topico.respostas.filter(aprovado=True)
 

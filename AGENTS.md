@@ -63,8 +63,8 @@ No MySQL locally? Validate migrations/tests/admin against a throwaway SQLite DB 
 
 ## Real-time chat (Django Channels)
 - `core/asgi.py` wires a `ProtocolTypeRouter`: HTTP through normal Django, WebSocket (`/ws/chat/`) through `chat.routing.websocket_urlpatterns` → `ChatConsumer`. `INSTALLED_APPS` has `'daphne'` listed **first** (required for `runserver` to serve ASGI) and `'channels'` with the other third-party apps.
-- `CHANNEL_LAYERS` uses `channels.layers.InMemoryChannelLayer` — only correct with a single process. Fine for local `runserver`; **before deploying with multiple workers/processes**, switch to `channels_redis.core.RedisChannelLayer` with a real Redis, or broadcasts won't reach all processes.
-- No Redis runs in this dev environment and none is required locally.
+- `CHANNEL_LAYERS` switches automatically on `DEBUG`: `InMemoryChannelLayer` locally, `channels_redis.core.RedisChannelLayer` when `DEBUG=False` — no manual deploy step needed. Both it and `CACHES` share one `REDIS_URL` env var (default `redis://127.0.0.1:6379`).
+- No Redis runs in this dev environment. The `DEBUG=False` branch's config was verified to resolve correctly, but never against a live Redis server — test that for real before depending on it in production.
 - Message times must go through `django.utils.timezone.localtime()` before formatting in the consumer — `.strftime()` alone returns UTC and will visibly disagree with the server-rendered history.
 
 ## SEO
@@ -83,7 +83,7 @@ No MySQL locally? Validate migrations/tests/admin against a throwaway SQLite DB 
 - Blog post author names link to `accounts:perfil` for that user
 - `copiarTexto(id, botao)` in `static/js/main.js` is the shared clipboard-copy helper used by the utilidades tools — reuse it instead of writing a new copy handler
 - Floating WhatsApp button (`.lw-whatsapp-fab`) is fixed-position on every page, separate from the footer's WhatsApp link
-- Neither `comunidade` nor `chat` has spam/rate-limit protection (no CAPTCHA, no throttling) — same accepted risk posture as the blog comment form
+- Rate limiting is on every anonymous write path (no CAPTCHA still, that's the remaining gap): blog comments and comunidade topics/replies use `django-ratelimit`'s `@ratelimit(key='ip', rate=..., method='POST', block=False)`, checked via `request.limited` so the form re-renders with a `messages.error()` instead of a raw 403. Chat can't use that decorator (WebSocket, not request/response) — `ChatConsumer` has its own async cache-based fixed-window counter instead (`RATE_LIMIT_MAX`/`RATE_LIMIT_JANELA` in `chat/consumers.py`), sending back `{"erro": "..."}` which `sala.html`'s JS checks for. Tests touching these must `cache.clear()` in `setUp()` — the counter is shared cache state, not per-test-transaction.
 - `setup.sh` only generates `SECRET_KEY`; it does NOT create the DB, install dependencies, or run migrations
 - Accessibility: skip-to-content link (`#conteudo-principal`) first in `base.html`'s body; nav dropdown buttons carry `aria-haspopup`/`aria-expanded` synced by `toggleDropdown()` in `main.js` (also closes on `Escape`). Heading hierarchy is h1→h2→h3 everywhere, no skipped levels — don't demote card-grid titles back to h3 for font-size reasons, use CSS classes for that.
 - Migrations dropping a field that might hold real data need a `RunPython` step to migrate that data into its replacement *before* the `RemoveField` — see `accounts/migrations/0002_remove_perfilusuario_habilidades_and_more.py` (`CreateModel` → `RunPython` → `RemoveField`) for the pattern. Don't assume the field is empty just because the local DB is.

@@ -62,6 +62,18 @@ function escaparHtml(texto) {
     return div.innerHTML;
 }
 
+function mostrarErroChat(mensagem) {
+    const lista = document.getElementById('chatMensagens');
+    const vazio = document.getElementById('chatVazio');
+    if (vazio) vazio.remove();
+
+    const aviso = document.createElement('div');
+    aviso.className = 'chat-msg';
+    aviso.innerHTML = '<span class="lw-badge lw-badge--danger">' + escaparHtml(mensagem) + '</span>';
+    lista.appendChild(aviso);
+    lista.scrollTop = lista.scrollHeight;
+}
+
 function adicionarMensagem(nome, texto, hora) {
     const lista = document.getElementById('chatMensagens');
     const vazio = document.getElementById('chatVazio');
@@ -95,6 +107,10 @@ function conectar() {
 
     socket.onmessage = (evento) => {
         const dados = JSON.parse(evento.data);
+        if (dados.erro) {
+            mostrarErroChat(dados.erro);
+            return;
+        }
         adicionarMensagem(dados.nome, dados.texto, dados.criado_em);
     };
 }

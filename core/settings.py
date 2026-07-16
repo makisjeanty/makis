@@ -96,11 +96,27 @@ ASGI_APPLICATION = 'core.asgi.application'
 # Channel layer do chat em tempo real. InMemoryChannelLayer só funciona com um único
 # processo (bom para desenvolvimento local). Em produção com múltiplos workers/processos,
 # trocar para channels_redis.core.RedisChannelLayer com um Redis real.
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+REDIS_URL = config('REDIS_URL', default='redis://127.0.0.1:6379')
+
+# InMemoryChannelLayer only works within a single process — fine for local
+# `runserver`, but with multiple workers/processes in production, messages
+# would silently stop reaching everyone connected to a different process.
+# Redis-backed layer is required as soon as there's more than one process.
+if DEBUG:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        }
     }
-}
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [REDIS_URL],
+            },
+        }
+    }
 
 
 # Database - MySQL (sua escolha)
@@ -201,7 +217,7 @@ if not DEBUG:
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-            'LOCATION': 'redis://127.0.0.1:6379',
+            'LOCATION': REDIS_URL,
         }
     }
 

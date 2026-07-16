@@ -15,6 +15,16 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('titulo',)}
     list_editable = ('publicado',)
     date_hierarchy = 'data_criacao'
+    filter_horizontal = ('tags',)
+    actions = ['publicar_posts', 'despublicar_posts']
+
+    @admin.action(description='Publicar posts selecionados')
+    def publicar_posts(self, request, queryset):
+        queryset.update(publicado=True)
+
+    @admin.action(description='Despublicar posts selecionados')
+    def despublicar_posts(self, request, queryset):
+        queryset.update(publicado=False)
 
     fieldsets = (
         ('Informações do Post', {
@@ -37,8 +47,12 @@ class ComentarioAdmin(admin.ModelAdmin):
     list_filter = ('aprovado', 'data_criacao', 'post')
     search_fields = ('nome', 'conteudo', 'email')
     list_editable = ('aprovado',)
-    actions = ['aprovar_comentarios']
-    
+    actions = ['aprovar_comentarios', 'reprovar_comentarios']
+
     def aprovar_comentarios(self, request, queryset):
         queryset.update(aprovado=True)
     aprovar_comentarios.short_description = "Aprovar comentários selecionados"
+
+    def reprovar_comentarios(self, request, queryset):
+        queryset.update(aprovado=False)
+    reprovar_comentarios.short_description = "Reprovar comentários selecionados"

@@ -1,7 +1,9 @@
+from channels.testing import WebsocketCommunicator
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from .consumers import SALA_PADRAO
+from .consumers import ChatConsumer, RATE_LIMIT_MAX, SALA_PADRAO
 from .models import Mensagem
 
 
@@ -38,3 +40,38 @@ class ChatViewsTests(TestCase):
         # deve manter as 50 mais recentes, em ordem cronológica
         self.assertEqual(mensagens[0].texto, 'mensagem 5')
         self.assertEqual(mensagens[-1].texto, 'mensagem 54')
+
+
+class ChatConsumerRateLimitTests(TestCase):
+    def setUp(self):
+        cache.clear()
+
+    async def test_mensagens_dentro_do_limite_sao_aceitas(self):
+        communicator = WebsocketCommunicator(ChatConsumer.as_asgi(), '/ws/chat/')
+        conectado, _ = await communicator.connect()
+        self.assertTrue(conectado)
+
+        for i in range(RATE_LIMIT_MAX):
+            await communicator.send_json_to({'nome': 'Ana', 'texto': f'mensagem {i}'})
+            resposta = await communicator.receive_json_from()
+            self.assertEqual(resposta.get('texto'), f'mensagem {i}')
+            self.assertNotIn('erro', resposta)
+
+        await communicator.disconnect()
+
+    async def test_mensagem_alem_do_limite_recebe_erro_e_nao_e_salva(self):
+        communicator = WebsocketCommunicator(ChatConsumer.as_asgi(), '/ws/chat/')
+        await communicator.connect()
+
+        for i in range(RATE_LIMIT_MAX):
+            await communicator.send_json_to({'nome': 'Ana', 'texto': f'mensagem {i}'})
+            await communicator.receive_json_from()
+
+        await communicator.send_json_to({'nome': 'Ana', 'texto': 'mensagem excedente'})
+        resposta = await communicator.receive_json_from()
+        self.assertIn('erro', resposta)
+
+        await communicator.disconnect()
+
+        salva = await Mensagem.objects.filter(texto='mensagem excedente').aexists()
+        self.assertFalse(salva)

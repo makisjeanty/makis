@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
+from django_ratelimit.decorators import ratelimit
 
 from .forms import ComentarioForm
 from .models import Categoria, Post
@@ -29,19 +30,20 @@ def lista_posts(request):
     })
 
 
+@ratelimit(key='ip', rate='10/m', method='POST', block=False)
 def detalhe_post(request, slug):
     post = get_object_or_404(Post, slug=slug, publicado=True)
 
+    form = ComentarioForm(request.POST or None)
     if request.method == 'POST':
-        form = ComentarioForm(request.POST)
-        if form.is_valid():
+        if getattr(request, 'limited', False):
+            messages.error(request, 'Muitos comentários em pouco tempo. Aguarde alguns minutos e tente novamente.')
+        elif form.is_valid():
             comentario = form.save(commit=False)
             comentario.post = post
             comentario.save()
             messages.success(request, 'Comentário enviado! Ele aparecerá aqui após ser aprovado.')
             return redirect('blog:detalhe', slug=post.slug)
-    else:
-        form = ComentarioForm()
 
     comentarios = post.comentarios.filter(aprovado=True)
     posts_relacionados = Post.objects.filter(

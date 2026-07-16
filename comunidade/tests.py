@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -6,6 +7,7 @@ from .models import Resposta, Topico
 
 class ComunidadeViewsTests(TestCase):
     def setUp(self):
+        cache.clear()  # isola o contador de rate-limit entre testes
         self.client = Client()
         self.topico_aprovado = Topico.objects.create(
             titulo='Como estruturar um projeto Django?',
@@ -74,3 +76,45 @@ class ComunidadeViewsTests(TestCase):
         respostas = list(response.context['respostas'])
         self.assertIn(resposta_aprovada, respostas)
         self.assertNotIn(resposta_escondida, respostas)
+
+
+class ComunidadeRateLimitTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.client = Client()
+        self.topico = Topico.objects.create(
+            titulo='Tópico para respostas', autor_nome='V', autor_email='v@example.com',
+            conteudo='c', aprovado=True,
+        )
+
+    def _payload_topico(self, i):
+        return {
+            'titulo': f'Tópico {i}', 'autor_nome': 'V', 'autor_email': f'v{i}@example.com',
+            'conteudo': 'conteúdo',
+        }
+
+    def test_criacao_de_topico_e_bloqueada_apos_5_por_minuto(self):
+        url = reverse('comunidade:lista')
+        for i in range(5):
+            response = self.client.post(url, self._payload_topico(i))
+            self.assertEqual(response.status_code, 302, f'requisição {i} deveria ter passado')
+
+        response = self.client.post(url, self._payload_topico(5))
+        self.assertEqual(response.status_code, 200)  # form re-renderizado, sem redirect
+        self.assertFalse(Topico.objects.filter(titulo='Tópico 5').exists())
+        mensagens = [str(m) for m in response.context['messages']]
+        self.assertTrue(any('Muitas publicações' in m for m in mensagens))
+
+    def test_criacao_de_resposta_e_bloqueada_apos_10_por_minuto(self):
+        url = reverse('comunidade:detalhe', args=[self.topico.slug])
+        for i in range(10):
+            response = self.client.post(url, {
+                'autor_nome': 'V', 'autor_email': f'v{i}@example.com', 'conteudo': 'c',
+            })
+            self.assertEqual(response.status_code, 302, f'requisição {i} deveria ter passado')
+
+        response = self.client.post(url, {
+            'autor_nome': 'V', 'autor_email': 'v10@example.com', 'conteudo': 'c',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Resposta.objects.filter(autor_email='v10@example.com').count(), 0)

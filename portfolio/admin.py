@@ -13,6 +13,23 @@ class ProjetoAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('titulo',)}
     list_editable = ('destaque', 'publico')
     inlines = [ImagemProjetoInline]
+    actions = ['marcar_destaque', 'remover_destaque', 'publicar_projetos', 'despublicar_projetos']
+
+    @admin.action(description='Marcar como destaque')
+    def marcar_destaque(self, request, queryset):
+        queryset.update(destaque=True)
+
+    @admin.action(description='Remover destaque')
+    def remover_destaque(self, request, queryset):
+        queryset.update(destaque=False)
+
+    @admin.action(description='Publicar projetos selecionados')
+    def publicar_projetos(self, request, queryset):
+        queryset.update(publico=True)
+
+    @admin.action(description='Despublicar projetos selecionados')
+    def despublicar_projetos(self, request, queryset):
+        queryset.update(publico=False)
 
     fieldsets = (
         ('Informações Básicas', {
