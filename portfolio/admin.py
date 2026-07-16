@@ -7,16 +7,16 @@ class ImagemProjetoInline(admin.TabularInline):
 
 @admin.register(Projeto)
 class ProjetoAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'categoria', 'destaque', 'publico', 'data_criacao')
-    list_filter = ('categoria', 'destaque', 'publico', 'data_criacao')
+    list_display = ('titulo', 'categoria', 'tipo', 'destaque', 'publico', 'data_criacao')
+    list_filter = ('categoria', 'tipo', 'destaque', 'publico', 'data_criacao')
     search_fields = ('titulo', 'descricao_curta', 'tecnologias')
     prepopulated_fields = {'slug': ('titulo',)}
     list_editable = ('destaque', 'publico')
     inlines = [ImagemProjetoInline]
-    
+
     fieldsets = (
         ('Informações Básicas', {
-            'fields': ('titulo', 'slug', 'categoria', 'descricao_curta', 'descricao_completa')
+            'fields': ('titulo', 'slug', 'categoria', 'tipo', 'descricao_curta', 'descricao_completa')
         }),
         ('Mídia', {
             'fields': ('imagem_principal',)

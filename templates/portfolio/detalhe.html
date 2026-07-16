@@ -13,12 +13,15 @@
         <nav class="lw-breadcrumb">
             <a href="{% url 'home' %}">Início</a>
             <span>/</span>
-            <a href="{% url 'portfolio:lista' %}">Portfolio</a>
+            <a href="{% url 'portfolio:lista' %}">Projetos</a>
             <span>/</span>
             <span>{{ projeto.titulo }}</span>
         </nav>
 
-        <span class="lw-badge mb-4">{{ projeto.get_categoria_display }}</span>
+        <div class="flex flex-wrap gap-2 mb-4">
+            <span class="lw-badge">{{ projeto.get_categoria_display }}</span>
+            <span class="lw-tag">{{ projeto.get_tipo_display }}</span>
+        </div>
         <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">{{ projeto.titulo }}</h1>
         <p class="lw-muted text-lg mb-6">{{ projeto.descricao_curta }}</p>
 
@@ -27,7 +30,7 @@
             <a href="{{ projeto.link_demo }}" target="_blank" rel="noopener" class="lw-btn lw-btn--primary">Ver demo</a>
             {% endif %}
             {% if projeto.link_github %}
-            <a href="{{ projeto.link_github }}" target="_blank" rel="noopener" class="lw-btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--line);">Ver código</a>
+            <a href="{{ projeto.link_github }}" target="_blank" rel="noopener" class="lw-btn lw-btn--secondary">Ver código</a>
             {% endif %}
         </div>
 

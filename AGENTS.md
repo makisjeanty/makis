@@ -20,9 +20,9 @@ MySQL database must exist first: `CREATE DATABASE base_central CHARACTER SET utf
 
 ## App Structure
 - `core/` — project settings (`core/settings.py`), root urls (`core/urls.py`)
-- `accounts/` — custom user model `PerfilUsuario` (extends `AbstractUser`), admin registered; public profile views implemented (`sobre` = first superuser's profile, `perfil` = profile by username)
-- `portfolio/` — `Projeto` + `ImagemProjeto` models, admin registered with inline gallery; public views implemented (list/filter, cases, detail by slug)
-- `blog/` — `Categoria`, `Tag`, `Post`, `Comentario` models, admin registered; public views implemented (list/filter, categories index, detail by slug, plus a `ComentarioForm` for the comment form — new comments save with `aprovado=False` and need admin approval)
+- `accounts/` — custom user model `PerfilUsuario` (extends `AbstractUser`) + `Habilidade` (skill with `nivel` 1-3 and `categoria`, FK via `related_name='skills'`), admin registered; public profile views implemented (`sobre` = first superuser's profile, `perfil` = profile by username). Profile page groups skills by category with a 3-star meter, and shows `perfil.filosofia` as a "Minha filosofia" card when filled in
+- `portfolio/` — `Projeto` (has both `categoria` — web/mobile/data/automacao/outro — **and** a separate `tipo` — pessoal/academico/fork, independently filterable) + `ImagemProjeto` models, admin registered with inline gallery; public views implemented (list/filter by categoria and/or tipo, cases, detail by slug)
+- `blog/` — `Categoria`, `Tag`, `Post`, `Comentario` models, admin registered; public views implemented (list/filter, categories index, detail by slug, plus a `ComentarioForm` for the comment form — new comments save with `aprovado=False` and need admin approval). Data migration seeds "Estudos de Caso"/"Resumos Técnicos"/"Desafios" categories; **nav labels this app "Estudos"** even though the app/URLs/templates are still named `blog`
 - `utilidades/` — no models; renders a tool index + 4 tools (gerador de senha, validador CPF/CNPJ, formatador JSON, conversor Base64). All 4 run **entirely client-side in vanilla JS** — no data is ever POSTed to Django, by design (privacy)
 - `comunidade/` — `Topico` + `Resposta` models, no login (name/email like blog comments), `aprovado=True` by default (posts show immediately, admin can hide after the fact). List view doubles as the "new topic" form, detail view doubles as the "reply" form
 - `chat/` — real-time chat, no login. `Mensagem` model persists history; `chat/consumers.py` (`ChatConsumer`) handles the live WebSocket on a single hardcoded room (`SALA_PADRAO = 'geral'`), saves via `database_sync_to_async`, broadcasts to the `chat_geral` channel-layer group. View renders last 50 messages server-side, then JS connects via WebSocket for live updates. Nickname lives in browser `localStorage`, not server-side
@@ -41,6 +41,7 @@ MySQL database must exist first: `CREATE DATABASE base_central CHARACTER SET utf
 - `/sitemap.xml` → `django.contrib.sitemaps`, defined in `core/sitemaps.py` (includes `chat:sala`) + `portfolio/sitemaps.py` + `blog/sitemaps.py` + `comunidade/sitemaps.py`
 - **Admin is NOT at `/admin/`** — uses obfuscated path from `ADMIN_URL` env var (default: `gestao-dmh8g6skcx`)
 - Nav links in `base.html` use `{% url %}` tags — don't hardcode hrefs there
+- Nav label ≠ app name: "Portfolio" shows as **"Projetos"**, "Blog" shows as **"Estudos"** — app names/URLs/template dirs are unchanged, only visible text
 - List views (`portfolio:lista`, `blog:lista`, `blog:categoria`) are paginated (9/page) via `templates/partials/paginacao.html`, which preserves query params like `?categoria=`/`?tag=`
 
 ## Critical Settings
@@ -67,6 +68,8 @@ MySQL database must exist first: `CREATE DATABASE base_central CHARACTER SET utf
 - `sitemap.xml` and `blog/rss/` build absolute URLs via `django.contrib.sites` (`SITE_ID = 1`), not the request host. The Site row is still the default `example.com` placeholder — **update it before deploying** (`/<ADMIN_URL>/sites/site/1/change/`) or sitemap/RSS links will point to the wrong domain.
 
 ## Notable
+- This is a git repository (remote `origin` → `git@github.com:makisjeanty/makis.git`, branch `main`). Push uses a dedicated SSH key at `~/.ssh/id_ed25519_makis` (not the default identity) — use `GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519_makis -o IdentitiesOnly=yes"` for push/fetch unless that key is added to the agent
+- `.gitignore` excludes `.claude/settings.local.json` alongside the usual `.env`/`venv/`/`staticfiles/`/`media/`
 - `index.html` in the parent directory (one level above this repo) is a standalone shift-control page (localStorage-based), not served by Django, not part of this codebase
 - Admin site header overridden to `Painel Makis` (`core/urls.py`)
 - Custom 404/500 handlers defined in `core/urls.py` — no debug tracebacks in production

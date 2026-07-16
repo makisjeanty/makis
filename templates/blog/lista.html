@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% if categoria_obj %}{{ categoria_obj.nome }} · {% endif %}Blog · Makis Digital{% endblock %}
+{% block title %}{% if categoria_obj %}{{ categoria_obj.nome }} · {% endif %}Estudos · Makis Digital{% endblock %}
 {% block meta_description %}{% if categoria_obj %}Artigos sobre {{ categoria_obj.nome }}.{% else %}Conteúdo sobre desenvolvimento, dados e tecnologia.{% endif %}{% endblock %}
-{% block og_title %}{% if categoria_obj %}{{ categoria_obj.nome }} · {% endif %}Blog · Makis Digital{% endblock %}
+{% block og_title %}{% if categoria_obj %}{{ categoria_obj.nome }} · {% endif %}Estudos · Makis Digital{% endblock %}
 {% block og_description %}{% if categoria_obj %}Artigos sobre {{ categoria_obj.nome }}.{% else %}Conteúdo sobre desenvolvimento, dados e tecnologia.{% endif %}{% endblock %}
 
 {% block content %}
 <section class="lw-section lwh-grid-bg" style="padding-top: 7rem;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="lw-section__header">
-            <span class="lw-pill mb-4">Blog</span>
-            <h1 class="lw-section__title">{% if categoria_obj %}{{ categoria_obj.nome }}{% else %}Artigos e novidades{% endif %}</h1>
-            <p class="lw-section__subtitle">Conteúdo sobre desenvolvimento, dados e tecnologia.</p>
+            <span class="lw-pill mb-4">Estudos</span>
+            <h1 class="lw-section__title">{% if categoria_obj %}{{ categoria_obj.nome }}{% else %}Trilha de estudos{% endif %}</h1>
+            <p class="lw-section__subtitle">Estudos de caso, resumos técnicos, desafios e artigos sobre desenvolvimento e tecnologia — o registro do que venho aprendendo.</p>
             <a href="{% url 'blog:rss' %}" class="lw-tag inline-flex mt-4">RSS</a>
         </div>
 

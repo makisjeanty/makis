@@ -44,23 +44,15 @@
                 </div>
                 {% endif %}
 
-                {% if perfil.get_habilidades_list %}
-                <div class="flex flex-wrap gap-2 mt-6">
-                    {% for habilidade in perfil.get_habilidades_list %}
-                    <span class="lw-tag">{{ habilidade }}</span>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <div class="flex flex-wrap gap-3 mt-8">
+                <div class="flex flex-wrap gap-3 mt-4">
                     {% if perfil.linkedin %}
-                    <a href="{{ perfil.linkedin }}" target="_blank" rel="noopener" class="lw-btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--line);">LinkedIn</a>
+                    <a href="{{ perfil.linkedin }}" target="_blank" rel="noopener" class="lw-btn lw-btn--secondary">LinkedIn</a>
                     {% endif %}
                     {% if perfil.github %}
-                    <a href="{{ perfil.github }}" target="_blank" rel="noopener" class="lw-btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--line);">GitHub</a>
+                    <a href="{{ perfil.github }}" target="_blank" rel="noopener" class="lw-btn lw-btn--secondary">GitHub</a>
                     {% endif %}
                     {% if perfil.site_pessoal %}
-                    <a href="{{ perfil.site_pessoal }}" target="_blank" rel="noopener" class="lw-btn" style="background: var(--surface); color: var(--text); border: 1px solid var(--line);">Site pessoal</a>
+                    <a href="{{ perfil.site_pessoal }}" target="_blank" rel="noopener" class="lw-btn lw-btn--secondary">Site pessoal</a>
                     {% endif %}
                     {% if perfil.whatsapp %}
                     <a href="https://wa.me/{{ perfil.whatsapp }}" target="_blank" rel="noopener" class="lw-btn lw-btn--primary">WhatsApp</a>
@@ -68,6 +60,39 @@
                 </div>
             </div>
         </div>
+
+        {% if perfil.filosofia %}
+        <div class="lw-card mt-12">
+            <span class="lw-badge mb-4">Minha filosofia</span>
+            <div class="lw-prose">
+                {{ perfil.filosofia|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if perfil.skills.all %}
+        <div class="mt-12">
+            <h2 class="lw-section__title" style="font-size: 1.4rem; text-align: left; margin-bottom: 1.5rem;">Caixa de ferramentas</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% regroup perfil.skills.all by get_categoria_display as grupos_habilidades %}
+                {% for grupo in grupos_habilidades %}
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wide mb-3" style="color: var(--muted);">{{ grupo.grouper }}</h3>
+                    <div class="flex flex-col gap-2">
+                        {% for habilidade in grupo.list %}
+                        <div class="lw-card flex items-center justify-between gap-3" style="padding: 0.75rem 1.25rem;">
+                            <span class="text-sm">{{ habilidade.nome }}</span>
+                            <span aria-label="{{ habilidade.get_nivel_display }}">
+                                {% for i in "123" %}<span style="color: {% if forloop.counter <= habilidade.nivel %}var(--accent){% else %}var(--line){% endif %};">★</span>{% endfor %}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
         {% else %}
         <div class="lw-empty-state">
             <p>Nenhum perfil publicado ainda.</p>

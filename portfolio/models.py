@@ -10,12 +10,19 @@ class Projeto(models.Model):
         ('automacao', 'Automação'),
         ('outro', 'Outro'),
     ]
-    
+
+    TIPOS = [
+        ('pessoal', 'Projeto Pessoal'),
+        ('academico', 'Projeto Acadêmico'),
+        ('fork', 'Fork de Open Source'),
+    ]
+
     titulo = models.CharField(max_length=200, verbose_name='Título')
     slug = models.SlugField(unique=True, blank=True)
     descricao_curta = models.TextField(max_length=300, verbose_name='Descrição curta')
     descricao_completa = models.TextField(verbose_name='Descrição completa')
     categoria = models.CharField(max_length=20, choices=CATEGORIAS, default='web')
+    tipo = models.CharField(max_length=20, choices=TIPOS, default='pessoal', verbose_name='Tipo de projeto')
     imagem_principal = models.ImageField(
         upload_to='projetos/', 
         validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'webp'])]

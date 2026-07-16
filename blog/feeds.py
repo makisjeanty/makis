@@ -5,9 +5,9 @@ from .models import Post
 
 
 class PostsFeed(Feed):
-    title = 'Makis Digital — Blog'
+    title = 'Makis Digital — Estudos'
     link = '/blog/'
-    description = 'Últimos artigos publicados no blog da Makis Digital.'
+    description = 'Últimos artigos publicados na trilha de estudos da Makis Digital.'
 
     def items(self):
         return Post.objects.filter(publicado=True).order_by('-data_publicacao')[:20]

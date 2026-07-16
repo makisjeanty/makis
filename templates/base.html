@@ -18,7 +18,7 @@
     {% endif %}
     <meta name="twitter:card" content="summary_large_image">
 
-    <link rel="alternate" type="application/rss+xml" title="Makis Digital — Blog" href="{% url 'blog:rss' %}">
+    <link rel="alternate" type="application/rss+xml" title="Makis Digital — Estudos" href="{% url 'blog:rss' %}">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
@@ -38,31 +38,34 @@
                 <div class="hidden md:flex items-center gap-1">
                     <a href="{% url 'home' %}" class="lw-nav__link {% if request.path == '/' %}active{% endif %}">Início</a>
 
-                    <!-- Portfolio dropdown -->
+                    <!-- Projetos dropdown -->
                     <div class="lw-nav__dropdown relative">
                         <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)">
-                            Portfolio
+                            Projetos
                             <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
                         <div class="lw-nav__dropdown-menu absolute left-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                            <a href="{% url 'portfolio:lista' %}" class="lw-nav__dropdown-item">Projetos</a>
+                            <a href="{% url 'portfolio:lista' %}" class="lw-nav__dropdown-item">Todos os projetos</a>
                             <a href="{% url 'portfolio:cases' %}" class="lw-nav__dropdown-item">Cases</a>
                         </div>
                     </div>
 
-                    <!-- Blog dropdown -->
+                    <!-- Estudos dropdown -->
                     <div class="lw-nav__dropdown relative">
                         <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)">
-                            Blog
+                            Estudos
                             <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
-                        <div class="lw-nav__dropdown-menu absolute left-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                            <a href="{% url 'blog:lista' %}" class="lw-nav__dropdown-item">Artigos</a>
-                            <a href="{% url 'blog:categorias' %}" class="lw-nav__dropdown-item">Categorias</a>
+                        <div class="lw-nav__dropdown-menu absolute left-0 mt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                            <a href="{% url 'blog:lista' %}" class="lw-nav__dropdown-item">Todos os artigos</a>
+                            <a href="{% url 'blog:categoria' 'estudos-de-caso' %}" class="lw-nav__dropdown-item">Estudos de Caso</a>
+                            <a href="{% url 'blog:categoria' 'resumos-tecnicos' %}" class="lw-nav__dropdown-item">Resumos Técnicos</a>
+                            <a href="{% url 'blog:categoria' 'desafios' %}" class="lw-nav__dropdown-item">Desafios</a>
+                            <a href="{% url 'blog:categorias' %}" class="lw-nav__dropdown-item">Todas categorias</a>
                         </div>
                     </div>
 
@@ -112,8 +115,8 @@
             <div id="mobile-menu" class="hidden md:hidden pb-4">
                 <div class="flex flex-col gap-2">
                     <a href="{% url 'home' %}" class="lw-nav__link">Início</a>
-                    <a href="{% url 'portfolio:lista' %}" class="lw-nav__link">Portfolio</a>
-                    <a href="{% url 'blog:lista' %}" class="lw-nav__link">Blog</a>
+                    <a href="{% url 'portfolio:lista' %}" class="lw-nav__link">Projetos</a>
+                    <a href="{% url 'blog:lista' %}" class="lw-nav__link">Estudos</a>
                     <a href="{% url 'utilidades:lista' %}" class="lw-nav__link">Utilidades</a>
                     <a href="{% url 'comunidade:lista' %}" class="lw-nav__link">Fórum</a>
                     <a href="{% url 'chat:sala' %}" class="lw-nav__link">Chat ao vivo</a>
@@ -158,8 +161,8 @@
                     <h3 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: var(--text)">Navegação</h3>
                     <div class="flex flex-col gap-2 text-sm">
                         <a href="{% url 'home' %}" class="lw-nav__link">Início</a>
-                        <a href="{% url 'portfolio:lista' %}" class="lw-nav__link">Portfolio</a>
-                        <a href="{% url 'blog:lista' %}" class="lw-nav__link">Blog</a>
+                        <a href="{% url 'portfolio:lista' %}" class="lw-nav__link">Projetos</a>
+                        <a href="{% url 'blog:lista' %}" class="lw-nav__link">Estudos</a>
                         <a href="{% url 'utilidades:lista' %}" class="lw-nav__link">Utilidades</a>
                         <a href="{% url 'comunidade:lista' %}" class="lw-nav__link">Fórum</a>
                         <a href="{% url 'chat:sala' %}" class="lw-nav__link">Chat ao vivo</a>

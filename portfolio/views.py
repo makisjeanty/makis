@@ -13,6 +13,10 @@ def lista_projetos(request):
     if categoria_ativa:
         projetos = projetos.filter(categoria=categoria_ativa)
 
+    tipo_ativo = request.GET.get('tipo')
+    if tipo_ativo:
+        projetos = projetos.filter(tipo=tipo_ativo)
+
     page_obj = Paginator(projetos, POR_PAGINA).get_page(request.GET.get('page'))
 
     return render(request, 'portfolio/lista.html', {
@@ -20,6 +24,8 @@ def lista_projetos(request):
         'projetos': page_obj,
         'categorias': Projeto.CATEGORIAS,
         'categoria_ativa': categoria_ativa,
+        'tipos': Projeto.TIPOS,
+        'tipo_ativo': tipo_ativo,
     })
 
 
