@@ -5,7 +5,8 @@
 - MySQL via `pymysql` (NOT sqlite)
 - Env vars via `python-decouple` (`.env` required)
 - Real-time chat runs over ASGI/WebSockets via Django Channels + Daphne — `runserver` now serves both HTTP and WebSocket (look for "Starting ASGI/Daphne development server" in its output)
-- `requirements.txt` exists (added with Channels/Daphne) — `pip install -r requirements.txt`. Still no `pyproject.toml`, `setup.py`, tests, or CI
+- `requirements.txt` exists (added with Channels/Daphne) — `pip install -r requirements.txt`. Includes `Pillow` (required by `ImageField`: `avatar`, `imagem_principal`, `imagem_capa`). Still no `pyproject.toml`, `setup.py`, or CI
+- Tests exist: `<app>/tests.py` per app, Django's built-in `TestCase` (not pytest). Run with `python manage.py test` (74 tests). `core/` needs its `__init__.py` for bare `manage.py test` to pick up `core/tests.py` — it's not in `INSTALLED_APPS`, so it's easy to silently skip
 
 ## Setup
 ```bash
@@ -17,6 +18,7 @@ python manage.py runserver
 ```
 MySQL database must exist first: `CREATE DATABASE base_central CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
 `.env` contains real credentials and is gitignored.
+No MySQL locally? Validate migrations/tests/admin against a throwaway SQLite DB via a settings module that does `from core.settings import *` then reassigns `DATABASES` (and adds `'testserver'` to `ALLOWED_HOSTS` for `Client()`), kept outside the repo — don't edit `core/settings.py` for this.
 
 ## App Structure
 - `core/` — project settings (`core/settings.py`), root urls (`core/urls.py`)
@@ -53,9 +55,11 @@ MySQL database must exist first: `CREATE DATABASE base_central CHARACTER SET utf
 
 ## Design System
 - Color palette (`static/css/main.css` `:root`) matches Claude.ai's look: warm dark neutrals (`--bg: #262624`, `--surface: #30302e`) instead of a cool slate/blue theme, with Anthropic's terracotta accent `--accent: #CC785C` used throughout. Stay within this palette.
+- Accent color has **three WCAG-AA-verified tiers** — don't merge them, no single shade passes both "white text on this" and "this as text on the page bg": `--accent` (text on dark bg — logo, links, focus rings), `--accent-solid`/`--accent-solid-hover` (solid fills with white text — primary buttons, active filters, WhatsApp FAB), `--accent-light` (accent text on tinted pill/badge backgrounds). `--danger`/`--success` were lightened too (text-only, no tiering needed).
 - Tailwind is loaded via CDN in `base.html` — no build step/npm in this repo. Preflight is left enabled; disabling it broke native `<button>` styling in the nav dropdowns.
 - Reuse the `lw-*` component classes in `main.css` (`lw-card`, `lw-media-card`, `lw-badge`, `lw-tag`, `lw-filter-btn`, `lw-breadcrumb`, `lw-prose`, `lw-empty-state`) instead of inventing new styles.
 - Tailwind CDN is acceptable for this low-traffic site but not for high-traffic production — a compiled build is the eventual upgrade path.
+- Don't rely on Tailwind responsive utilities (`md:flex-row`, `md:w-2/5`, etc.) to override unconditional rules in `main.css` for the *same* element/class — `main.css` loads after the Tailwind CDN's injected stylesheet, so at equal specificity `main.css` wins regardless of the media query, silently no-opping the Tailwind utility. Use a dedicated modifier class in `main.css` instead (see `.lw-media-card--horizontal`).
 
 ## Real-time chat (Django Channels)
 - `core/asgi.py` wires a `ProtocolTypeRouter`: HTTP through normal Django, WebSocket (`/ws/chat/`) through `chat.routing.websocket_urlpatterns` → `ChatConsumer`. `INSTALLED_APPS` has `'daphne'` listed **first** (required for `runserver` to serve ASGI) and `'channels'` with the other third-party apps.
@@ -66,6 +70,8 @@ MySQL database must exist first: `CREATE DATABASE base_central CHARACTER SET utf
 ## SEO
 - `base.html` defines overridable blocks `meta_description`, `og_type`, `og_title`, `og_description` plus a conditional `og:image` tag driven by an `og_image_url` context variable that detail views pass explicitly.
 - `sitemap.xml` and `blog/rss/` build absolute URLs via `django.contrib.sites` (`SITE_ID = 1`), not the request host. The Site row is still the default `example.com` placeholder — **update it before deploying** (`/<ADMIN_URL>/sites/site/1/change/`) or sitemap/RSS links will point to the wrong domain.
+- `robots.txt` is served by the `robots_txt` view in `core/urls.py` (plain text, not a static file) — disallows the admin path, points to `/sitemap.xml`.
+- JSON-LD: `base.html` emits `Organization` schema everywhere via `{% block structured_data %}`; `blog/detalhe.html` adds `Article`, `portfolio/detalhe.html` adds `CreativeWork` (both render alongside, not instead of, the base block). User-controlled fields go through `|escapejs` to stay JSON-safe.
 
 ## Notable
 - This is a git repository (remote `origin` → `git@github.com:makisjeanty/makis.git`, branch `main`). Push uses a dedicated SSH key at `~/.ssh/id_ed25519_makis` (not the default identity) — use `GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519_makis -o IdentitiesOnly=yes"` for push/fetch unless that key is added to the agent
@@ -79,3 +85,6 @@ MySQL database must exist first: `CREATE DATABASE base_central CHARACTER SET utf
 - Floating WhatsApp button (`.lw-whatsapp-fab`) is fixed-position on every page, separate from the footer's WhatsApp link
 - Neither `comunidade` nor `chat` has spam/rate-limit protection (no CAPTCHA, no throttling) — same accepted risk posture as the blog comment form
 - `setup.sh` only generates `SECRET_KEY`; it does NOT create the DB, install dependencies, or run migrations
+- Accessibility: skip-to-content link (`#conteudo-principal`) first in `base.html`'s body; nav dropdown buttons carry `aria-haspopup`/`aria-expanded` synced by `toggleDropdown()` in `main.js` (also closes on `Escape`). Heading hierarchy is h1→h2→h3 everywhere, no skipped levels — don't demote card-grid titles back to h3 for font-size reasons, use CSS classes for that.
+- Migrations dropping a field that might hold real data need a `RunPython` step to migrate that data into its replacement *before* the `RemoveField` — see `accounts/migrations/0002_remove_perfilusuario_habilidades_and_more.py` (`CreateModel` → `RunPython` → `RemoveField`) for the pattern. Don't assume the field is empty just because the local DB is.
+- Below-the-fold images (list/gallery/related cards) use `loading="lazy"`; each page's likely LCP element (avatar, blog cover, project hero image) intentionally doesn't.

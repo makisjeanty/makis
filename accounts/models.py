@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 
+from core.image_utils import otimizar_imagem
+
 class PerfilUsuario(AbstractUser):
     # Extensões do perfil profissional
     cargo = models.CharField(max_length=200, verbose_name='Cargo atual', default='Analista de Sistemas')
@@ -24,7 +26,18 @@ class PerfilUsuario(AbstractUser):
     class Meta:
         verbose_name = 'Perfil de Usuário'
         verbose_name_plural = 'Perfis de Usuários'
-    
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._avatar_original = self.avatar.name if self.pk else None
+
+    def save(self, *args, **kwargs):
+        if self.avatar and self.avatar.name != self._avatar_original:
+            otimizado = otimizar_imagem(self.avatar, max_dimensao=400)
+            self.avatar.save(otimizado.name, otimizado, save=False)
+            self._avatar_original = self.avatar.name
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.get_full_name()} - {self.cargo}"
 

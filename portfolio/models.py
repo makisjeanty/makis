@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.text import slugify
 from django.core.validators import FileExtensionValidator
 
+from core.image_utils import otimizar_imagem
+
 class Projeto(models.Model):
     CATEGORIAS = [
         ('web', 'Web'),
@@ -40,14 +42,22 @@ class Projeto(models.Model):
         verbose_name = 'Projeto'
         verbose_name_plural = 'Projetos'
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._imagem_principal_original = self.imagem_principal.name if self.pk else None
+
     def __str__(self):
         return self.titulo
-    
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.titulo)
+        if self.imagem_principal and self.imagem_principal.name != self._imagem_principal_original:
+            otimizado = otimizar_imagem(self.imagem_principal, max_dimensao=1920)
+            self.imagem_principal.save(otimizado.name, otimizado, save=False)
+            self._imagem_principal_original = self.imagem_principal.name
         super().save(*args, **kwargs)
-    
+
     def get_tecnologias_list(self):
         return [tech.strip() for tech in self.tecnologias.split(',')]
 
@@ -58,7 +68,18 @@ class ImagemProjeto(models.Model):
         validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'webp'])]
     )
     legenda = models.CharField(max_length=200, blank=True)
-    
+
     class Meta:
         verbose_name = 'Imagem do projeto'
         verbose_name_plural = 'Imagens dos projetos'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._imagem_original = self.imagem.name if self.pk else None
+
+    def save(self, *args, **kwargs):
+        if self.imagem and self.imagem.name != self._imagem_original:
+            otimizado = otimizar_imagem(self.imagem, max_dimensao=1920)
+            self.imagem.save(otimizado.name, otimizado, save=False)
+            self._imagem_original = self.imagem.name
+        super().save(*args, **kwargs)
