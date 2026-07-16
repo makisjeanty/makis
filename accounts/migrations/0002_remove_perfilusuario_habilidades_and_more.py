@@ -5,6 +5,23 @@ from django.conf import settings
 from django.db import migrations, models
 
 
+def migrar_habilidades_csv_para_modelo(apps, schema_editor):
+    """Converte o texto livre 'habilidades' (CSV) de cada perfil em registros
+    do novo modelo Habilidade, antes que a coluna antiga seja descartada.
+    """
+    PerfilUsuario = apps.get_model('accounts', 'PerfilUsuario')
+    Habilidade = apps.get_model('accounts', 'Habilidade')
+
+    for perfil in PerfilUsuario.objects.exclude(habilidades__isnull=True).exclude(habilidades=''):
+        nomes = [s.strip()[:100] for s in perfil.habilidades.split(',') if s.strip()]
+        for nome in nomes:
+            Habilidade.objects.get_or_create(
+                usuario=perfil,
+                nome=nome,
+                defaults={'categoria': 'linguagem', 'nivel': 2},
+            )
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -12,15 +29,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='perfilusuario',
-            name='habilidades',
-        ),
-        migrations.AddField(
-            model_name='perfilusuario',
-            name='filosofia',
-            field=models.TextField(blank=True, help_text='O que você busca, como trabalha. Ex: "Quero resolver problemas de negócio usando tecnologia..."', max_length=600, verbose_name='Minha filosofia'),
-        ),
+        # CreateModel precisa vir antes do RunPython (que grava Habilidade),
+        # e o RunPython precisa vir antes do RemoveField (que apaga a coluna
+        # de onde os dados são lidos) — essa ordem preserva os dados
+        # existentes em vez de descartá-los silenciosamente.
         migrations.CreateModel(
             name='Habilidade',
             fields=[
@@ -35,5 +47,15 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Habilidades',
                 'ordering': ['categoria', '-nivel', 'nome'],
             },
+        ),
+        migrations.RunPython(migrar_habilidades_csv_para_modelo, migrations.RunPython.noop),
+        migrations.RemoveField(
+            model_name='perfilusuario',
+            name='habilidades',
+        ),
+        migrations.AddField(
+            model_name='perfilusuario',
+            name='filosofia',
+            field=models.TextField(blank=True, help_text='O que você busca, como trabalha. Ex: "Quero resolver problemas de negócio usando tecnologia..."', max_length=600, verbose_name='Minha filosofia'),
         ),
     ]

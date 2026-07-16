@@ -55,7 +55,7 @@
                 <div class="lw-card">
                     <p class="font-semibold mb-1">{{ comentario.nome }}</p>
                     <p class="lw-muted text-sm mb-2">{{ comentario.data_criacao|date:"d/m/Y" }}</p>
-                    <p>{{ comentario.conteudo }}</p>
+                    <p>{{ comentario.conteudo|linebreaksbr }}</p>
                 </div>
                 {% endfor %}
             </div>
@@ -70,7 +70,7 @@
                     <label for="{{ field.id_for_label }}" class="text-sm font-semibold mb-1 block">{{ field.label }}</label>
                     {{ field }}
                     {% for error in field.errors %}
-                    <p class="text-sm mt-1" style="color: var(--accent);">{{ error }}</p>
+                    <p class="text-sm mt-1" style="color: var(--danger);">{{ error }}</p>
                     {% endfor %}
                 </div>
                 {% endfor %}

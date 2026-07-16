@@ -40,7 +40,7 @@
                 <div class="lw-card">
                     <p class="font-semibold mb-1">{{ resposta.autor_nome }}</p>
                     <p class="lw-muted text-sm mb-2">{{ resposta.data_criacao|date:"d/m/Y H:i" }}</p>
-                    <p>{{ resposta.conteudo|linebreaks }}</p>
+                    <div>{{ resposta.conteudo|linebreaks }}</div>
                 </div>
                 {% endfor %}
             </div>

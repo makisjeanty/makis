@@ -26,7 +26,7 @@
         {% if posts %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for post in posts %}
-            <a href="{% url 'blog:detalhe' post.slug %}" class="lw-media-card">
+            <div class="lw-media-card">
                 {% if post.imagem_capa %}
                 <img src="{{ post.imagem_capa.url }}" alt="{{ post.titulo }}" class="lw-media-card__img">
                 {% endif %}
@@ -34,7 +34,7 @@
                     {% if post.categoria %}
                     <span class="lw-badge">{{ post.categoria.nome }}</span>
                     {% endif %}
-                    <h3 class="lw-media-card__title">{{ post.titulo }}</h3>
+                    <h3 class="lw-media-card__title"><a href="{% url 'blog:detalhe' post.slug %}" class="lw-media-card__title-link">{{ post.titulo }}</a></h3>
                     <p class="lw-muted text-sm leading-relaxed">{{ post.resumo }}</p>
                     <div class="lw-media-card__meta mt-auto">
                         <a href="{% url 'accounts:perfil' post.autor.username %}" style="color: inherit; text-decoration: none;">{{ post.autor.get_full_name|default:post.autor.username }}</a>
@@ -44,7 +44,7 @@
                         {% endif %}
                     </div>
                 </div>
-            </a>
+            </div>
             {% endfor %}
         </div>
         {% include 'partials/paginacao.html' %}

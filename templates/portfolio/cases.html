@@ -18,9 +18,9 @@
         {% if projetos %}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {% for projeto in projetos %}
-            <a href="{% url 'portfolio:detalhe' projeto.slug %}" class="lw-media-card md:flex-row">
+            <a href="{% url 'portfolio:detalhe' projeto.slug %}" class="lw-media-card lw-media-card--horizontal">
                 {% if projeto.imagem_principal %}
-                <img src="{{ projeto.imagem_principal.url }}" alt="{{ projeto.titulo }}" class="lw-media-card__img md:w-2/5">
+                <img src="{{ projeto.imagem_principal.url }}" alt="{{ projeto.titulo }}" class="lw-media-card__img">
                 {% endif %}
                 <div class="lw-media-card__body">
                     <span class="lw-badge">{{ projeto.get_categoria_display }}</span>
