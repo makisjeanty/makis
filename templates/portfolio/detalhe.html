@@ -7,6 +7,20 @@
 {% block og_title %}{{ projeto.titulo }} · Makis Digital{% endblock %}
 {% block og_description %}{{ projeto.descricao_curta }}{% endblock %}
 
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": "{{ projeto.titulo|escapejs }}",
+    "description": "{{ projeto.descricao_curta|escapejs }}",
+    "dateCreated": "{{ projeto.data_criacao|date:'c' }}",
+    "mainEntityOfPage": "{{ request.build_absolute_uri }}"{% if projeto.imagem_principal %},
+    "image": "{{ request.scheme }}://{{ request.get_host }}{{ projeto.imagem_principal.url }}"{% endif %}
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <section class="lw-section" style="padding-top: 7rem;">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,7 +69,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
             {% for imagem in projeto.imagens.all %}
             <figure>
-                <img src="{{ imagem.imagem.url }}" alt="{{ imagem.legenda|default:projeto.titulo }}" class="w-full rounded-xl" style="border: 1px solid var(--line);">
+                <img src="{{ imagem.imagem.url }}" alt="{{ imagem.legenda|default:projeto.titulo }}" class="w-full rounded-xl" style="border: 1px solid var(--line);" loading="lazy">
                 {% if imagem.legenda %}
                 <figcaption class="lw-muted text-sm mt-2">{{ imagem.legenda }}</figcaption>
                 {% endif %}
@@ -76,7 +90,7 @@
             {% for outro in outros_projetos %}
             <a href="{% url 'portfolio:detalhe' outro.slug %}" class="lw-media-card">
                 {% if outro.imagem_principal %}
-                <img src="{{ outro.imagem_principal.url }}" alt="{{ outro.titulo }}" class="lw-media-card__img">
+                <img src="{{ outro.imagem_principal.url }}" alt="{{ outro.titulo }}" class="lw-media-card__img" loading="lazy">
                 {% endif %}
                 <div class="lw-media-card__body">
                     <h3 class="lw-media-card__title">{{ outro.titulo }}</h3>

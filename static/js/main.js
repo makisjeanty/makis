@@ -15,23 +15,37 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Desktop dropdown toggle
+function fecharTodosDropdowns() {
+    document.querySelectorAll('.lw-nav__dropdown').forEach(d => {
+        d.classList.remove('open');
+        const btn = d.querySelector('button[aria-haspopup="true"]');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+}
+
 function toggleDropdown(button) {
     const dropdown = button.closest('.lw-nav__dropdown');
     const isOpen = dropdown.classList.contains('open');
 
-    // Close all dropdowns first
-    document.querySelectorAll('.lw-nav__dropdown').forEach(d => d.classList.remove('open'));
+    fecharTodosDropdowns();
 
-    // Toggle current
     if (!isOpen) {
         dropdown.classList.add('open');
+        button.setAttribute('aria-expanded', 'true');
     }
 }
 
 // Close dropdowns when clicking outside
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.lw-nav__dropdown')) {
-        document.querySelectorAll('.lw-nav__dropdown').forEach(d => d.classList.remove('open'));
+        fecharTodosDropdowns();
+    }
+});
+
+// Close dropdowns on Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        fecharTodosDropdowns();
     }
 });
 

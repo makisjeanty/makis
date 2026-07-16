@@ -5,9 +5,19 @@
     --text: #f5f4ee;
     --muted: #a39e93;
     --accent: #CC785C;
-    --accent-hover: #b5694d;
-    --success: #7a9471;
-    --danger: #c4645a;
+    /* Darker fills for solid buttons/badges with white text on top — #CC785C
+       itself only reaches 3.28:1 with white (WCAG AA needs 4.5:1), and no
+       single shade can satisfy both "text on dark bg" and "white text on
+       this bg" at once, so fills get their own darker tier. */
+    --accent-solid: #B35738;
+    --accent-solid-hover: #94482E;
+    /* Lighter text tint for accent-colored text sitting on the low-opacity
+       accent-tinted pill/badge backgrounds (same contrast reasoning, other
+       direction: foreground text on a still-dark tinted bg needs to be
+       lighter, not darker, to clear 4.5:1). */
+    --accent-light: #DF957C;
+    --success: #9AB092;
+    --danger: #DD958D;
     --line: rgba(245,244,238,0.08);
     --shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
     --shadow-sm: 0 4px 20px -4px rgba(0,0,0,0.3);
@@ -220,7 +230,7 @@ body {
     border-radius: 9999px;
     background: rgba(204, 120, 92, 0.1);
     border: 1px solid rgba(204, 120, 92, 0.2);
-    color: var(--accent);
+    color: var(--accent-light);
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
@@ -309,12 +319,12 @@ body {
 }
 
 .lw-btn--primary {
-    background: var(--accent);
+    background: var(--accent-solid);
     color: white;
 }
 
 .lw-btn--primary:hover {
-    background: var(--accent-hover);
+    background: var(--accent-solid-hover);
     transform: translateY(-1px);
     box-shadow: 0 10px 30px -10px rgba(204, 120, 92, 0.4);
 }
@@ -364,7 +374,7 @@ body {
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
     background: rgba(204, 120, 92, 0.12);
-    color: var(--accent);
+    color: var(--accent-light);
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -419,8 +429,8 @@ body {
 }
 
 .lw-filter-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: var(--accent-solid);
+    border-color: var(--accent-solid);
     color: white;
 }
 
@@ -644,14 +654,14 @@ body {
     width: 3.5rem;
     height: 3.5rem;
     border-radius: 9999px;
-    background: var(--accent);
+    background: var(--accent-solid);
     color: white;
     box-shadow: var(--shadow);
     transition: all 0.2s;
 }
 
 .lw-whatsapp-fab:hover {
-    background: var(--accent-hover);
+    background: var(--accent-solid-hover);
     transform: translateY(-3px);
 }
 

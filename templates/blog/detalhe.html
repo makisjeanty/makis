@@ -7,6 +7,22 @@
 {% block og_title %}{{ post.titulo }} · Makis Digital{% endblock %}
 {% block og_description %}{{ post.resumo }}{% endblock %}
 
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "{{ post.titulo|escapejs }}",
+    "description": "{{ post.resumo|escapejs }}",
+    "author": {"@type": "Person", "name": "{{ post.autor.get_full_name|default:post.autor.username|escapejs }}"},
+    "datePublished": "{{ post.data_publicacao|date:'c' }}",
+    "dateModified": "{{ post.data_atualizacao|date:'c' }}",
+    "mainEntityOfPage": "{{ request.build_absolute_uri }}"{% if post.imagem_capa %},
+    "image": "{{ request.scheme }}://{{ request.get_host }}{{ post.imagem_capa.url }}"{% endif %}
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <section class="lw-section" style="padding-top: 7rem;">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,7 +106,7 @@
             {% for outro in posts_relacionados %}
             <a href="{% url 'blog:detalhe' outro.slug %}" class="lw-media-card">
                 {% if outro.imagem_capa %}
-                <img src="{{ outro.imagem_capa.url }}" alt="{{ outro.titulo }}" class="lw-media-card__img">
+                <img src="{{ outro.imagem_capa.url }}" alt="{{ outro.titulo }}" class="lw-media-card__img" loading="lazy">
                 {% endif %}
                 <div class="lw-media-card__body">
                     <h3 class="lw-media-card__title">{{ outro.titulo }}</h3>

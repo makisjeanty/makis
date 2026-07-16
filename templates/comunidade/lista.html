@@ -37,7 +37,7 @@
             {% for topico in topicos %}
             <a href="{% url 'comunidade:detalhe' topico.slug %}" class="lw-card">
                 {% if topico.fixado %}<span class="lw-badge mb-2">Fixado</span>{% endif %}
-                <h3 class="text-lg font-bold mb-2">{{ topico.titulo }}</h3>
+                <h2 class="text-lg font-bold mb-2">{{ topico.titulo }}</h2>
                 <p class="lw-muted text-sm leading-relaxed mb-3">{{ topico.conteudo|truncatewords:30 }}</p>
                 <div class="lw-media-card__meta">
                     <span>{{ topico.autor_nome }}</span>

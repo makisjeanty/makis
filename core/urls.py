@@ -10,6 +10,7 @@ from django.urls import path, include
 from django.conf import settings
 from decouple import config
 from django.conf.urls.static import static
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from blog.sitemaps import PostSitemap
@@ -39,6 +40,18 @@ def home(request):
     })
 
 
+# robots.txt: libera indexação geral, esconde o painel admin (mesmo já tendo URL
+# ofuscada) e aponta para o sitemap
+def robots_txt(request):
+    linhas = [
+        'User-agent: *',
+        f'Disallow: /{ADMIN_URL}/',
+        '',
+        f'Sitemap: {request.scheme}://{request.get_host()}/sitemap.xml',
+    ]
+    return HttpResponse('\n'.join(linhas), content_type='text/plain')
+
+
 # Tratamento de erros sem expor detalhes técnicos (modo produção)
 def page_not_found(request, exception=None):
     return render(request, '404.html', status=404)
@@ -51,6 +64,7 @@ urlpatterns = [
     path('', home, name='home'),
     path(f'{ADMIN_URL}/', admin.site.urls),
     path('sitemap.xml', sitemap, {'sitemaps': SITEMAPS}, name='sitemap'),
+    path('robots.txt', robots_txt, name='robots_txt'),
     # Páginas públicas das apps
     path('portfolio/', include('portfolio.urls')),
     path('blog/', include('blog.urls')),

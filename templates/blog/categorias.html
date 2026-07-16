@@ -19,7 +19,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for categoria in categorias %}
             <a href="{% url 'blog:categoria' categoria.slug %}" class="lw-card">
-                <h3 class="text-lg font-bold mb-2">{{ categoria.nome }}</h3>
+                <h2 class="text-lg font-bold mb-2">{{ categoria.nome }}</h2>
                 <span class="text-sm font-semibold" style="color: var(--accent)">Ver artigos &rarr;</span>
             </a>
             {% endfor %}

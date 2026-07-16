@@ -20,11 +20,11 @@
             {% for projeto in projetos %}
             <a href="{% url 'portfolio:detalhe' projeto.slug %}" class="lw-media-card lw-media-card--horizontal">
                 {% if projeto.imagem_principal %}
-                <img src="{{ projeto.imagem_principal.url }}" alt="{{ projeto.titulo }}" class="lw-media-card__img">
+                <img src="{{ projeto.imagem_principal.url }}" alt="{{ projeto.titulo }}" class="lw-media-card__img" loading="lazy">
                 {% endif %}
                 <div class="lw-media-card__body">
                     <span class="lw-badge">{{ projeto.get_categoria_display }}</span>
-                    <h3 class="lw-media-card__title text-xl">{{ projeto.titulo }}</h3>
+                    <h2 class="lw-media-card__title text-xl">{{ projeto.titulo }}</h2>
                     <p class="lw-muted text-sm leading-relaxed">{{ projeto.descricao_curta }}</p>
                     <span class="text-sm font-semibold" style="color: var(--accent)">Ver case completo &rarr;</span>
                 </div>

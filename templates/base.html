@@ -20,6 +20,18 @@
 
     <link rel="alternate" type="application/rss+xml" title="Makis Digital — Estudos" href="{% url 'blog:rss' %}">
 
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Makis Digital",
+        "url": "{{ request.scheme }}://{{ request.get_host }}/",
+        "email": "contato@makisdigital.com",
+        "description": "Desenvolvimento web, mobile, automação e dados sob medida para pequenas e médias empresas."
+    }
+    </script>
+    {% block structured_data %}{% endblock %}
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,7 +39,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav class="lw-nav sticky top-0 z-50">
+    <a href="#conteudo-principal" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg" style="background: var(--accent); color: white;">Pular para o conteúdo</a>
+    <nav class="lw-nav sticky top-0 z-50" aria-label="Navegação principal">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="{% url 'home' %}" class="lw-nav__logo flex items-center gap-2">
@@ -40,7 +53,7 @@
 
                     <!-- Projetos dropdown -->
                     <div class="lw-nav__dropdown relative">
-                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)">
+                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)" aria-haspopup="true" aria-expanded="false">
                             Projetos
                             <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -54,7 +67,7 @@
 
                     <!-- Estudos dropdown -->
                     <div class="lw-nav__dropdown relative">
-                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)">
+                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)" aria-haspopup="true" aria-expanded="false">
                             Estudos
                             <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -71,7 +84,7 @@
 
                     <!-- Utilidades dropdown -->
                     <div class="lw-nav__dropdown relative">
-                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)">
+                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)" aria-haspopup="true" aria-expanded="false">
                             Utilidades
                             <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -87,7 +100,7 @@
 
                     <!-- Comunidade dropdown -->
                     <div class="lw-nav__dropdown relative">
-                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)">
+                        <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)" aria-haspopup="true" aria-expanded="false">
                             Comunidade
                             <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -126,7 +139,7 @@
         </div>
     </nav>
 
-    <main class="flex-1 relative z-10">
+    <main id="conteudo-principal" class="flex-1 relative z-10">
         {% if messages %}
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
             {% for message in messages %}

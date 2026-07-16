@@ -34,14 +34,14 @@
             {% for projeto in projetos %}
             <a href="{% url 'portfolio:detalhe' projeto.slug %}" class="lw-media-card">
                 {% if projeto.imagem_principal %}
-                <img src="{{ projeto.imagem_principal.url }}" alt="{{ projeto.titulo }}" class="lw-media-card__img">
+                <img src="{{ projeto.imagem_principal.url }}" alt="{{ projeto.titulo }}" class="lw-media-card__img" loading="lazy">
                 {% endif %}
                 <div class="lw-media-card__body">
                     <div class="flex flex-wrap gap-2">
                         <span class="lw-badge">{{ projeto.get_categoria_display }}</span>
                         <span class="lw-tag">{{ projeto.get_tipo_display }}</span>
                     </div>
-                    <h3 class="lw-media-card__title">{{ projeto.titulo }}</h3>
+                    <h2 class="lw-media-card__title">{{ projeto.titulo }}</h2>
                     <p class="lw-muted text-sm leading-relaxed">{{ projeto.descricao_curta }}</p>
                     <div class="flex flex-wrap gap-2 mt-auto">
                         {% for tech in projeto.get_tecnologias_list|slice:":4" %}
