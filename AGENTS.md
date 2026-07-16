@@ -6,7 +6,8 @@
 - Env vars via `python-decouple` (`.env` required)
 - Real-time chat runs over ASGI/WebSockets via Django Channels + Daphne — `runserver` now serves both HTTP and WebSocket (look for "Starting ASGI/Daphne development server" in its output)
 - `requirements.txt` exists (added with Channels/Daphne) — `pip install -r requirements.txt`. Includes `Pillow` (required by `ImageField`: `avatar`, `imagem_principal`, `imagem_capa`). Still no `pyproject.toml`, `setup.py`, or CI
-- Tests exist: `<app>/tests.py` per app, Django's built-in `TestCase` (not pytest). Run with `python manage.py test` (74 tests). `core/` needs its `__init__.py` for bare `manage.py test` to pick up `core/tests.py` — it's not in `INSTALLED_APPS`, so it's easy to silently skip
+- Tests exist: `<app>/tests.py` per app, Django's built-in `TestCase` (not pytest). Run with `python manage.py test`. `core/` needs its `__init__.py` for bare `manage.py test` to pick up `core/tests.py` — it's not in `INSTALLED_APPS`, so it's easy to silently skip. CI runs the suite on every push/PR to `main` (`.github/workflows/tests.yml`, MySQL 8 service container, root user since the real `user_central` lacks `CREATE DATABASE`).
+- Tests driving a Channels consumer via `channels.testing.WebsocketCommunicator` must use `TransactionTestCase`, not `TestCase` — the consumer's DB write runs on a different thread via `database_sync_to_async`, and `TestCase`'s transaction-per-test is tied to the main thread's connection. MySQL enforces that strictly (corrupts the transaction, confusing `IntegrityError`); SQLite tolerates it and hides the bug — bit `chat/tests.py` in CI after passing locally.
 
 ## Setup
 ```bash
@@ -18,7 +19,7 @@ python manage.py runserver
 ```
 MySQL database must exist first: `CREATE DATABASE base_central CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
 `.env` contains real credentials and is gitignored.
-No MySQL locally? Validate migrations/tests/admin against a throwaway SQLite DB via a settings module that does `from core.settings import *` then reassigns `DATABASES` (and adds `'testserver'` to `ALLOWED_HOSTS` for `Client()`), kept outside the repo — don't edit `core/settings.py` for this.
+No MySQL locally? Validate migrations/tests/admin against a throwaway SQLite DB via a settings module that does `from core.settings import *` then reassigns `DATABASES` (and adds `'testserver'` to `ALLOWED_HOSTS` for `Client()`), kept outside the repo — don't edit `core/settings.py` for this. Treat it as a proxy, not proof: it can pass while the real MySQL backend fails (see the `TransactionTestCase` note above).
 
 ## App Structure
 - `core/` — project settings (`core/settings.py`), root urls (`core/urls.py`)
