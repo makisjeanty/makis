@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import Projeto
 
 POR_PAGINA = 9
+CASES_MAX = 12
 
 
 def lista_projetos(request):
@@ -30,7 +31,10 @@ def lista_projetos(request):
 
 
 def cases(request):
-    projetos = Projeto.objects.filter(publico=True, destaque=True)
+    # Página de curadoria (destaque=True): sem paginação, mas com um teto
+    # explícito para não virar uma consulta sem limite se o número de
+    # projetos em destaque crescer muito.
+    projetos = Projeto.objects.filter(publico=True, destaque=True)[:CASES_MAX]
     return render(request, 'portfolio/cases.html', {'projetos': projetos})
 
 

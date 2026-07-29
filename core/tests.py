@@ -1,3 +1,5 @@
+import json
+
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -52,19 +54,13 @@ class SolicitarOrcamentoTests(TestCase):
 
 
     def test_solicitar_orcamento_post_valido(self):
-        import time
-        from django.core import signing
-        from core.antispam import SALT
-
-        # Gera timestamp de 10 segundos atrás para passar pelo antispam sem delay
-        ts_antigo = signing.dumps(time.time() - 10, salt=SALT)
+        from core.testing_helpers import antispam_ok
 
         data = {
             'nome': 'Empresa Teste',
             'email': 'contato@teste.com',
             'descricao': 'Necessito de um sistema Django.',
-            'ts_form': ts_antigo,
-            'website': '',  # Honeypot vazio
+            **antispam_ok(),
         }
         response = self.client.post(reverse('solicitar_orcamento'), data)
         self.assertEqual(response.status_code, 200)
@@ -74,9 +70,6 @@ class SolicitarOrcamentoTests(TestCase):
         response = self.client.get(reverse('produto_digital'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'core/produto_digital.html')
-
-
-import json
 
 
 class MonitoriaTests(TestCase):

@@ -83,7 +83,3 @@ def mini_curso(request):
 
 
 
-
-
-
-

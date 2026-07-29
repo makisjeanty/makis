@@ -54,20 +54,18 @@
     </div>
 </section>
 
+<script src="{% static 'js/gerador_senha.js' %}"></script>
 <script>
 function gerarSenha() {
     const tamanho = parseInt(document.getElementById('tamanho').value, 10);
-    const maiusculas = document.getElementById('maiusculas').checked;
-    const minusculas = document.getElementById('minusculas').checked;
-    const numeros = document.getElementById('numeros').checked;
-    const simbolos = document.getElementById('simbolos').checked;
     const erro = document.getElementById('senhaErro');
 
-    let charset = '';
-    if (maiusculas) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    if (minusculas) charset += 'abcdefghijklmnopqrstuvwxyz';
-    if (numeros) charset += '0123456789';
-    if (simbolos) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+    const charset = construirCharset({
+        maiusculas: document.getElementById('maiusculas').checked,
+        minusculas: document.getElementById('minusculas').checked,
+        numeros: document.getElementById('numeros').checked,
+        simbolos: document.getElementById('simbolos').checked,
+    });
 
     if (!charset) {
         erro.textContent = 'Selecione ao menos um tipo de caractere.';
@@ -78,12 +76,7 @@ function gerarSenha() {
 
     const valores = new Uint32Array(tamanho);
     crypto.getRandomValues(valores);
-    let senha = '';
-    for (let i = 0; i < tamanho; i++) {
-        senha += charset[valores[i] % charset.length];
-    }
-
-    document.getElementById('resultado').value = senha;
+    document.getElementById('resultado').value = gerarSenhaAPartirDeValores(charset, valores);
 }
 </script>
 {% endblock %}

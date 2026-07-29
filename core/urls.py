@@ -12,6 +12,8 @@ from decouple import config
 from django.conf.urls.static import static
 from django.http import HttpResponse
 from django.shortcuts import render
+from django_ratelimit.decorators import ratelimit
+from core.antispam import bloquear_submissao_suspeita, gerar_timestamp_assinado
 from core.views_monitoria import painel_monitoria, api_monitoria, moderar_comentario, webhook_kiwify
 
 from blog.sitemaps import PostSitemap
@@ -42,13 +44,12 @@ def home(request):
 
 
 # View de solicitação de orçamento & consultoria
+@ratelimit(key='ip', rate='5/m', method='POST', block=False)
 def solicitar_orcamento(request):
-    from core.antispam import gerar_timestamp_assinado, formulario_parece_bot
     enviado = False
 
-    if request.method == 'POST':
-        if not formulario_parece_bot(request):
-            enviado = True
+    if request.method == 'POST' and not bloquear_submissao_suspeita(request):
+        enviado = True
 
     return render(request, 'core/solicitar_orcamento.html', {
         'antispam_ts': gerar_timestamp_assinado(),

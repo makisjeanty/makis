@@ -6,14 +6,9 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from core.antispam import SALT
+from core.testing_helpers import antispam_ok
 
 from .models import Resposta, Topico
-
-
-def antispam_ok():
-    """Campos que fazem o formulário parecer preenchido por um humano:
-    honeypot vazio + timestamp assinado de alguns segundos atrás."""
-    return {'website': '', 'ts_form': signing.dumps(time.time() - 5, salt=SALT)}
 
 
 class ComunidadeViewsTests(TestCase):

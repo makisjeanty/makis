@@ -45,8 +45,6 @@ INSTALLED_APPS = [
 
     # Apps de terceiros (segurança e performance)
     'corsheaders',
-    'rest_framework',
-    'django_filters',
     'whitenoise.runserver_nostatic',
     'channels',
 
@@ -221,17 +219,6 @@ if not DEBUG:
             'LOCATION': REDIS_URL,
         }
     }
-
-# Django REST Framework - se quiser criar APIs para seus projetos
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ],
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
-}
-
 
 # -------------------------- EMAIL --------------------------
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -3,12 +3,14 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django_ratelimit.decorators import ratelimit
 
-from core.antispam import formulario_parece_bot, gerar_timestamp_assinado
+from core.antispam import bloquear_submissao_suspeita, gerar_timestamp_assinado
 
 from .forms import ComentarioForm
 from .models import Categoria, Post
 
 POR_PAGINA = 9
+CATEGORIAS_MAX = 100
+MENSAGEM_LIMITE = 'Muitos comentários em pouco tempo. Aguarde alguns minutos e tente novamente.'
 
 
 def lista_posts(request):
@@ -37,12 +39,8 @@ def detalhe_post(request, slug):
     post = get_object_or_404(Post, slug=slug, publicado=True)
 
     form = ComentarioForm(request.POST or None)
-    if request.method == 'POST':
-        if getattr(request, 'limited', False):
-            messages.error(request, 'Muitos comentários em pouco tempo. Aguarde alguns minutos e tente novamente.')
-        elif formulario_parece_bot(request):
-            messages.error(request, 'Não foi possível processar seu envio. Tente novamente.')
-        elif form.is_valid():
+    if request.method == 'POST' and not bloquear_submissao_suspeita(request, mensagem_limite=MENSAGEM_LIMITE):
+        if form.is_valid():
             comentario = form.save(commit=False)
             comentario.post = post
             comentario.save()
@@ -64,7 +62,9 @@ def detalhe_post(request, slug):
 
 
 def lista_categorias(request):
-    categorias = Categoria.objects.all()
+    # Taxonomia curada pelo admin (poucas categorias esperadas), mas com um
+    # teto explícito em vez de uma consulta sem limite nenhum.
+    categorias = Categoria.objects.all()[:CATEGORIAS_MAX]
     return render(request, 'blog/categorias.html', {'categorias': categorias})
 
 

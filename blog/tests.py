@@ -10,12 +10,9 @@ from django.utils import timezone
 
 from accounts.models import PerfilUsuario
 from core.antispam import SALT
+from core.testing_helpers import antispam_ok
 
 from .models import Categoria, Comentario, Post, Tag
-
-
-def antispam_ok():
-    return {'website': '', 'ts_form': signing.dumps(time.time() - 5, salt=SALT)}
 
 
 class PostModelTests(TestCase):
