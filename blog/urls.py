@@ -10,5 +10,7 @@ urlpatterns = [
     path('rss/', PostsFeed(), name='rss'),
     path('categories/', views.lista_categorias, name='categorias'),
     path('categoria/<slug:slug>/', views.posts_por_categoria, name='categoria'),
+    path('gerenciador-ia/', views.gerenciador_ia, name='gerenciador_ia'),
     path('<slug:slug>/', views.detalhe_post, name='detalhe'),
 ]
+

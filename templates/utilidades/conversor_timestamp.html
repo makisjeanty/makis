@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Conversor de Timestamp Unix & Epoch · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Converte Timestamp Unix (Epoch) em data legível e vice-versa instantaneamente no navegador.{% endblock %}
+{% block og_title %}Conversor de Timestamp Unix · Makis Digital{% endblock %}
+{% block og_description %}Converte Timestamp Unix (Epoch) em data legível e vice-versa instantaneamente.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Conversor de Timestamp Unix</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Utilidades</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Conversor de Timestamp Unix (Epoch)</h1>
+        <p class="lw-muted mb-8">Converte segundos e milissegundos Unix para datas humanas em tempo real.</p>
+
+        <!-- Live Epoch Banner -->
+        <div class="lw-card mb-6 flex flex-col sm:flex-row items-center justify-between gap-4" style="border-left: 4px solid var(--accent);">
+            <div>
+                <span class="text-xs uppercase font-semibold text-neutral-400 block">Timestamp Unix Atual</span>
+                <span id="liveTimestamp" class="text-2xl font-mono font-bold" style="color: var(--accent);">0</span>
+            </div>
+            <button type="button" onclick="copiarLiveTimestamp()" class="lw-copy-btn text-xs">Copiar Unix Atual</button>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Timestamp para Data -->
+            <div class="lw-card space-y-4">
+                <h2 class="text-lg font-bold">1. Timestamp Unix ➔ Data Legível</h2>
+                <div>
+                    <label for="inputTimestamp" class="text-sm font-semibold block mb-1">Timestamp Unix (segundos ou milissegundos)</label>
+                    <div class="flex gap-2">
+                        <input id="inputTimestamp" type="number" class="lw-input lw-mono" placeholder="Ex: 1700000000" oninput="converterTimestampParaData()" />
+                        <button type="button" onclick="usarAgora()" class="lw-btn lw-btn--secondary whitespace-nowrap">Usar Agora</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div>
+                        <label for="resLocal" class="text-xs font-semibold text-neutral-400 block mb-1">Horário Local</label>
+                        <input id="resLocal" type="text" readonly class="lw-input lw-mono text-sm" placeholder="---" />
+                    </div>
+                    <div>
+                        <label for="resUTC" class="text-xs font-semibold text-neutral-400 block mb-1">Horário UTC / ISO</label>
+                        <input id="resUTC" type="text" readonly class="lw-input lw-mono text-sm" placeholder="---" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data para Timestamp -->
+            <div class="lw-card space-y-4">
+                <h2 class="text-lg font-bold">2. Data ➔ Timestamp Unix</h2>
+                <div>
+                    <label for="inputData" class="text-sm font-semibold block mb-1">Selecione Data e Hora</label>
+                    <input id="inputData" type="datetime-local" class="lw-input lw-mono" onchange="converterDataParaTimestamp()" />
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div>
+                        <label for="resSec" class="text-xs font-semibold text-neutral-400 block mb-1">Segundos (Epoch)</label>
+                        <div class="flex gap-2">
+                            <input id="resSec" type="text" readonly class="lw-input lw-mono text-sm" placeholder="---" />
+                            <button type="button" onclick="copiarTexto('resSec', this)" class="lw-copy-btn">Copiar</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="resMs" class="text-xs font-semibold text-neutral-400 block mb-1">Milissegundos</label>
+                        <div class="flex gap-2">
+                            <input id="resMs" type="text" readonly class="lw-input lw-mono text-sm" placeholder="---" />
+                            <button type="button" onclick="copiarTexto('resMs', this)" class="lw-copy-btn">Copiar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function atualizarLiveTimestamp() {
+    const nowSec = Math.floor(Date.now() / 1000);
+    document.getElementById('liveTimestamp').textContent = nowSec;
+}
+
+function copiarLiveTimestamp() {
+    const val = document.getElementById('liveTimestamp').textContent;
+    navigator.clipboard.writeText(val);
+}
+
+function converterTimestampParaData() {
+    const inputVal = document.getElementById('inputTimestamp').value.trim();
+    if (!inputVal) {
+        document.getElementById('resLocal').value = '';
+        document.getElementById('resUTC').value = '';
+        return;
+    }
+
+    let num = parseInt(inputVal, 10);
+    if (isNaN(num)) return;
+
+    // Se tiver 10 dígitos -> segundos. Se tiver 13 -> ms
+    if (num < 100000000000) {
+        num = num * 1000;
+    }
+
+    const d = new Date(num);
+    if (isNaN(d.getTime())) {
+        document.getElementById('resLocal').value = 'Timestamp inválido';
+        document.getElementById('resUTC').value = 'Timestamp inválido';
+        return;
+    }
+
+    document.getElementById('resLocal').value = d.toLocaleString();
+    document.getElementById('resUTC').value = d.toISOString();
+}
+
+function usarAgora() {
+    const nowSec = Math.floor(Date.now() / 1000);
+    document.getElementById('inputTimestamp').value = nowSec;
+    converterTimestampParaData();
+}
+
+function converterDataParaTimestamp() {
+    const val = document.getElementById('inputData').value;
+    if (!val) {
+        document.getElementById('resSec').value = '';
+        document.getElementById('resMs').value = '';
+        return;
+    }
+
+    const d = new Date(val);
+    const ms = d.getTime();
+    const sec = Math.floor(ms / 1000);
+
+    document.getElementById('resSec').value = sec;
+    document.getElementById('resMs').value = ms;
+}
+
+// Iniciar relógio live e preencher data atual
+setInterval(atualizarLiveTimestamp, 1000);
+atualizarLiveTimestamp();
+
+document.addEventListener('DOMContentLoaded', () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('inputData').value = now.toISOString().slice(0, 16);
+    converterDataParaTimestamp();
+});
+</script>
+{% endblock %}

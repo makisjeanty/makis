@@ -9,7 +9,7 @@ class Topico(models.Model):
     autor_email = models.EmailField(verbose_name='E-mail')
     conteudo = models.TextField(max_length=3000, verbose_name='Mensagem')
     data_criacao = models.DateTimeField(auto_now_add=True)
-    aprovado = models.BooleanField(default=True, verbose_name='Visível publicamente')
+    aprovado = models.BooleanField(default=True, verbose_name='Visível publicamente', db_index=True)
     fixado = models.BooleanField(default=False, verbose_name='Fixado no topo')
 
     class Meta:
@@ -38,7 +38,7 @@ class Resposta(models.Model):
     autor_email = models.EmailField(verbose_name='E-mail')
     conteudo = models.TextField(max_length=2000, verbose_name='Resposta')
     data_criacao = models.DateTimeField(auto_now_add=True)
-    aprovado = models.BooleanField(default=True, verbose_name='Visível publicamente')
+    aprovado = models.BooleanField(default=True, verbose_name='Visível publicamente', db_index=True)
 
     class Meta:
         ordering = ['data_criacao']

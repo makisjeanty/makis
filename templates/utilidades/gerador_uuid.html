@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerador de UUID v4 · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Gere identificadores únicos universais (UUID v4) individualmente ou em lote direto no navegador.{% endblock %}
+{% block og_title %}Gerador de UUID v4 · Makis Digital{% endblock %}
+{% block og_description %}Gere identificadores únicos universais (UUID v4) individualmente ou em lote direto no navegador.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Gerador de UUID v4</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Utilidades</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Gerador de UUID v4</h1>
+        <p class="lw-muted mb-8">Gere UUIDs versão 4 totalmente aleatórios para seus projetos e bancos de dados — 100% no seu navegador.</p>
+
+        <div class="lw-card space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label for="uuidQuantidade" class="text-sm font-semibold block mb-2">Quantidade (1 - 50)</label>
+                    <input id="uuidQuantidade" type="number" min="1" max="50" value="5" class="lw-input" onchange="gerarUUIDs()" />
+                </div>
+                <div class="flex items-center gap-2 pt-6">
+                    <input id="uuidMaiusculas" type="checkbox" class="w-4 h-4 rounded" onchange="gerarUUIDs()" />
+                    <label for="uuidMaiusculas" class="text-sm font-semibold cursor-pointer">Maiúsculas</label>
+                </div>
+                <div class="flex items-center gap-2 pt-6">
+                    <input id="uuidChaves" type="checkbox" class="w-4 h-4 rounded" onchange="gerarUUIDs()" />
+                    <label for="uuidChaves" class="text-sm font-semibold cursor-pointer">Incluir chaves { }</label>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <button type="button" onclick="gerarUUIDs()" class="lw-btn lw-btn--primary">Gerar Novos UUIDs</button>
+                <button type="button" onclick="copiarTexto('uuidSaida', this)" class="lw-btn lw-btn--secondary">Copiar Todos</button>
+            </div>
+
+            <div>
+                <label for="uuidSaida" class="text-sm font-semibold block mb-2">Resultado</label>
+                <textarea id="uuidSaida" class="lw-input lw-mono" rows="8" readonly></textarea>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function gerarUUIDv4() {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        return crypto.randomUUID();
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+function gerarUUIDs() {
+    const qtdInput = parseInt(document.getElementById('uuidQuantidade').value, 10) || 1;
+    const qtd = Math.min(Math.max(qtdInput, 1), 50);
+    const maiusculas = document.getElementById('uuidMaiusculas').checked;
+    const chaves = document.getElementById('uuidChaves').checked;
+    const saida = document.getElementById('uuidSaida');
+
+    const uuids = [];
+    for (let i = 0; i < qtd; i++) {
+        let u = gerarUUIDv4();
+        if (maiusculas) u = u.toUpperCase();
+        if (chaves) u = '{' + u + '}';
+        uuids.push(u);
+    }
+
+    saida.value = uuids.join('\n');
+}
+
+// Gerar automaticamente ao carregar a página
+document.addEventListener('DOMContentLoaded', gerarUUIDs);
+</script>
+{% endblock %}

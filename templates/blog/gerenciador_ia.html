@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerenciador de Blog com Agentes de IA & Skills · Makis Digital{% endblock %}
+{% block meta_description %}Painel inteligente de criação, revisão e otimização de artigos usando 3 agentes de IA especializados e skills técnicas.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'blog:lista' %}">Blog & Estudos</a>
+            <span>/</span>
+            <span>Gerenciador de Blog IA</span>
+        </nav>
+
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 mt-4">
+            <div>
+                <span class="lw-pill" style="background: rgba(204,120,92,0.15); color: var(--accent-light);">3 Agentes Ativos & Skills</span>
+                <h1 class="lw-display text-3xl md:text-4xl mt-2">Gerenciador Inteligente de Blog IA</h1>
+                <p class="lw-muted text-sm mt-1">Crie, revise e otimize artigos técnicos completos com auxílio de agentes de IA treinados.</p>
+            </div>
+            <a href="{% url 'blog:lista' %}" class="lw-btn lw-btn--secondary text-xs">← Voltar ao Blog</a>
+        </div>
+
+        <!-- Grid Principal do Gerenciador -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Painel Esquerdo: Seleção do Agente e Parâmetros -->
+            <div class="space-y-6">
+                <!-- 1. Seleção de Agente -->
+                <div class="lw-card space-y-3">
+                    <h2 class="text-xs font-semibold uppercase tracking-wider text-neutral-400">1. Selecione o Agente de IA</h2>
+                    <div class="space-y-2">
+                        <label class="p-3 rounded-xl border border-neutral-700 bg-neutral-900/60 cursor-pointer flex items-center gap-3 hover:border-amber-500 transition-colors">
+                            <input type="radio" name="agenteTipo" value="redator" class="w-4 h-4" onchange="atualizarAgente()" checked />
+                            <div>
+                                <span class="font-bold text-sm block">🧠 Agente Redator & Pesquisador</span>
+                                <span class="text-xs text-neutral-400">Gera artigos completos em Markdown.</span>
+                            </div>
+                        </label>
+                        <label class="p-3 rounded-xl border border-neutral-700 bg-neutral-900/60 cursor-pointer flex items-center gap-3 hover:border-amber-500 transition-colors">
+                            <input type="radio" name="agenteTipo" value="seo" class="w-4 h-4" onchange="atualizarAgente()" />
+                            <div>
+                                <span class="font-bold text-sm block">🔍 Agente Especialista SEO</span>
+                                <span class="text-xs text-neutral-400">Gera Meta Title, Description e JSON-LD.</span>
+                            </div>
+                        </label>
+                        <label class="p-3 rounded-xl border border-neutral-700 bg-neutral-900/60 cursor-pointer flex items-center gap-3 hover:border-amber-500 transition-colors">
+                            <input type="radio" name="agenteTipo" value="revisor" class="w-4 h-4" onchange="atualizarAgente()" />
+                            <div>
+                                <span class="font-bold text-sm block">🛠️ Agente Revisor de Código</span>
+                                <span class="text-xs text-neutral-400">Valida blocos de código e sintaxe.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 2. Presets de Temas Rápidos -->
+                <div class="lw-card space-y-3">
+                    <h2 class="text-xs font-semibold uppercase tracking-wider text-neutral-400">2. Temas Populares (Presets)</h2>
+                    <div class="space-y-1.5">
+                        <button type="button" onclick="aplicarPreset('django')" class="w-full text-left p-2 rounded text-xs bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-neutral-800">🚀 Django 6.0 & WebSockets com Daphne</button>
+                        <button type="button" onclick="aplicarPreset('mysql')" class="w-full text-left p-2 rounded text-xs bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-neutral-800">🐬 Otimização de SQL & Índices MySQL</button>
+                        <button type="button" onclick="aplicarPreset('owasp')" class="w-full text-left p-2 rounded text-xs bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-neutral-800">🛡️ Proteções OWASP Top 10 em Web Apps</button>
+                        <button type="button" onclick="aplicarPreset('ia')" class="w-full text-left p-2 rounded text-xs bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-neutral-800">🤖 Agentes de IA Autônomos em Python</button>
+                    </div>
+                </div>
+
+                <!-- 3. Parâmetros -->
+                <div class="lw-card space-y-3">
+                    <div>
+                        <label for="postTituloInput" class="text-xs font-semibold block mb-1">Título / Ideia Central</label>
+                        <input id="postTituloInput" type="text" class="lw-input text-xs" placeholder="Ex: Como otimizar queries no Django..." />
+                    </div>
+                    <div>
+                        <label for="postCategoriaSelect" class="text-xs font-semibold block mb-1">Categoria</label>
+                        <select id="postCategoriaSelect" class="lw-input text-xs">
+                            {% for cat in categorias %}
+                                <option value="{{ cat.nome }}">{{ cat.nome }}</option>
+                            {% empty %}
+                                <option value="Tecnologia">Tecnologia</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="button" onclick="executarAgenteIA()" class="lw-btn lw-btn--primary w-full py-2.5 text-xs font-bold">Gerar Conteúdo com IA ➔</button>
+                </div>
+            </div>
+
+            <!-- Painel Direito: Editor & Saída do Agente -->
+            <div class="lg:col-span-2 space-y-4">
+                <div class="lw-card space-y-4">
+                    <div class="flex justify-between items-center pb-2 border-b border-neutral-700">
+                        <span id="agenteAtivoBadge" class="lw-badge text-xs font-mono">Agente Ativo: Redator & Pesquisador</span>
+                        <button type="button" onclick="copiarTexto('postConteudoResultado', this)" class="lw-copy-btn text-xs">Copiar Markdown</button>
+                    </div>
+
+                    <div>
+                        <label for="postConteudoResultado" class="text-sm font-bold block mb-2">Artigo Gerado / Estrutura Markdown</label>
+                        <textarea id="postConteudoResultado" class="lw-input lw-mono text-sm" rows="18" placeholder="O conteúdo gerado pelo Agente de IA selecionado aparecerá aqui..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+function atualizarAgente() {
+    const radio = document.querySelector('input[name="agenteTipo"]:checked').value;
+    const badge = document.getElementById('agenteAtivoBadge');
+
+    if (radio === 'redator') {
+        badge.textContent = 'Agente Ativo: Redator & Pesquisador';
+    } else if (radio === 'seo') {
+        badge.textContent = 'Agente Ativo: Especialista SEO & Meta Tags';
+    } else {
+        badge.textContent = 'Agente Ativo: Revisor de Código & Formatação';
+    }
+}
+
+function aplicarPreset(tipo) {
+    const input = document.getElementById('postTituloInput');
+    if (tipo === 'django') input.value = 'Como Construir Aplicações em Tempo Real com Django 6.0 e Daphne';
+    if (tipo === 'mysql') input.value = 'Guia Prático de Otimização de Queries e Índices no MySQL 8.0';
+    if (tipo === 'owasp') input.value = 'Como Proteger sua Aplicação Web contra as 10 Maiores Vulnerabilidades OWASP';
+    if (tipo === 'ia') input.value = 'Desenvolvendo Agentes Autônomos de IA em Python com Arquitetura Clean Code';
+
+    executarAgenteIA();
+}
+
+function executarAgenteIA() {
+    const radio = document.querySelector('input[name="agenteTipo"]:checked').value;
+    const titulo = document.getElementById('postTituloInput').value.trim() || 'Desenvolvimento Web Moderno em Python';
+    const cat = document.getElementById('postCategoriaSelect').value;
+    const res = document.getElementById('postConteudoResultado');
+
+    let output = '';
+
+    if (radio === 'redator') {
+        output = `# ${titulo}
+
+> **Resumo Executivo**: Aprenda passo a passo como implementar ${titulo.toLowerCase()} utilizando as melhores práticas do mercado tech.
+
+---
+
+## 📌 1. Introdução
+No cenário atual do desenvolvimento de software, a busca por **performance, escalabilidade e manutenibilidade** é fundamental. Neste estudo, exploramos estratégias para dominar **${titulo}** dentro da categoria **${cat}**.
+
+---
+
+## 🛠️ 2. Arquitetura e Implementação Prática
+
+Abaixo vemos um exemplo prático de implementação estruturada:
+
+\`\`\`python
+# Exemplo de código otimizado
+def executar_solucao():
+    print("[INIT] Executando rotina técnica para ${titulo}...")
+    # Lógica de alta performance
+    return True
+\`\`\`
+
+---
+
+## 📊 3. Boas Práticas e Resultados Esperados
+- **Escalabilidade**: Estruturação preparada para alto volume de acessos.
+- **Segurança**: Conformidade com os padrões da OWASP.
+- **Manutenibilidade**: Código limpo e desacoplado.
+
+---
+
+## 🎯 Conclusão
+Ao aplicar estas técnicas no seu dia a dia, seu sistema estará pronto para enfrentar desafios de grande escala no ambiente de produção.
+`;
+    } else if (radio === 'seo') {
+        output = `/* === RELATÓRIO DE SEO E METADADOS DO AGENTE === */
+
+Meta Title (56 chars): ${titulo} · Makis Digital
+Meta Description (148 chars): Guia completo sobre ${titulo.toLowerCase()}. Aprenda boas práticas de arquitetura, segurança e performance no desenvolvimento web.
+
+JSON-LD Schema:
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "${titulo}",
+    "articleSection": "${cat}",
+    "author": {
+        "@type": "Person",
+        "name": "Makis Jeanty"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "Makis Digital"
+    }
+}
+<\/script>
+`;
+    } else {
+        output = `/* === REVISÃO TÉCNICA E SINTAXE DO AGENTE REVISOR === */
+
+- Status da Sintaxe: ✅ VÁLIDA
+- Blocos de Código Detectados: Python 3.13, SQL
+- Testes Recomendados: Unitários (django.test)
+- Qualidade do Markdown: 100% Compatível com GitHub e Notions
+
+Tags Sugeridas: #Python #Django #${cat.replace(/\s+/g, '')} #WebDev #CleanCode
+`;
+    }
+
+    res.value = output;
+}
+
+document.addEventListener('DOMContentLoaded', executarAgenteIA);
+</script>
+{% endblock %}

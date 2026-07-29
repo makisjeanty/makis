@@ -1,0 +1,563 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Painel de Monitoria · Makis Digital{% endblock %}
+{% block meta_description %}Painel interno de monitoria de vendas, servidor e moderação.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 5rem; min-height: 100vh;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Cabeçalho -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <div>
+        <span class="lw-pill mb-2" style="background:rgba(204,120,92,0.15);color:var(--accent);">🔒 Área Restrita</span>
+        <h1 class="lw-display text-3xl md:text-4xl mt-2">Painel de Monitoria</h1>
+        <p class="lw-muted text-sm mt-1">Visão unificada de vendas, infraestrutura e moderação.</p>
+      </div>
+      <button id="btn-atualizar"
+              onclick="atualizarDados()"
+              class="lw-btn lw-btn--secondary flex items-center gap-2 text-sm">
+        <svg id="icon-refresh" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003
+                   8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Atualizar agora
+        <span id="ultima-atualizacao" class="text-xs lw-muted hidden ml-1"></span>
+      </button>
+    </div>
+
+    <!-- Cards de métricas rápidas -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="lw-card p-5 text-center">
+        <p class="text-xs lw-muted uppercase tracking-wider mb-1">Vendas hoje</p>
+        <p id="metric-hoje" class="text-3xl font-extrabold" style="color:var(--accent);">{{ compras_hoje }}</p>
+      </div>
+      <div class="lw-card p-5 text-center">
+        <p class="text-xs lw-muted uppercase tracking-wider mb-1">Vendas (30d)</p>
+        <p id="metric-mes" class="text-3xl font-extrabold" style="color:var(--success);">{{ compras_mes }}</p>
+      </div>
+      <div class="lw-card p-5 text-center">
+        <p class="text-xs lw-muted uppercase tracking-wider mb-1">Receita mês</p>
+        <p id="metric-receita" class="text-3xl font-extrabold text-neutral-100">R$ {{ receita_mes|floatformat:0 }}</p>
+      </div>
+      <div class="lw-card p-5 text-center">
+        <p class="text-xs lw-muted uppercase tracking-wider mb-1">Comentários pendentes</p>
+        <p id="metric-pendentes" class="text-3xl font-extrabold {% if comentarios_pendentes > 0 %}text-amber-400{% else %}text-neutral-400{% endif %}">
+          {{ comentarios_pendentes }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Abas de navegação -->
+    <div class="flex gap-1 mb-6 p-1 rounded-xl" style="background:var(--surface);">
+      <button onclick="mudarAba('vendas')" id="aba-vendas"
+              class="aba-btn aba-ativa flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all">
+        📦 Vendas
+      </button>
+      <button onclick="mudarAba('servidor')" id="aba-servidor"
+              class="aba-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all">
+        🖥️ Servidor
+      </button>
+      <button onclick="mudarAba('moderacao')" id="aba-moderacao"
+              class="aba-btn flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all">
+        🛡️ Moderação
+        {% if comentarios_pendentes > 0 %}
+          <span class="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold"
+                style="background:var(--accent-solid);color:white;">{{ comentarios_pendentes }}</span>
+        {% endif %}
+      </button>
+    </div>
+
+    <!-- ═══════════════ ABA 1: VENDAS ═══════════════ -->
+    <div id="painel-vendas" class="painel-conteudo">
+
+      <!-- Gráfico 7 dias -->
+      <div class="lw-card p-6 mb-6">
+        <h2 class="text-lg font-bold text-neutral-100 mb-4">Vendas nos últimos 7 dias</h2>
+        <div class="relative" style="height:180px;">
+          <canvas id="grafico-vendas"></canvas>
+        </div>
+      </div>
+
+      <!-- Últimas compras -->
+      <div class="lw-card p-6">
+        <h2 class="text-lg font-bold text-neutral-100 mb-4">Últimas compras</h2>
+        {% if ultimas_compras %}
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-neutral-700 text-left">
+                  <th class="pb-3 lw-muted font-medium">Comprador</th>
+                  <th class="pb-3 lw-muted font-medium">E-mail</th>
+                  <th class="pb-3 lw-muted font-medium">Produto</th>
+                  <th class="pb-3 lw-muted font-medium">Valor</th>
+                  <th class="pb-3 lw-muted font-medium">Status</th>
+                  <th class="pb-3 lw-muted font-medium">Plataforma</th>
+                  <th class="pb-3 lw-muted font-medium">Data</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for compra in ultimas_compras %}
+                <tr class="border-b border-neutral-800 hover:bg-neutral-800/40 transition-colors">
+                  <td class="py-3 font-medium text-neutral-200">{{ compra.comprador_nome }}</td>
+                  <td class="py-3 lw-muted">{{ compra.comprador_email }}</td>
+                  <td class="py-3 lw-muted">{{ compra.produto }}</td>
+                  <td class="py-3 font-semibold" style="color:var(--success);">
+                    {% if compra.valor %}R$ {{ compra.valor|floatformat:2 }}{% else %}—{% endif %}
+                  </td>
+                  <td class="py-3">
+                    <span class="lw-badge {% if compra.status == 'aprovada' %}text-emerald-400{% elif compra.status == 'pendente' %}text-amber-400{% else %}text-red-400{% endif %}">
+                      {{ compra.get_status_display }}
+                    </span>
+                  </td>
+                  <td class="py-3 lw-muted capitalize">{{ compra.plataforma }}</td>
+                  <td class="py-3 lw-muted text-xs">{{ compra.criado_em|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="lw-empty-state py-10">
+            <p class="text-4xl mb-3">📭</p>
+            <p class="lw-muted">Nenhuma compra registrada ainda.</p>
+            <p class="text-xs lw-muted mt-1">As vendas aparecerão aqui automaticamente via webhook Kiwify.</p>
+          </div>
+        {% endif %}
+
+        <!-- Resumo financeiro -->
+        <div class="mt-6 pt-6 border-t border-neutral-700 grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="text-center">
+            <p class="text-xs lw-muted mb-1">Total de vendas</p>
+            <p class="text-2xl font-bold text-neutral-100" id="total-vendas">{{ compras_total }}</p>
+          </div>
+          <div class="text-center">
+            <p class="text-xs lw-muted mb-1">Receita total</p>
+            <p class="text-2xl font-bold" style="color:var(--success);" id="receita-total">
+              R$ {{ receita_total|floatformat:2 }}
+            </p>
+          </div>
+          <div class="text-center">
+            <p class="text-xs lw-muted mb-1">Ticket médio</p>
+            <p class="text-2xl font-bold text-neutral-100">
+              {% if compras_total > 0 %}
+                R$ {{ receita_total|floatformat:0 }}
+              {% else %}—{% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ ABA 2: SERVIDOR ═══════════════ -->
+    <div id="painel-servidor" class="painel-conteudo hidden">
+
+      <!-- Status de saúde -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="lw-card p-6">
+          <h2 class="text-lg font-bold text-neutral-100 mb-4">🔌 Status dos Serviços</h2>
+          <div class="space-y-3">
+
+            <div class="flex items-center justify-between p-3 rounded-lg bg-neutral-900/50">
+              <span class="text-sm font-medium text-neutral-200">Banco de dados (MySQL)</span>
+              <span id="status-banco"
+                    class="lw-pill text-xs font-bold {% if banco_ok %}text-emerald-400 bg-emerald-400/10{% else %}text-red-400 bg-red-400/10{% endif %}">
+                {% if banco_ok %}✅ Online{% else %}❌ Offline{% endif %}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-lg bg-neutral-900/50">
+              <span class="text-sm font-medium text-neutral-200">Redis / Cache</span>
+              <span id="status-redis"
+                    class="lw-pill text-xs font-bold {% if redis_ok %}text-emerald-400 bg-emerald-400/10{% else %}text-amber-400 bg-amber-400/10{% endif %}">
+                {% if redis_ok %}✅ Online{% else %}⚠️ Indisponível (normal em dev){% endif %}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-lg bg-neutral-900/50">
+              <span class="text-sm font-medium text-neutral-200">Aplicação Django</span>
+              <span class="lw-pill text-xs font-bold text-emerald-400 bg-emerald-400/10">✅ Online</span>
+            </div>
+          </div>
+
+          <button onclick="atualizarDados()"
+                  class="mt-4 w-full lw-btn lw-btn--secondary text-sm">
+            Verificar saúde agora
+          </button>
+        </div>
+
+        <!-- Contadores de conteúdo -->
+        <div class="lw-card p-6">
+          <h2 class="text-lg font-bold text-neutral-100 mb-4">📊 Conteúdo do Site</h2>
+          <div class="space-y-3">
+            {% with items=total_posts|add:0 %}
+            <div class="flex justify-between items-center py-2 border-b border-neutral-800">
+              <span class="text-sm lw-muted">Posts publicados</span>
+              <span class="font-bold text-neutral-200" id="cnt-posts">{{ total_posts }}</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-neutral-800">
+              <span class="text-sm lw-muted">Projetos no portfólio</span>
+              <span class="font-bold text-neutral-200" id="cnt-projetos">{{ total_projetos }}</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-neutral-800">
+              <span class="text-sm lw-muted">Tópicos na comunidade</span>
+              <span class="font-bold text-neutral-200" id="cnt-topicos">{{ total_topicos }}</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-neutral-800">
+              <span class="text-sm lw-muted">Mensagens no chat (24h)</span>
+              <span class="font-bold text-neutral-200" id="cnt-mensagens">{{ mensagens_24h }}</span>
+            </div>
+            <div class="flex justify-between items-center py-2">
+              <span class="text-sm lw-muted">Comentários pendentes</span>
+              <span class="font-bold {% if comentarios_pendentes > 0 %}text-amber-400{% else %}text-neutral-400{% endif %}"
+                    id="cnt-pendentes">{{ comentarios_pendentes }}</span>
+            </div>
+            {% endwith %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Info do ambiente -->
+      <div class="lw-card p-6">
+        <h2 class="text-lg font-bold text-neutral-100 mb-4">⚙️ Ambiente</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div class="p-3 rounded-lg bg-neutral-900/50">
+            <p class="text-xs lw-muted mb-1">Framework</p>
+            <p class="font-semibold text-neutral-200">Django 6.0</p>
+          </div>
+          <div class="p-3 rounded-lg bg-neutral-900/50">
+            <p class="text-xs lw-muted mb-1">Banco</p>
+            <p class="font-semibold text-neutral-200">MySQL 8</p>
+          </div>
+          <div class="p-3 rounded-lg bg-neutral-900/50">
+            <p class="text-xs lw-muted mb-1">WebSocket</p>
+            <p class="font-semibold text-neutral-200">Channels/Daphne</p>
+          </div>
+          <div class="p-3 rounded-lg bg-neutral-900/50">
+            <p class="text-xs lw-muted mb-1">Arquivos estáticos</p>
+            <p class="font-semibold text-neutral-200">WhiteNoise</p>
+          </div>
+        </div>
+
+        <!-- Instrução webhook -->
+        <div class="mt-5 p-4 rounded-xl border border-amber-500/30 bg-amber-500/5">
+          <p class="text-xs font-bold text-amber-400 mb-1">🔗 URL do Webhook Kiwify</p>
+          <p class="text-xs lw-muted mb-2">Configure esta URL no painel Kiwify para receber notificações de vendas:</p>
+          <code class="text-xs text-emerald-400 break-all">
+            {{ request.scheme }}://{{ request.get_host }}/api/webhook/kiwify/?token=<span class="text-amber-400">SEU_KIWIFY_TOKEN</span>
+          </code>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ ABA 3: MODERAÇÃO ═══════════════ -->
+    <div id="painel-moderacao" class="painel-conteudo hidden">
+
+      <!-- Comentários pendentes -->
+      <div class="lw-card p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-neutral-100">
+            💬 Comentários Pendentes
+            <span id="badge-pendentes"
+                  class="ml-2 inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold
+                  {% if comentarios_pendentes > 0 %}bg-amber-500/20 text-amber-400{% else %}bg-neutral-700 text-neutral-400{% endif %}">
+              {{ comentarios_pendentes }}
+            </span>
+          </h2>
+        </div>
+
+        {% if comentarios_pendentes %}
+          <div id="lista-comentarios" class="space-y-3">
+            {% for c in comentarios_pendentes %}
+            <div id="comentario-{{ c.pk }}"
+                 class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/40 transition-all">
+              <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-semibold text-neutral-200 text-sm">{{ c.nome }}</span>
+                    <span class="text-xs lw-muted">·</span>
+                    <span class="text-xs lw-muted">{{ c.email }}</span>
+                  </div>
+                  <p class="text-xs lw-muted mb-2">
+                    em <a href="{% url 'blog:detalhe' c.post.slug %}" target="_blank"
+                          class="underline hover:text-neutral-200">{{ c.post.titulo }}</a>
+                    · {{ c.data_criacao|date:"d/m/Y H:i" }}
+                  </p>
+                  <p class="text-sm text-neutral-300 leading-relaxed">{{ c.conteudo }}</p>
+                </div>
+                <div class="flex gap-2 sm:flex-col sm:items-end shrink-0">
+                  <button onclick="moderarComentario({{ c.pk }}, 'aprovar')"
+                          id="btn-aprovar-{{ c.pk }}"
+                          class="lw-btn lw-btn--primary text-xs py-1.5 px-3">
+                    ✅ Aprovar
+                  </button>
+                  <button onclick="moderarComentario({{ c.pk }}, 'rejeitar')"
+                          id="btn-rejeitar-{{ c.pk }}"
+                          class="lw-btn lw-btn--secondary text-xs py-1.5 px-3">
+                    🗑️ Rejeitar
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="lw-empty-state py-8">
+            <p class="text-4xl mb-3">✅</p>
+            <p class="lw-muted">Nenhum comentário aguardando aprovação.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Tópicos ocultos -->
+      <div class="lw-card p-6 mb-6">
+        <h2 class="text-lg font-bold text-neutral-100 mb-4">🚫 Tópicos Ocultos da Comunidade</h2>
+        {% if topicos_ocultos %}
+          <div class="space-y-2">
+            {% for t in topicos_ocultos %}
+            <div class="flex items-center justify-between p-3 rounded-lg bg-neutral-900/50 border border-neutral-800">
+              <div>
+                <p class="text-sm font-medium text-neutral-200">{{ t.titulo }}</p>
+                <p class="text-xs lw-muted">{{ t.autor_nome }} · {{ t.data_criacao|date:"d/m/Y H:i" }}</p>
+              </div>
+              <a href="{% url 'comunidade:detalhe' t.slug %}" target="_blank"
+                 class="text-xs lw-muted hover:text-neutral-200 underline">Ver →</a>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="lw-empty-state py-6">
+            <p class="lw-muted text-sm">Nenhum tópico oculto.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Mensagens recentes do chat -->
+      <div class="lw-card p-6">
+        <h2 class="text-lg font-bold text-neutral-100 mb-4">
+          💬 Chat — Últimas 24h
+          <span class="ml-2 text-sm font-normal lw-muted">({{ mensagens_recentes|length }} mensagem{% if mensagens_recentes|length != 1 %}s{% endif %})</span>
+        </h2>
+        {% if mensagens_recentes %}
+          <div class="space-y-2 max-h-80 overflow-y-auto pr-1" style="scrollbar-width:thin;">
+            {% for m in mensagens_recentes %}
+            <div class="flex items-start gap-3 p-2 rounded-lg hover:bg-neutral-800/40 transition-colors">
+              <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                   style="background:var(--accent-solid);color:white;">
+                {{ m.nome|first|upper }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-baseline gap-2">
+                  <span class="text-xs font-semibold text-neutral-200">{{ m.nome }}</span>
+                  <span class="text-xs lw-muted">{{ m.criado_em|date:"H:i" }}</span>
+                </div>
+                <p class="text-xs lw-muted truncate">{{ m.texto }}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="lw-empty-state py-6">
+            <p class="lw-muted text-sm">Nenhuma mensagem nas últimas 24h.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div><!-- fim painel-moderacao -->
+
+  </div><!-- fim max-w -->
+</section>
+
+<style>
+  .aba-ativa {
+    background: var(--accent-solid);
+    color: white;
+  }
+  .aba-btn:not(.aba-ativa) {
+    color: var(--text-muted);
+  }
+  .aba-btn:not(.aba-ativa):hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .girando { animation: spin 1s linear infinite; }
+</style>
+
+<script>
+  // ── Troca de abas ──
+  function mudarAba(aba) {
+    document.querySelectorAll('.painel-conteudo').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.aba-btn').forEach(el => el.classList.remove('aba-ativa'));
+    document.getElementById('painel-' + aba).classList.remove('hidden');
+    document.getElementById('aba-' + aba).classList.add('aba-ativa');
+  }
+
+  // ── Atualização via fetch (API JSON) ──
+  async function atualizarDados() {
+    const icon = document.getElementById('icon-refresh');
+    icon.classList.add('girando');
+    try {
+      const resp = await fetch("{% url 'api_monitoria' %}");
+      const d = await resp.json();
+
+      // Métricas do topo
+      document.getElementById('metric-hoje').textContent   = d.compras_hoje;
+      document.getElementById('metric-mes').textContent    = d.compras_mes;
+      document.getElementById('metric-receita').textContent = 'R$ ' + Math.round(d.receita_mes);
+      document.getElementById('metric-pendentes').textContent = d.comentarios_pendentes;
+
+      // Servidor
+      document.getElementById('status-banco').textContent =
+        d.banco_ok ? '✅ Online' : '❌ Offline';
+      document.getElementById('status-redis').textContent =
+        d.redis_ok ? '✅ Online' : '⚠️ Indisponível';
+
+      // Contadores
+      document.getElementById('cnt-posts').textContent     = d.total_posts;
+      document.getElementById('cnt-projetos').textContent  = d.total_projetos;
+      document.getElementById('cnt-topicos').textContent   = d.total_topicos;
+      document.getElementById('cnt-mensagens').textContent = d.mensagens_24h;
+      document.getElementById('cnt-pendentes').textContent = d.comentarios_pendentes;
+
+      // Timestamp
+      const ts = document.getElementById('ultima-atualizacao');
+      ts.textContent = d.timestamp;
+      ts.classList.remove('hidden');
+    } catch (e) {
+      console.error('Erro ao atualizar:', e);
+    } finally {
+      icon.classList.remove('girando');
+    }
+  }
+
+  // ── Moderação de comentários inline ──
+  async function moderarComentario(id, acao) {
+    const btnAprovar  = document.getElementById('btn-aprovar-' + id);
+    const btnRejeitar = document.getElementById('btn-rejeitar-' + id);
+    if (btnAprovar) btnAprovar.disabled = true;
+    if (btnRejeitar) btnRejeitar.disabled = true;
+
+    try {
+      const form = new FormData();
+      form.append('acao', acao);
+      form.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+      const resp = await fetch(`/{{ MONITORIA_URL|default:"monitoria" }}/moderar/${id}/`, {
+        method: 'POST',
+        body: form,
+      });
+      const data = await resp.json();
+
+      if (data.ok) {
+        const card = document.getElementById('comentario-' + id);
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(20px)';
+        card.style.transition = 'all 0.3s ease';
+        setTimeout(() => {
+          card.remove();
+          // Atualiza badge de pendentes
+          const badge = document.getElementById('badge-pendentes');
+          const metricPendentes = document.getElementById('metric-pendentes');
+          const atual = parseInt(badge.textContent.trim()) || 0;
+          const novo = Math.max(0, atual - 1);
+          badge.textContent = novo;
+          if (metricPendentes) metricPendentes.textContent = novo;
+
+          // Se não sobrar nenhum, mostra mensagem vazia
+          const lista = document.getElementById('lista-comentarios');
+          if (lista && lista.children.length === 0) {
+            lista.innerHTML = '<div class="lw-empty-state py-8"><p class="text-4xl mb-3">✅</p><p class="lw-muted">Nenhum comentário aguardando aprovação.</p></div>';
+          }
+        }, 350);
+      }
+    } catch (e) {
+      if (btnAprovar)  btnAprovar.disabled  = false;
+      if (btnRejeitar) btnRejeitar.disabled = false;
+      console.error('Erro na moderação:', e);
+    }
+  }
+
+  // ── Gráfico de barras (7 dias) — canvas puro, sem dependências ──
+  document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('grafico-vendas');
+    if (!canvas) return;
+
+    const labels  = {{ grafico_labels|safe }};
+    const valores  = {{ grafico_valores|safe }};
+    const ctx      = canvas.getContext('2d');
+    const W        = canvas.parentElement.offsetWidth;
+    const H        = 180;
+    canvas.width   = W;
+    canvas.height  = H;
+
+    const max    = Math.max(...valores, 1);
+    const barW   = (W - 60) / labels.length;
+    const padL   = 40;
+    const padB   = 30;
+    const chartH = H - padB - 10;
+    const accentColor = '#CC785C';
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Grades horizontais
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = 10 + (chartH / 4) * i;
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(W - 10, y);
+      ctx.stroke();
+
+      const val = Math.round(max - (max / 4) * i);
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.font = '10px Inter,sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(val, padL - 4, y + 4);
+    }
+
+    // Barras
+    valores.forEach((v, i) => {
+      const x    = padL + i * barW + barW * 0.1;
+      const bw   = barW * 0.8;
+      const bh   = (v / max) * chartH;
+      const y    = 10 + chartH - bh;
+
+      // Gradiente
+      const grad = ctx.createLinearGradient(0, y, 0, y + bh);
+      grad.addColorStop(0,   accentColor);
+      grad.addColorStop(1,   'rgba(204,120,92,0.2)');
+      ctx.fillStyle = grad;
+
+      const radius = 4;
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + bw - radius, y);
+      ctx.arcTo(x + bw, y, x + bw, y + radius, radius);
+      ctx.lineTo(x + bw, y + bh);
+      ctx.lineTo(x, y + bh);
+      ctx.lineTo(x, y + radius);
+      ctx.arcTo(x, y, x + radius, y, radius);
+      ctx.closePath();
+      ctx.fill();
+
+      // Label do eixo X
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '10px Inter,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(labels[i], x + bw / 2, H - 8);
+
+      // Valor no topo da barra
+      if (v > 0) {
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = 'bold 11px Inter,sans-serif';
+        ctx.fillText(v, x + bw / 2, y - 4);
+      }
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Minificador & Formatador de Código (CSS, HTML, JS) · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Minifique ou formatador trechos de código CSS, HTML e JavaScript direto no seu navegador.{% endblock %}
+{% block og_title %}Minificador de Código · Makis Digital{% endblock %}
+{% block og_description %}Minifique ou formate trechos de código CSS, HTML e JS instantaneamente.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Minificador de Código</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Utilidades</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Minificador & Formatador de Código</h1>
+        <p class="lw-muted mb-8">Remova espaços e comentários extras para reduzir o tamanho de scripts CSS, HTML e JS.</p>
+
+        <div class="lw-card space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex gap-2">
+                    <button type="button" id="btnTipoCSS" onclick="setTipo('css')" class="lw-btn lw-btn--primary text-xs">CSS</button>
+                    <button type="button" id="btnTipoHTML" onclick="setTipo('html')" class="lw-btn lw-btn--secondary text-xs">HTML</button>
+                    <button type="button" id="btnTipoJS" onclick="setTipo('js')" class="lw-btn lw-btn--secondary text-xs">JavaScript</button>
+                </div>
+                <span id="statReducao" class="text-xs font-semibold px-2.5 py-1 rounded" style="background: rgba(204,120,92,0.15); color: var(--accent-light);">Redução: 0%</span>
+            </div>
+
+            <div>
+                <label for="codigoInput" class="text-sm font-semibold block mb-2">Código Fonte</label>
+                <textarea id="codigoInput" class="lw-input lw-mono text-sm" rows="8" placeholder="Cole seu código CSS, HTML ou JS aqui..."></textarea>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <button type="button" onclick="processarCodigo('minificar')" class="lw-btn lw-btn--primary">Minificar Código</button>
+                <button type="button" onclick="processarCodigo('formatar')" class="lw-btn lw-btn--secondary">Embelezar / Formatar</button>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label for="codigoSaida" class="text-sm font-semibold block">Resultado</label>
+                    <span id="tamanhoSaida" class="text-xs text-neutral-400 font-mono">Tamanho: 0 bytes</span>
+                </div>
+                <textarea id="codigoSaida" class="lw-input lw-mono text-sm" rows="8" readonly></textarea>
+                <button type="button" onclick="copiarTexto('codigoSaida', this)" class="lw-copy-btn mt-2">Copiar Resultado</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+let tipoAtual = 'css';
+
+function setTipo(tipo) {
+    tipoAtual = tipo;
+    ['CSS', 'HTML', 'JS'].forEach(t => {
+        const btn = document.getElementById('btnTipo' + t);
+        if (t.toLowerCase() === tipo) {
+            btn.className = 'lw-btn lw-btn--primary text-xs';
+        } else {
+            btn.className = 'lw-btn lw-btn--secondary text-xs';
+        }
+    });
+}
+
+function minificarCSS(code) {
+    return code
+        .replace(/\/\*[\s\S]*?\*\//g, '') // remove comentários
+        .replace(/\s*([\{\}:;,])\s*/g, '$1') // remove espaços ao redor de caracteres
+        .replace(/\s+/g, ' ') // reduz múltiplos espaços
+        .trim();
+}
+
+function minificarHTML(code) {
+    return code
+        .replace(/<!--[\s\S]*?-->/g, '') // remove comentários HTML
+        .replace(/>\s+</g, '><') // remove espaços entre tags
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function minificarJS(code) {
+    return code
+        .replace(/\/\*[\s\S]*?\*\//g, '') // comentários bloco
+        .replace(/\/\/.*/g, '') // comentários linha
+        .replace(/\s*([\{\}\(\);=+\-\*\/,])\s*/g, '$1')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function processarCodigo(modo) {
+    const input = document.getElementById('codigoInput').value;
+    const saida = document.getElementById('codigoSaida');
+    const statReducao = document.getElementById('statReducao');
+    const tamanhoSaida = document.getElementById('tamanhoSaida');
+
+    if (!input.trim()) {
+        saida.value = '';
+        statReducao.textContent = 'Redução: 0%';
+        tamanhoSaida.textContent = 'Tamanho: 0 bytes';
+        return;
+    }
+
+    let res = '';
+    if (modo === 'minificar') {
+        if (tipoAtual === 'css') res = minificarCSS(input);
+        else if (tipoAtual === 'html') res = minificarHTML(input);
+        else if (tipoAtual === 'js') res = minificarJS(input);
+    } else {
+        // Formatar simples
+        res = input
+            .replace(/;\s*/g, ';\n')
+            .replace(/\{\s*/g, ' {\n    ')
+            .replace(/\}\s*/g, '\n}\n');
+    }
+
+    saida.value = res;
+
+    const originalSize = new Blob([input]).size;
+    const finalSize = new Blob([res]).size;
+    const pct = originalSize > 0 ? Math.round(((originalSize - finalSize) / originalSize) * 100) : 0;
+
+    statReducao.textContent = `Redução: ${Math.max(0, pct)}% (${originalSize}B ➔ ${finalSize}B)`;
+    tamanhoSaida.textContent = `Tamanho: ${finalSize} bytes`;
+}
+</script>
+{% endblock %}

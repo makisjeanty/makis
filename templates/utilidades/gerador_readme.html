@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerador de README.md Profissional · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Gere arquivos README.md profissionais e completos para repositórios do GitHub no seu navegador.{% endblock %}
+{% block og_title %}Gerador de README.md · Makis Digital{% endblock %}
+{% block og_description %}Gere arquivos README.md profissionais e completos para repositórios do GitHub.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Gerador de README.md</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Ferramenta para Devs</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Gerador de README.md Profissional</h1>
+        <p class="lw-muted mb-8">Monte documentações completas e elegantes para seus projetos do GitHub em poucos segundos.</p>
+
+        <div class="lw-card space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="readmeNome" class="text-sm font-semibold block mb-1">Nome do Projeto</label>
+                    <input id="readmeNome" type="text" class="lw-input" placeholder="Ex: Makis Home" oninput="gerarReadme()" />
+                </div>
+                <div>
+                    <label for="readmeLicenca" class="text-sm font-semibold block mb-1">Licença</label>
+                    <select id="readmeLicenca" class="lw-input" onchange="gerarReadme()">
+                        <option value="MIT">MIT License</option>
+                        <option value="Apache-2.0">Apache 2.0</option>
+                        <option value="GPL-3.0">GPL v3</option>
+                        <option value="Proprietary">Proprietário / Privado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="readmeDescricao" class="text-sm font-semibold block mb-1">Descrição Breve do Projeto</label>
+                <textarea id="readmeDescricao" class="lw-input" rows="3" placeholder="Ex: Sistema web desenvolvido em Django 6.0 com suporte a WebSockets em tempo real, fórum e ferramentas client-side." oninput="gerarReadme()"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="readmeTechs" class="text-sm font-semibold block mb-1">Tecnologias (separadas por vírgula)</label>
+                    <input id="readmeTechs" type="text" class="lw-input" placeholder="Ex: Python, Django, MySQL, Redis, Tailwind" oninput="gerarReadme()" />
+                </div>
+                <div>
+                    <label for="readmeComando" class="text-sm font-semibold block mb-1">Comando de Instalação/Execução</label>
+                    <input id="readmeComando" type="text" class="lw-input" placeholder="Ex: pip install -r requirements.txt && python manage.py runserver" oninput="gerarReadme()" />
+                </div>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label for="readmeResultado" class="text-sm font-bold">Conteúdo README.md Gerado</label>
+                    <button type="button" onclick="copiarTexto('readmeResultado', this)" class="lw-copy-btn">Copiar README.md</button>
+                </div>
+                <textarea id="readmeResultado" class="lw-input lw-mono text-sm" rows="12" readonly></textarea>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function gerarReadme() {
+    const nome = document.getElementById('readmeNome').value.trim() || 'Meu Projeto';
+    const licenca = document.getElementById('readmeLicenca').value;
+    const desc = document.getElementById('readmeDescricao').value.trim() || 'Descrição do projeto...';
+    const techsRaw = document.getElementById('readmeTechs').value.trim();
+    const cmd = document.getElementById('readmeComando').value.trim() || 'python manage.py runserver';
+
+    const techs = techsRaw ? techsRaw.split(',').map(t => `- **${t.trim()}**`).join('\n') : '- **Python**\n- **Django**';
+
+    const md = `# ${nome}
+
+> ${desc}
+
+## 🚀 Tecnologias Utilizadas
+${techs}
+
+## 📋 Pré-requisitos
+- Python 3.13+
+- Git
+
+## 🛠️ Como Executar o Projeto
+
+\`\`\`bash
+# Clonar o repositório
+git clone https://github.com/usuario/${nome.toLowerCase().replace(/\s+/g, '-')}.git
+
+# Entrar no diretório
+cd ${nome.toLowerCase().replace(/\s+/g, '-')}
+
+# Executar a aplicação
+${cmd}
+\`\`\`
+
+## 📄 Licença
+Este projeto está sob a licença [${licenca}](LICENSE).
+`;
+
+    document.getElementById('readmeResultado').value = md;
+}
+
+document.addEventListener('DOMContentLoaded', gerarReadme);
+</script>
+{% endblock %}

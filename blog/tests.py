@@ -186,6 +186,12 @@ class BlogViewsTests(TestCase):
         response = self.client.get(reverse('blog:categoria', args=['categoria-que-nao-existe']))
         self.assertEqual(response.status_code, 404)
 
+    def test_gerenciador_ia_retorna_200_e_template_correto(self):
+        response = self.client.get(reverse('blog:gerenciador_ia'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/gerenciador_ia.html')
+
+
 
 class BlogRateLimitTests(TestCase):
     def setUp(self):

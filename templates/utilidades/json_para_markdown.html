@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Conversor de JSON para Tabela Markdown & CSV · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Converta JSON gerado por IAs (ChatGPT/Claude) em tabelas limpas em Markdown ou CSV para Notion, Excel e documentação.{% endblock %}
+{% block og_title %}Conversor de JSON para Markdown & CSV · Makis Digital{% endblock %}
+{% block og_description %}Converta JSON de IAs em tabelas limpas em Markdown ou CSV para Notion e documentação.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Conversor JSON ➔ Markdown/CSV</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Ferramenta para IA</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Conversor de JSON para Markdown & CSV</h1>
+        <p class="lw-muted mb-8">Transforme respostas em formato JSON retornadas pelas IAs em tabelas em Markdown prontas para documentação ou planilhas CSV.</p>
+
+        <div class="lw-card space-y-6">
+            <div>
+                <label for="jsonInput" class="text-sm font-semibold block mb-2">Cole o JSON aqui (Array de objetos ou Objeto)</label>
+                <textarea id="jsonInput" class="lw-input lw-mono text-sm" rows="8" placeholder='[&#10;  {"nome": "Django", "categoria": "Framework", "linguagem": "Python"},&#10;  {"nome": "React", "categoria": "Biblioteca", "linguagem": "JavaScript"}&#10;]' oninput="converterJSON()"></textarea>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+                <button type="button" id="btnModoMarkdown" onclick="setModo('markdown')" class="lw-btn lw-btn--primary text-xs">Tabela Markdown</button>
+                <button type="button" id="btnModoCSV" onclick="setModo('csv')" class="lw-btn lw-btn--secondary text-xs">CSV (Excel)</button>
+            </div>
+
+            <p id="jsonErro" class="text-sm hidden" style="color: var(--danger);"></p>
+
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label for="resultadoSaida" class="text-sm font-bold">Resultado Convertido</label>
+                    <button type="button" onclick="copiarTexto('resultadoSaida', this)" class="lw-copy-btn">Copiar Resultado</button>
+                </div>
+                <textarea id="resultadoSaida" class="lw-input lw-mono text-sm" rows="8" readonly></textarea>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+let modoAtual = 'markdown';
+
+function setModo(modo) {
+    modoAtual = modo;
+    if (modo === 'markdown') {
+        document.getElementById('btnModoMarkdown').className = 'lw-btn lw-btn--primary text-xs';
+        document.getElementById('btnModoCSV').className = 'lw-btn lw-btn--secondary text-xs';
+    } else {
+        document.getElementById('btnModoMarkdown').className = 'lw-btn lw-btn--secondary text-xs';
+        document.getElementById('btnModoCSV').className = 'lw-btn lw-btn--primary text-xs';
+    }
+    converterJSON();
+}
+
+function converterJSON() {
+    const raw = document.getElementById('jsonInput').value.trim();
+    const saida = document.getElementById('resultadoSaida');
+    const erro = document.getElementById('jsonErro');
+
+    if (!raw) {
+        saida.value = '';
+        erro.classList.add('hidden');
+        return;
+    }
+
+    try {
+        let obj = JSON.parse(raw);
+        erro.classList.add('hidden');
+
+        if (!Array.isArray(obj)) {
+            obj = [obj];
+        }
+
+        if (obj.length === 0) {
+            saida.value = '';
+            return;
+        }
+
+        const headers = Array.from(new Set(obj.flatMap(item => typeof item === 'object' && item !== null ? Object.keys(item) : ['valor'])));
+
+        if (modoAtual === 'markdown') {
+            // Tabela Markdown
+            let md = `| ${headers.join(' | ')} |\n`;
+            md += `| ${headers.map(() => '---').join(' | ')} |\n`;
+
+            obj.forEach(row => {
+                const cols = headers.map(h => {
+                    const val = typeof row === 'object' && row !== null ? row[h] : row;
+                    return (val !== undefined && val !== null) ? String(val).replace(/\|/g, '\\|') : '';
+                });
+                md += `| ${cols.join(' | ')} |\n`;
+            });
+            saida.value = md;
+        } else {
+            // CSV
+            let csv = headers.map(h => `"${h}"`).join(',') + '\n';
+            obj.forEach(row => {
+                const cols = headers.map(h => {
+                    const val = typeof row === 'object' && row !== null ? row[h] : row;
+                    return val !== undefined && val !== null ? `"${String(val).replace(/"/g, '""')}"` : '""';
+                });
+                csv += cols.join(',') + '\n';
+            });
+            saida.value = csv;
+        }
+    } catch (e) {
+        erro.textContent = 'JSON inválido: ' + e.message;
+        erro.classList.remove('hidden');
+        saida.value = '';
+    }
+}
+</script>
+{% endblock %}

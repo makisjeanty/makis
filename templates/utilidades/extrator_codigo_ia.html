@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Extrator de Blocos de Código de Respostas de IA · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Extraia facilmente todos os blocos de código contidos em respostas brutas de ChatGPT, Claude, DeepSeek e Gemini.{% endblock %}
+{% block og_title %}Extrator de Código de IA · Makis Digital{% endblock %}
+{% block og_description %}Extraia facilmente todos os blocos de código contidos em respostas brutas de ChatGPT, Claude e Gemini.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Extrator de Código de IA</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Ferramenta para IA</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Extrator de Código de Respostas de IA</h1>
+        <p class="lw-muted mb-8">Cole a resposta completa da IA (com explicações e textos) e isole instantaneamente todos os blocos de código em recipientes prontos para cópia.</p>
+
+        <div class="lw-card space-y-6">
+            <div>
+                <label for="iaRespostaInput" class="text-sm font-semibold block mb-2">Cole a Resposta da IA aqui</label>
+                <textarea id="iaRespostaInput" class="lw-input text-sm" rows="8" placeholder="Cole o texto bruto da IA contendo blocos ```python, ```sql, ```html, etc..." oninput="extrairBlocosDeCodigo()"></textarea>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-400">Blocos de Código Extraídos (<span id="countBlocos">0</span>)</h2>
+                </div>
+                <div id="containerBlocos" class="space-y-4">
+                    <p class="text-sm text-neutral-500 italic">Nenhum bloco de código detectado ainda...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function extrairBlocosDeCodigo() {
+    const text = document.getElementById('iaRespostaInput').value;
+    const container = document.getElementById('containerBlocos');
+    const countSpan = document.getElementById('countBlocos');
+
+    // Regex para encontrar blocos ```lang \n code ```
+    const regex = /```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g;
+    let matches = [];
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+        matches.push({
+            lang: match[1] || 'code',
+            code: match[2].trim()
+        });
+    }
+
+    countSpan.textContent = matches.length;
+
+    if (matches.length === 0) {
+        container.innerHTML = '<p class="text-sm text-neutral-500 italic">Nenhum bloco de código detectado ainda...</p>';
+        return;
+    }
+
+    container.innerHTML = '';
+    matches.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'lw-card space-y-2';
+        div.style.background = 'var(--bg)';
+        div.style.border = '1px solid rgba(255,255,255,0.1)';
+
+        const header = document.createElement('div');
+        header.className = 'flex justify-between items-center border-b border-neutral-700 pb-2 mb-2';
+
+        const langBadge = document.createElement('span');
+        langBadge.className = 'lw-badge text-xs uppercase font-mono';
+        langBadge.textContent = `#${index + 1} - ${item.lang}`;
+
+        const copyBtn = document.createElement('button');
+        copyBtn.type = 'button';
+        copyBtn.className = 'lw-copy-btn text-xs';
+        copyBtn.textContent = 'Copiar Bloco';
+        copyBtn.onclick = () => {
+            navigator.clipboard.writeText(item.code);
+            copyBtn.textContent = 'Copiado!';
+            setTimeout(() => copyBtn.textContent = 'Copiar Bloco', 2000);
+        };
+
+        header.appendChild(langBadge);
+        header.appendChild(copyBtn);
+
+        const textarea = document.createElement('textarea');
+        textarea.className = 'lw-input lw-mono text-sm';
+        textarea.rows = Math.min(Math.max(item.code.split('\n').length, 3), 12);
+        textarea.readOnly = true;
+        textarea.value = item.code;
+
+        div.appendChild(header);
+        div.appendChild(textarea);
+        container.appendChild(div);
+    });
+}
+</script>
+{% endblock %}

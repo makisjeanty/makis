@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Calculadora de Tokens & Custo para IA (LLMs) · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Estime o número de tokens e custo de API para GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro e Llama 3 em tempo real.{% endblock %}
+{% block og_title %}Calculadora de Tokens para IA · Makis Digital{% endblock %}
+{% block og_description %}Estime o número de tokens e custo de API para GPT-4o, Claude 3.5, Gemini e Llama em tempo real.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Calculadora de Tokens IA</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Ferramenta para IA</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Calculadora de Tokens & Custo para LLMs</h1>
+        <p class="lw-muted mb-8">Estime a quantidade de tokens e o custo estimado de envio para os principais modelos de IA (GPT-4o, Claude 3.5, Gemini 1.5).</p>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            <div class="lw-card text-center py-4">
+                <span id="statTokensEst" class="block text-3xl font-extrabold" style="color: var(--accent);">0</span>
+                <span class="text-xs uppercase font-semibold text-neutral-400">Tokens Estimados</span>
+            </div>
+            <div class="lw-card text-center py-4">
+                <span id="statCaracteres" class="block text-3xl font-extrabold" style="color: var(--accent);">0</span>
+                <span class="text-xs uppercase font-semibold text-neutral-400">Caracteres</span>
+            </div>
+            <div class="lw-card text-center py-4">
+                <span id="statPalavras" class="block text-3xl font-extrabold" style="color: var(--accent);">0</span>
+                <span class="text-xs uppercase font-semibold text-neutral-400">Palavras</span>
+            </div>
+            <div class="lw-card text-center py-4">
+                <span id="statCustoGpt4" class="block text-3xl font-extrabold" style="color: var(--accent);">$0.00</span>
+                <span class="text-xs uppercase font-semibold text-neutral-400">Custo Est. (GPT-4o)</span>
+            </div>
+        </div>
+
+        <div class="lw-card space-y-6">
+            <div>
+                <label for="promptInput" class="text-sm font-semibold block mb-2">Cole seu Prompt ou Texto aqui</label>
+                <textarea id="promptInput" class="lw-input lw-mono text-sm" rows="8" placeholder="Cole o prompt, código ou texto para calcular a contagem aproximada de tokens..." oninput="calcularTokens()"></textarea>
+            </div>
+
+            <!-- Tabela Comparativa de Custos -->
+            <div>
+                <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-400 mb-3">Estimativa de Custo de Entrada (Input API)</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b border-neutral-700 text-neutral-400">
+                                <th class="py-2">Modelo / Provedor</th>
+                                <th class="py-2">Preço / 1M Tokens</th>
+                                <th class="py-2 text-right">Custo Estimado do Prompt</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-neutral-800">
+                            <tr>
+                                <td class="py-2.5 font-semibold">OpenAI GPT-4o</td>
+                                <td class="py-2.5 text-neutral-400">$2.50 / 1M</td>
+                                <td id="costGpt4o" class="py-2.5 text-right font-mono font-bold" style="color: var(--accent-light);">$0.0000</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 font-semibold">Anthropic Claude 3.5 Sonnet</td>
+                                <td class="py-2.5 text-neutral-400">$3.00 / 1M</td>
+                                <td id="costClaude" class="py-2.5 text-right font-mono font-bold" style="color: var(--accent-light);">$0.0000</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 font-semibold">Google Gemini 1.5 Pro</td>
+                                <td class="py-2.5 text-neutral-400">$1.25 / 1M</td>
+                                <td id="costGemini" class="py-2.5 text-right font-mono font-bold" style="color: var(--accent-light);">$0.0000</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 font-semibold">OpenAI GPT-4o-mini</td>
+                                <td class="py-2.5 text-neutral-400">$0.15 / 1M</td>
+                                <td id="costGpt4mini" class="py-2.5 text-right font-mono font-bold" style="color: var(--accent-light);">$0.0000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Banner Comercial de Desenvolvimento de IA -->
+            <div class="p-6 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-6" style="background: linear-gradient(135deg, rgba(204,120,92,0.15), rgba(30,30,35,0.9)); border: 1px solid var(--accent-light);">
+                <div class="space-y-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-400">🤖 Integração de Modelos de IA & Agentes Autônomos</span>
+                    <h3 class="text-xl font-bold">Quer integrar IAs generativas e automações no seu software?</h3>
+                    <p class="lw-muted text-sm">Desenvolvemos soluções sob medida conectadas a APIs da OpenAI, Claude e Gemini com custos otimizados e alta performance.</p>
+                </div>
+                <a href="{% url 'solicitar_orcamento' %}" class="lw-btn lw-btn--primary text-sm whitespace-nowrap px-6 py-3 font-bold">Contratar Integração ➔</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script>
+function calcularTokens() {
+    const text = document.getElementById('promptInput').value;
+
+    const charCount = text.length;
+    const words = text.trim().match(/\S+/g);
+    const wordCount = words ? words.length : 0;
+
+    // Estimativa de tokens para PT-BR/Código: 1 token ~= 3.2 caracteres em PT-BR / código
+    const tokensEst = Math.ceil(charCount / 3.2);
+
+    document.getElementById('statCaracteres').textContent = charCount;
+    document.getElementById('statPalavras').textContent = wordCount;
+    document.getElementById('statTokensEst').textContent = tokensEst;
+
+    // Custos (Input por 1M tokens)
+    const costGpt4oVal = (tokensEst / 1000000) * 2.50;
+    const costClaudeVal = (tokensEst / 1000000) * 3.00;
+    const costGeminiVal = (tokensEst / 1000000) * 1.25;
+    const costGpt4miniVal = (tokensEst / 1000000) * 0.15;
+
+    document.getElementById('statCustoGpt4').textContent = '$' + costGpt4oVal.toFixed(4);
+    document.getElementById('costGpt4o').textContent = '$' + costGpt4oVal.toFixed(5);
+    document.getElementById('costClaude').textContent = '$' + costClaudeVal.toFixed(5);
+    document.getElementById('costGemini').textContent = '$' + costGeminiVal.toFixed(5);
+    document.getElementById('costGpt4mini').textContent = '$' + costGpt4miniVal.toFixed(5);
+}
+</script>
+{% endblock %}

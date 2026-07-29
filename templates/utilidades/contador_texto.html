@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contador de Palavras e Estatísticas de Texto · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Conte caracteres, palavras, linhas e estime o tempo de leitura do seu texto em tempo real no navegador.{% endblock %}
+{% block og_title %}Contador de Texto e Estatísticas · Makis Digital{% endblock %}
+{% block og_description %}Conte caracteres, palavras, linhas e estime o tempo de leitura do seu texto em tempo real.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Contador de Texto</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Utilidades</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Contador de Texto & Estatísticas</h1>
+        <p class="lw-muted mb-8">Analise a estrutura do seu texto instantaneamente — 100% no seu navegador.</p>
+
+        <!-- Grid de Estatísticas Estatísticas -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            <div class="lw-card text-center py-4">
+                <span id="statPalavras" class="block text-3xl font-extrabold" style="color: var(--accent);">0</span>
+                <span class="text-xs uppercase font-semibold text-neutral-400">Palavras</span>
+            </div>
+            <div class="lw-card text-center py-4">
+                <span id="statCaracteres" class="block text-3xl font-extrabold" style="color: var(--accent);">0</span>
+                <span class="text-xs uppercase font-semibold text-neutral-400">Caracteres</span>
+            </div>
+            <div class="lw-card text-center py-4">
+                <span id="statSemEspacos" class="block text-3xl font-extrabold" style="color: var(--accent);">0</span>
+                <span class="text-xs uppercase font-semibold text-neutral-400">Sem Espaços</span>
+            </div>
+            <div class="lw-card text-center py-4">
+                <span id="statTempoLeitura" class="block text-3xl font-extrabold" style="color: var(--accent);">0 min</span>
+                <span class="text-xs uppercase font-semibold text-neutral-400">Tempo de Leitura</span>
+            </div>
+        </div>
+
+        <div class="lw-card space-y-4">
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label for="textoInput" class="text-sm font-semibold">Digite ou cole seu texto abaixo</label>
+                    <span id="statLinhas" class="text-xs text-neutral-400 font-mono">Linhas: 0 | Parágrafos: 0</span>
+                </div>
+                <textarea id="textoInput" class="lw-input lw-mono" rows="8" placeholder="Cole o seu texto aqui..." oninput="analisarTexto()"></textarea>
+            </div>
+
+            <!-- Botões de Ação de Texto -->
+            <div class="flex flex-wrap gap-2 pt-2">
+                <button type="button" onclick="transformarTexto('maiusculas')" class="lw-btn lw-btn--secondary text-xs">MAIÚSCULAS</button>
+                <button type="button" onclick="transformarTexto('minusculas')" class="lw-btn lw-btn--secondary text-xs">minúsculas</button>
+                <button type="button" onclick="transformarTexto('capitalizar')" class="lw-btn lw-btn--secondary text-xs">Primeiras Letras</button>
+                <button type="button" onclick="transformarTexto('removerEspacos')" class="lw-btn lw-btn--secondary text-xs">Remover Espaços Duplos</button>
+                <button type="button" onclick="copiarTexto('textoInput', this)" class="lw-copy-btn text-xs ml-auto">Copiar Texto</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function analisarTexto() {
+    const text = document.getElementById('textoInput').value;
+
+    const charCount = text.length;
+    const charNoSpaces = text.replace(/\s/g, '').length;
+    
+    const wordsMatch = text.trim().match(/\S+/g);
+    const wordCount = wordsMatch ? wordsMatch.length : 0;
+
+    const lines = text ? text.split('\n').length : 0;
+    const paragraphs = text.trim() ? text.trim().split(/\n\s*\n/).length : 0;
+
+    // Tempo estimado de leitura (200 pvm)
+    const readingTimeMinutes = Math.ceil(wordCount / 200);
+
+    document.getElementById('statCaracteres').textContent = charCount;
+    document.getElementById('statSemEspacos').textContent = charNoSpaces;
+    document.getElementById('statPalavras').textContent = wordCount;
+    document.getElementById('statTempoLeitura').textContent = wordCount === 0 ? '0 min' : (readingTimeMinutes + ' min');
+    document.getElementById('statLinhas').textContent = `Linhas: ${lines} | Parágrafos: ${paragraphs}`;
+}
+
+function transformarTexto(modo) {
+    const area = document.getElementById('textoInput');
+    let val = area.value;
+
+    if (modo === 'maiusculas') {
+        val = val.toUpperCase();
+    } else if (modo === 'minusculas') {
+        val = val.toLowerCase();
+    } else if (modo === 'capitalizar') {
+        val = val.replace(/\b\w/g, l => l.toUpperCase());
+    } else if (modo === 'removerEspacos') {
+        val = val.replace(/[ \t]+/g, ' ').replace(/^\s+|\s+$/gm, '');
+    }
+
+    area.value = val;
+    analisarTexto();
+}
+</script>
+{% endblock %}

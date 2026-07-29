@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Agente Orientador de Carreira & Arquitetura Tech · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Assistente de orientação em tempo real para planejamento de carreira em tecnologia, escolha de stacks e planos de estudo.{% endblock %}
+{% block og_title %}Agente Orientador Tech IA · Makis Digital{% endblock %}
+{% block og_description %}Assistente de orientação em tempo real para planejamento de carreira em tecnologia, escolhas de stack e arquitetura.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Agente Orientador IA</span>
+        </nav>
+
+        <span class="lw-pill mb-4" style="background: rgba(204,120,92,0.15); color: var(--accent-light);">Agente Inteligente</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Agente Orientador de Carreira & Projetos Tech</h1>
+        <p class="lw-muted mb-8">Obtenha orientações personalizadas de estudo, arquitetura de software e plano de ação profissional adaptados ao seu momento.</p>
+
+        <!-- Formulário de Diagnóstico do Agente -->
+        <div class="lw-card space-y-6">
+            <h2 class="text-lg font-bold">1. Qual é o seu momento e objetivo atual?</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="orientArea" class="text-sm font-semibold block mb-1">Área de Atuação / Foco</label>
+                    <select id="orientArea" class="lw-input" onchange="gerarOrientacao()">
+                        <option value="backend">Backend & Engenharia de APIs</option>
+                        <option value="fullstack">Full-Stack (Web & Mobile)</option>
+                        <option value="frontend">Frontend Moderno & UX</option>
+                        <option value="devops">DevOps & Cloud Engineering</option>
+                        <option value="data">Data Engineering & IA</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="orientNivel" class="text-sm font-semibold block mb-1">Nível Atual</label>
+                    <select id="orientNivel" class="lw-input" onchange="gerarOrientacao()">
+                        <option value="iniciante">Estudante / Júnior</option>
+                        <option value="pleno">Desenvolvedor Pleno</option>
+                        <option value="senior">Sênior / Tech Lead</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="orientObjetivo" class="text-sm font-semibold block mb-1">Meta Principal</label>
+                    <select id="orientObjetivo" class="lw-input" onchange="gerarOrientacao()">
+                        <option value="emprego">Conseguir Vaga / Troca de Empresa</option>
+                        <option value="projeto">Construir um Projeto de Alto Impacto</option>
+                        <option value="promocao">Crescimento para Sênior/Liderança</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Resultado do Diagnóstico do Agente -->
+            <div id="resultadoAgente" class="space-y-6 pt-4 border-t border-neutral-700">
+                <div>
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-2">💡 Recomendação de Stack & Arquitetura Recomendada</h3>
+                    <div id="boxStack" class="lw-card text-sm space-y-1" style="background: var(--bg); border: 1px solid rgba(255,255,255,0.1);"></div>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-2">📅 Plano de Ação em 3 Fases (30 - 60 - 90 Dias)</h3>
+                    <div id="boxPlano" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-neutral-400">🤖 Prompt de Mentoria Customizado (Copie para ChatGPT / Claude / Gemini)</h3>
+                        <button type="button" onclick="copiarTexto('promptMentoria', this)" class="lw-copy-btn text-xs">Copiar Prompt de Mentoria</button>
+                    </div>
+                    <textarea id="promptMentoria" class="lw-input lw-mono text-sm" rows="6" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function gerarOrientacao() {
+    const area = document.getElementById('orientArea').value;
+    const nivel = document.getElementById('orientNivel').value;
+    const objetivo = document.getElementById('orientObjetivo').value;
+
+    const boxStack = document.getElementById('boxStack');
+    const boxPlano = document.getElementById('boxPlano');
+    const promptMentoria = document.getElementById('promptMentoria');
+
+    let stackInfo = '';
+    let f1 = '', f2 = '', f3 = '';
+    let roleName = '';
+
+    if (area === 'backend') {
+        roleName = 'Backend Engineer';
+        stackInfo = `<strong>Linguagens & Frameworks:</strong> Python (Django, FastAPI) ou Node.js (TypeScript).<br>
+        <strong>Bancos de Dados:</strong> MySQL 8.0 / PostgreSQL + Redis para Cache/PubSub.<br>
+        <strong>Arquitetura:</strong> RESTful APIs, ASGI/WebSockets, Docker Compose, CI/CD com GitHub Actions.`;
+
+        f1 = "<strong>Dias 1 - 30:</strong> Dominar modelagem relacional, índices no MySQL, migrations e ORM avançado.";
+        f2 = "<strong>Dias 31 - 60:</strong> Implementar comunicação em tempo real (WebSockets), autenticação JWT e rate limiting.";
+        f3 = "<strong>Dias 61 - 90:</strong> Conteinerizar com Docker, montar suíte de testes com CI/CD automatizado e implantar.";
+    } else if (area === 'fullstack') {
+        roleName = 'Full-Stack Developer';
+        stackInfo = `<strong>Backend:</strong> Django 6.0 REST + MySQL.<br>
+        <strong>Frontend:</strong> React.js ou Vanilla JS + Tailwind CSS.<br>
+        <strong>Infraestrutura:</strong> Docker, Nginx e deploy automatizado.`;
+
+        f1 = "<strong>Dias 1 - 30:</strong> Construir APIs limpas e integradas a um frontend responsivo e acessível.";
+        f2 = "<strong>Dias 31 - 60:</strong> Desenvolver recursos avançados (autenticação segura, busca e paginação em lote).";
+        f3 = "<strong>Dias 61 - 90:</strong> Otimização de performance (Lighthouse > 90), cache em Redis e portfólio no ar.";
+    } else if (area === 'frontend') {
+        roleName = 'Frontend Engineer';
+        stackInfo = `<strong>Linguagens:</strong> JavaScript (ES6+) avançado & TypeScript.<br>
+        <strong>Estilização:</strong> Tailwind CSS + Design System customizado (tokens HSL, contraste WCAG AA).<br>
+        <strong>Performance:</strong> Otimização de assets, Lazy Loading e acessibilidade ARIA.`;
+
+        f1 = "<strong>Dias 1 - 30:</strong> Dominar manipulação nativa de DOM, Web APIs (Crypto, Fetch) e CSS moderno.";
+        f2 = "<strong>Dias 31 - 60:</strong> Criar um Design System reutilizável com temas claro/escuro e acessibilidade.";
+        f3 = "<strong>Dias 61 - 90:</strong> Integrar com WebSockets em tempo real e publicar projetos com PWA.";
+    } else if (area === 'devops') {
+        roleName = 'DevOps & Cloud Engineer';
+        stackInfo = `<strong>Ferramentas:</strong> Docker, Docker Compose, Nginx, Linux Shell Scripting.<br>
+        <strong>CI/CD:</strong> GitHub Actions, Testes Automatizados.<br>
+        <strong>Monitoramento:</strong> Prometheus, Grafana, Redis.`;
+
+        f1 = "<strong>Dias 1 - 30:</strong> Dominar Dockerfiles multi-stage e orquestração de serviços com Docker Compose.";
+        f2 = "<strong>Dias 31 - 60:</strong> Configurar Nginx como Reverse Proxy com SSL/HTTPS e HSTS ativado.";
+        f3 = "<strong>Dias 61 - 90:</strong> Criar pipelines completas de CI/CD para deploy com zero downtime.";
+    } else {
+        roleName = 'Data & AI Engineer';
+        stackInfo = `<strong>Linguagens:</strong> Python (Pandas, NumPy, Asyncio).<br>
+        <strong>IA & LLMs:</strong> Integração com APIs OpenAI, Anthropic, Gemini, Web Crypto.<br>
+        <strong>Bancos:</strong> MySQL + Redis PubSub.`;
+
+        f1 = "<strong>Dias 1 - 30:</strong> Ingestão e tratamento de dados estructurados em SQL e JSON.";
+        f2 = "<strong>Dias 31 - 60:</strong> Construção de pipelines de tratamento de prompts e estimativa de tokens.";
+        f3 = "<strong>Dias 61 - 90:</strong> Implantação de agentes inteligentes integrados a APIs REST.";
+    }
+
+    boxStack.innerHTML = stackInfo;
+
+    boxPlano.innerHTML = `
+        <div class="lw-card text-sm" style="background: var(--bg); border-top: 3px solid var(--accent);">${f1}</div>
+        <div class="lw-card text-sm" style="background: var(--bg); border-top: 3px solid var(--accent);">${f2}</div>
+        <div class="lw-card text-sm" style="background: var(--bg); border-top: 3px solid var(--accent);">${f3}</div>
+    `;
+
+    const promptText = `Você é um CTO e Staff ${roleName} atuando como meu Mentor de Carreira.\nMeu nível atual é ${nivel.toUpperCase()} e meu objetivo principal é ${objetivo.toUpperCase()}.\n\nPor favor, conduza uma sessão de mentoria comigo contendo:\n1. 3 perguntas estratégicas para avaliar meus pontos fortes e gaps.\n2. Recomendações de projetos práticos que vão me destacar em entrevistas.\n3. Dicas de arquitetura de software para o mercado atual.`;
+
+    promptMentoria.value = promptText;
+}
+
+document.addEventListener('DOMContentLoaded', gerarOrientacao);
+</script>
+{% endblock %}

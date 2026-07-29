@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerador de System Prompts para IA · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Crie prompts de sistema estruturados (System Prompts) para ChatGPT, Claude, DeepSeek e Gemini com melhores práticas de Prompt Engineering.{% endblock %}
+{% block og_title %}Gerador de System Prompts para IA · Makis Digital{% endblock %}
+{% block og_description %}Crie prompts de sistema estruturados para ChatGPT, Claude e Gemini com melhores práticas.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Gerador de Prompts IA</span>
+        </nav>
+
+        <span class="lw-pill mb-4">Engenharia de Prompt</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Gerador de System Prompts para IA</h1>
+        <p class="lw-muted mb-8">Construa instruções de sistema otimizadas (Papel, Contexto, Regras e Formato) para extrair o máximo de precisão das IAs.</p>
+
+        <div class="lw-card space-y-6">
+            <!-- Modelos Pré-definidos -->
+            <div>
+                <label class="text-xs font-semibold uppercase tracking-wider text-neutral-400 block mb-2">Modelos Prontos (Presets)</label>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="carregarPreset('codeReviewer')" class="lw-btn lw-btn--secondary text-xs">Revisor de Código</button>
+                    <button type="button" onclick="carregarPreset('sqlExpert')" class="lw-btn lw-btn--secondary text-xs">Especialista SQL</button>
+                    <button type="button" onclick="carregarPreset('techWriter')" class="lw-btn lw-btn--secondary text-xs">Redator Técnico</button>
+                    <button type="button" onclick="carregarPreset('bugHunter')" class="lw-btn lw-btn--secondary text-xs">Caçador de Bugs</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="promptPapel" class="text-sm font-semibold block mb-1">1. Papel / Persona (Role)</label>
+                    <input id="promptPapel" type="text" class="lw-input" placeholder="Ex: Você é um Engenheiro de Software Sênior especializado em Django e Python." oninput="gerarPromptFinal()" />
+                </div>
+                <div>
+                    <label for="promptTarefa" class="text-sm font-semibold block mb-1">2. Tarefa Principal (Task)</label>
+                    <input id="promptTarefa" type="text" class="lw-input" placeholder="Ex: Analisar o código fornecido, identificar vulnerabilidades e propor refatoração." oninput="gerarPromptFinal()" />
+                </div>
+            </div>
+
+            <div>
+                <label for="promptContexto" class="text-sm font-semibold block mb-1">3. Contexto & Detalhes (Context)</label>
+                <textarea id="promptContexto" class="lw-input" rows="3" placeholder="Ex: O projeto roda em Django 6.0 e MySQL 8.0. Dê prioridade à segurança e performance de banco." oninput="gerarPromptFinal()"></textarea>
+            </div>
+
+            <div>
+                <label for="promptRegras" class="text-sm font-semibold block mb-1">4. Regras & Restrições (Constraints - 1 por linha)</label>
+                <textarea id="promptRegras" class="lw-input" rows="3" placeholder="Ex: NUNCA use bibliotecas externas desnecessárias&#10;Forneça explicações concisas&#10;Responda sempre em português brasileiro" oninput="gerarPromptFinal()"></textarea>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label for="promptResultado" class="text-sm font-bold">System Prompt Gerado (Pronto para copiar)</label>
+                    <button type="button" onclick="copiarTexto('promptResultado', this)" class="lw-copy-btn">Copiar System Prompt</button>
+                </div>
+                <textarea id="promptResultado" class="lw-input lw-mono text-sm" rows="10" readonly></textarea>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function gerarPromptFinal() {
+    const papel = document.getElementById('promptPapel').value.trim();
+    const tarefa = document.getElementById('promptTarefa').value.trim();
+    const contexto = document.getElementById('promptContexto').value.trim();
+    const regrasRaw = document.getElementById('promptRegras').value.trim();
+
+    let out = [];
+
+    if (papel) {
+        out.push(`## PAPEL E PERSONA\n${papel}`);
+    }
+
+    if (tarefa) {
+        out.push(`## OBJETIVO E TAREFA\n${tarefa}`);
+    }
+
+    if (contexto) {
+        out.push(`## CONTEXTO DA APLICAÇÃO\n${contexto}`);
+    }
+
+    if (regrasRaw) {
+        const regras = regrasRaw.split('\n').filter(r => r.trim()).map(r => `- ${r.trim()}`).join('\n');
+        out.push(`## REGRAS E RESTRIÇÕES\n${regras}`);
+    }
+
+    if (out.length > 0) {
+        out.push(`## FORMATO DA RESPOSTA\nForneça respostas claras, organizadas em Markdown e focadas em soluções práticas.`);
+    }
+
+    document.getElementById('promptResultado').value = out.join('\n\n');
+}
+
+function carregarPreset(tipo) {
+    if (tipo === 'codeReviewer') {
+        document.getElementById('promptPapel').value = "Você é um Engenheiro de Software Sênior especializado em Code Review e Arquitetura de Software.";
+        document.getElementById('promptTarefa').value = "Revisar o código fornecido, identificando más práticas, potenciais bugs e oportunidades de refatoração.";
+        document.getElementById('promptContexto').value = "O código pertence a uma aplicação web em produção que necessita de alta disponibilidade e código limpo (Clean Code).";
+        document.getElementById('promptRegras').value = "Destaque os trechos problemáticos apontando o número da linha\nExplique o PORQUÊ da melhoria proposta\nForneça o trecho corrigido em bloco de código diff ou completo\nResponda em Português do Brasil de forma didática";
+    } else if (tipo === 'sqlExpert') {
+        document.getElementById('promptPapel').value = "Você é um DBA (Database Administrator) especialista em MySQL 8.0 e Otimização de Consultas.";
+        document.getElementById('promptTarefa').value = "Analisar queries SQL fornecidas, propor índices e reescrever a consulta para máxima performance.";
+        document.getElementById('promptContexto').value = "O banco utiliza charset utf8mb4_unicode_ci com alto volume de escritas e leituras concorrentes.";
+        document.getElementById('promptRegras').value = "Evite subselects ineficientes quando puder usar JOINs\nIndique os campos exatos que devem ser indexados\nUtilize sempre palavras-chave em MAIÚSCULAS no SQL";
+    } else if (tipo === 'techWriter') {
+        document.getElementById('promptPapel').value = "Você é um Technical Writer especialista em documentação de APIs e arquitetura de software.";
+        document.getElementById('promptTarefa').value = "Escrever a documentação clara e concisa para o código ou endpoint fornecido.";
+        document.getElementById('promptContexto').value = "A documentação será utilizada por desenvolvedores internos e externos da equipe.";
+        document.getElementById('promptRegras').value = "Use formato Markdown com tabelas para parâmetros e respostas\nInclua exemplos práticos em cURL e Python\nMantenha o tom profissional e direto ao ponto";
+    } else if (tipo === 'bugHunter') {
+        document.getElementById('promptPapel').value = "Você é um especialista em Segurança de Informação e QA focado em identificar falhas em aplicações web.";
+        document.getElementById('promptTarefa').value = "Encontrar brechas de segurança (SQL Injection, XSS, CSRF, IDOR) e exceções não tratadas no código.";
+        document.getElementById('promptContexto').value = "Aplicação Django conectada a APIs REST e MySQL.";
+        document.getElementById('promptRegras').value = "Classifique a gravidade da falha (Baixa, Média, Alta, Crítica)\nForneça um exemplo de prova de conceito (PoC) simples\nMostre a correção usando as práticas recomendadas do OWASP";
+    }
+    gerarPromptFinal();
+}
+</script>
+{% endblock %}

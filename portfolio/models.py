@@ -35,7 +35,7 @@ class Projeto(models.Model):
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_atualizacao = models.DateTimeField(auto_now=True)
     destaque = models.BooleanField(default=False, verbose_name='Destaque na home')
-    publico = models.BooleanField(default=True, verbose_name='Publicado')
+    publico = models.BooleanField(default=True, verbose_name='Publicado', db_index=True)
     
     class Meta:
         ordering = ['-data_criacao']

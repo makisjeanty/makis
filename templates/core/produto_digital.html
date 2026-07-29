@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Starter Kit Dev Pro · Produto Digital · Makis Digital{% endblock %}
+{% block meta_description %}Adquira o Starter Kit completo com Django 6.0, 18 utilitários de IA, Docker, MySQL e E-book de Arquitetura de Software.{% endblock %}
+{% block og_title %}Starter Kit Dev Pro · Produto Digital · Makis Digital{% endblock %}
+{% block og_description %}Adquira o Starter Kit completo com Django 6.0, 18 utilitários de IA e E-book de Arquitetura.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <span>Produto Digital</span>
+        </nav>
+
+        <!-- Badge de Produto Digital -->
+        <span class="lw-pill mb-4" style="background: rgba(245,158,11,0.15); color: var(--admin-gold);">⚡ Lançamento Oficial · Produto Digital</span>
+        <h1 class="lw-display text-3xl md:text-5xl mb-4 mt-4">Starter Kit Dev Pro & E-book de Arquitetura Django 6.0</h1>
+        <p class="lw-muted text-lg mb-8">Economize mais de 120 horas de desenvolvimento. Leve o ecossistema pronto com 18 utilitários client-side, Docker, MySQL, WebSockets e o E-book Definitivo de Arquitetura.</p>
+
+        <!-- Banner Principal do Produto -->
+        <div class="lw-card mb-8 p-8 space-y-6" style="background: linear-gradient(135deg, rgba(204,120,92,0.12), rgba(20,20,25,0.95)); border: 1px solid var(--accent-light);">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-neutral-700 pb-6">
+                <div>
+                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">Oferta Especial de Lançamento</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-neutral-100">Kit Completo Dev Pro + Licença Comercial</h2>
+                    <p class="text-sm text-neutral-300 mt-1">Desenvolva e venda SaaS, Portfólios e Web Apps 10x mais rápido.</p>
+                </div>
+                <div class="text-center md:text-right">
+                    <span class="text-xs text-neutral-400 line-through block">De R$ 297,00</span>
+                    <span class="text-4xl font-extrabold" style="color: var(--success);">R$ 97,00</span>
+                    <span class="text-xs text-neutral-400 block mt-0.5">Pagamento único · Acesso vitalício</span>
+                </div>
+            </div>
+
+            <!-- O que está incluído -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-bold text-neutral-100">📦 O que você vai receber imediatamente:</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="p-4 rounded-xl bg-neutral-900/60 border border-neutral-800 space-y-1">
+                        <span class="font-bold block text-neutral-200">🚀 Código-Fonte Otimizado (Django 6.0)</span>
+                        <p class="text-xs lw-muted">Estrutura completa com Daphne ASGI, MySQL 8.0, Redis, antispam e rate-limiting por IP.</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-neutral-900/60 border border-neutral-800 space-y-1">
+                        <span class="font-bold block text-neutral-200">🛠️ 18 Ferramentas Client-Side Prontas</span>
+                        <p class="text-xs lw-muted">Calculadora de Tokens IA, OWASP Auditor, SEO Specialist, JSON Converters e UUID Generators.</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-neutral-900/60 border border-neutral-800 space-y-1">
+                        <span class="font-bold block text-neutral-200">📘 E-book PDF de Arquitetura Web (120 págs)</span>
+                        <p class="text-xs lw-muted">Guia prático: "Como Construir e Monetizar Web Apps Escaláveis em Python & Django".</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-neutral-900/60 border border-neutral-800 space-y-1">
+                        <span class="font-bold block text-neutral-200">🤖 Pack com 50+ System Prompts IA</span>
+                        <p class="text-xs lw-muted">Engenharia de Prompt para mentoria, código limpo, SQL avançado e revisão de segurança.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão de Compra Instantânea -->
+            <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Garantia incondicional de 7 dias ou seu dinheiro de volta.
+                </div>
+                <a href="https://pay.kiwify.com.br/exemplo-checkout" target="_blank" onclick="alert('Checkout de demonstração ativado! Em produção redireciona para a Kiwify/Hotmart/Stripe.')" class="lw-btn lw-btn--primary py-4 px-8 text-base font-bold text-center w-full sm:w-auto">Comprar Agora por R$ 97,00 ➔</a>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

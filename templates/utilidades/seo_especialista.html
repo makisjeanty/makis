@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analisador & Gerador SEO Especialista · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Audite meta tags de páginas web, pré-visualize resultados no Google/Social Cards e gere dados estruturados JSON-LD Schema.org.{% endblock %}
+{% block og_title %}Analisador SEO Especialista · Makis Digital{% endblock %}
+{% block og_description %}Audite meta tags de páginas web, pré-visualize resultados no Google e gere dados estruturados JSON-LD.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>SEO Especialista</span>
+        </nav>
+
+        <span class="lw-pill mb-4">SEO & Indexação</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Analisador & Gerador SEO Especialista</h1>
+        <p class="lw-muted mb-8">Audite meta tags, simule o snippet do Google em tempo real e gere marcas JSON-LD no padrão Schema.org.</p>
+
+        <div class="lw-card space-y-6">
+            <!-- 1. Campos de Entrada SEO -->
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label for="seoTitulo" class="text-sm font-semibold">Título da Página (Meta Title)</label>
+                        <span id="charCountTitulo" class="text-xs font-mono text-neutral-400">0 / 60 caracteres</span>
+                    </div>
+                    <input id="seoTitulo" type="text" class="lw-input" placeholder="Ex: Desenvolvedor Full-Stack Python & Django · Makis Digital" oninput="analisarSEO()" />
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label for="seoDescricao" class="text-sm font-semibold">Meta Description</label>
+                        <span id="charCountDesc" class="text-xs font-mono text-neutral-400">0 / 160 caracteres</span>
+                    </div>
+                    <textarea id="seoDescricao" class="lw-input" rows="3" placeholder="Ex: Serviços de desenvolvimento web, mobile e automação de sistemas com foco em performance e segurança..." oninput="analisarSEO()"></textarea>
+                </div>
+
+                <div>
+                    <label for="seoUrl" class="text-sm font-semibold block mb-1">URL Canônica / Domínio</label>
+                    <input id="seoUrl" type="url" class="lw-input" placeholder="https://makisdigital.com/portfolio/" oninput="analisarSEO()" />
+                </div>
+            </div>
+
+            <!-- 2. Pré-visualização SERP Google -->
+            <div>
+                <h2 class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">🔍 Pré-visualização no Google Search (SERP)</h2>
+                <div class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/60 font-sans space-y-1">
+                    <div id="serpUrl" class="text-xs text-emerald-400 truncate font-mono">https://makisdigital.com</div>
+                    <div id="serpTitle" class="text-lg font-medium text-blue-400 hover:underline cursor-pointer truncate">Título da sua página web</div>
+                    <div id="serpDesc" class="text-sm text-neutral-300 line-clamp-2">A sua meta descrição aparecerá aqui assim que você começar a digitar acima...</div>
+                </div>
+            </div>
+
+            <!-- 3. Gerador de JSON-LD Schema -->
+            <div class="space-y-3 pt-4 border-t border-neutral-700">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs font-semibold uppercase tracking-wider text-neutral-400">⚡ Gerador de Dados Estruturados (JSON-LD)</h2>
+                    <select id="schemaType" class="lw-input py-1 text-xs" onchange="gerarJsonLd()">
+                        <option value="WebSite">WebSite Schema</option>
+                        <option value="Organization">Organization Schema</option>
+                        <option value="Article">Article (Blog Post)</option>
+                    </select>
+                </div>
+                <div class="relative">
+                    <button type="button" onclick="copiarTexto('jsonLdResultado', this)" class="lw-copy-btn text-xs absolute top-2 right-2 z-10">Copiar JSON-LD</button>
+                    <textarea id="jsonLdResultado" class="lw-input lw-mono text-xs" rows="8" readonly></textarea>
+                </div>
+            </div>
+
+            <!-- Banner Comercial de Consultoria de SEO -->
+            <div class="p-6 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-6" style="background: linear-gradient(135deg, rgba(154,176,146,0.15), rgba(30,30,35,0.9)); border: 1px solid var(--success);">
+                <div class="space-y-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">🚀 Otimização de Ranqueamento & Tráfego Orgânico</span>
+                    <h3 class="text-xl font-bold">Quer posicionar o seu site no topo das buscas do Google?</h3>
+                    <p class="lw-muted text-sm">Implementamos SEO técnico, Core Web Vitals, schema markup e otimização de velocidade para elevar o tráfego da sua empresa.</p>
+                </div>
+                <a href="{% url 'solicitar_orcamento' %}" class="lw-btn lw-btn--primary text-sm whitespace-nowrap px-6 py-3 font-bold">Solicitar SEO ➔</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script>
+function analisarSEO() {
+    const titulo = document.getElementById('seoTitulo').value;
+    const desc = document.getElementById('seoDescricao').value;
+    const url = document.getElementById('seoUrl').value || 'https://makisdigital.com';
+
+    // Contadores
+    const lenT = titulo.length;
+    const lenD = desc.length;
+
+    const countT = document.getElementById('charCountTitulo');
+    const countD = document.getElementById('charCountDesc');
+
+    countT.textContent = `${lenT} / 60 caracteres`;
+    countT.style.color = (lenT >= 30 && lenT <= 60) ? 'var(--success)' : (lenT > 60 ? 'var(--danger)' : 'var(--muted)');
+
+    countD.textContent = `${lenD} / 160 caracteres`;
+    countD.style.color = (lenD >= 120 && lenD <= 160) ? 'var(--success)' : (lenD > 160 ? 'var(--danger)' : 'var(--muted)');
+
+    // SERP
+    document.getElementById('serpTitle').textContent = titulo || 'Título da sua página web';
+    document.getElementById('serpDesc').textContent = desc || 'A sua meta descrição aparecerá aqui assim que você começar a digitar acima...';
+    document.getElementById('serpUrl').textContent = url;
+
+    gerarJsonLd();
+}
+
+function gerarJsonLd() {
+    const tipo = document.getElementById('schemaType').value;
+    const titulo = document.getElementById('seoTitulo').value || 'Makis Digital';
+    const desc = document.getElementById('seoDescricao').value || 'Desenvolvimento web profissional';
+    const url = document.getElementById('seoUrl').value || 'https://makisdigital.com';
+
+    let jsonLd = {};
+
+    if (tipo === 'WebSite') {
+        jsonLd = {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": titulo,
+            "url": url,
+            "description": desc,
+            "inLanguage": "pt-BR"
+        };
+    } else if (tipo === 'Organization') {
+        jsonLd = {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": titulo,
+            "url": url,
+            "logo": url + "/static/img/logo.png",
+            "sameAs": [
+                "https://github.com/makisjeanty",
+                "https://linkedin.com/in/makisjeanty"
+            ]
+        };
+    } else if (tipo === 'Article') {
+        jsonLd = {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": titulo,
+            "description": desc,
+            "url": url,
+            "author": {
+                "@type": "Person",
+                "name": "Makis Jeanty"
+            },
+            "publisher": {
+                "@type": "Organization",
+                "name": "Makis Digital"
+            }
+        };
+    }
+
+    document.getElementById('jsonLdResultado').value = `<script type="application/ld+json">\n` + JSON.stringify(jsonLd, null, 4) + `\n<\/script>`;
+}
+
+document.addEventListener('DOMContentLoaded', analisarSEO);
+</script>
+{% endblock %}

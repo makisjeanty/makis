@@ -24,7 +24,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='localhost,127.0.0.1')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='localhost,127.0.0.1,195.26.252.210')
 
 
 # Application definition
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'channels',
 
     # Seus apps personalizados
+    'core',
     'accounts',
     'portfolio',
     'blog',

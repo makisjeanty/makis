@@ -1,0 +1,199 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   Makis Digital - Custom High-End Modern Dark Theme para Django Admin
+   ========================================================================== */
+
+:root {
+    --admin-bg: #0B0F17;
+    --admin-card: #131B2E;
+    --admin-card-border: rgba(255, 255, 255, 0.08);
+    --admin-accent: #CC785C;
+    --admin-accent-hover: #E0896C;
+    --admin-gold: #F59E0B;
+    --admin-emerald: #10B981;
+    --admin-text-main: #F3F4F6;
+    --admin-text-muted: #9CA3AF;
+    --admin-input-bg: #1C2640;
+}
+
+body {
+    background-color: var(--admin-bg) !important;
+    color: var(--admin-text-main) !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Header */
+#header {
+    background: linear-gradient(135deg, #131B2E 0%, #0B0F17 100%) !important;
+    border-bottom: 1px solid var(--admin-card-border) !important;
+    padding: 16px 24px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+#site-name a {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #FFFFFF !important;
+    letter-spacing: -0.5px;
+}
+
+#user-tools a {
+    color: var(--admin-text-muted) !important;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+#user-tools a:hover {
+    color: var(--admin-accent-hover) !important;
+}
+
+/* Breadcrumbs */
+div.breadcrumbs {
+    background: var(--admin-card) !important;
+    border-bottom: 1px solid var(--admin-card-border) !important;
+    color: var(--admin-text-muted) !important;
+    padding: 12px 24px !important;
+    font-size: 13px !important;
+    border-radius: 8px;
+    margin: 15px 24px 0 24px;
+}
+
+div.breadcrumbs a {
+    color: var(--admin-accent) !important;
+    font-weight: 600;
+}
+
+/* Container & Cards */
+#content {
+    padding: 24px !important;
+}
+
+.module, .inline-group {
+    background: var(--admin-card) !important;
+    border: 1px solid var(--admin-card-border) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+    overflow: hidden;
+    margin-bottom: 24px !important;
+}
+
+.module h2, .inline-group h2 {
+    background: rgba(255, 255, 255, 0.03) !important;
+    color: #FFFFFF !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    padding: 12px 18px !important;
+    border-bottom: 1px solid var(--admin-card-border) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Tabelas da Listagem (Changelist) */
+#changelist table {
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--admin-card) !important;
+}
+
+#changelist table thead th {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: var(--admin-text-muted) !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--admin-card-border) !important;
+    padding: 12px 14px !important;
+}
+
+#changelist table tbody tr {
+    transition: background 0.15s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+#changelist table tbody tr:hover {
+    background: rgba(204, 120, 92, 0.08) !important;
+}
+
+#changelist table tbody td, #changelist table tbody th {
+    padding: 12px 14px !important;
+    color: var(--admin-text-main) !important;
+    font-size: 13.5px !important;
+}
+
+/* Inputs, Selects & Textareas */
+input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="number"], select, textarea {
+    background-color: var(--admin-input-bg) !important;
+    border: 1px solid var(--admin-card-border) !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--admin-accent) !important;
+    box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.25) !important;
+    outline: none !important;
+}
+
+/* Botões */
+.button, input[type=submit], input[type=button], .submit-row input {
+    background: linear-gradient(135deg, var(--admin-accent) 0%, #B8654A 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+    transition: transform 0.15s, box-shadow 0.15s !important;
+    box-shadow: 0 4px 14px rgba(204, 120, 92, 0.3) !important;
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 18px rgba(204, 120, 92, 0.45) !important;
+}
+
+.button.deletelink, a.deletelink {
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Actions Bar & Filters */
+#changelist-filter {
+    background: var(--admin-card) !important;
+    border-left: 1px solid var(--admin-card-border) !important;
+    border-radius: 12px;
+    padding: 18px !important;
+}
+
+#changelist-filter h2 {
+    font-size: 13px !important;
+    color: var(--admin-gold) !important;
+    margin-bottom: 12px !important;
+}
+
+#changelist-filter a {
+    color: var(--admin-text-muted) !important;
+    font-size: 13px !important;
+}
+
+#changelist-filter li.selected a {
+    color: var(--admin-accent) !important;
+    font-weight: 700 !important;
+}
+</style>
+{% endblock %}

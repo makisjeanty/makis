@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Achador de Oportunidades & Ideias Tech · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Identifique nichos de alta demanda no mercado tech, calcule sua taxa horária de freela e gere propostas comerciais de alto impacto.{% endblock %}
+{% block og_title %}Achador de Oportunidades Tech · Makis Digital{% endblock %}
+{% block og_description %}Identifique nichos de alta demanda no mercado tech, calcule sua taxa horária de freela e gere propostas.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Achador de Oportunidades</span>
+        </nav>
+
+        <span class="lw-pill mb-4" style="background: rgba(154,176,146,0.15); color: var(--success);">Mercado & Negócios</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Achador de Oportunidades & Ideias Tech</h1>
+        <p class="lw-muted mb-8">Descubra nichos de mercado de alta demanda, calcule sua precificação e gere propostas comerciais persuasivas.</p>
+
+        <!-- 1. Buscador de Nichos e Oportunidades -->
+        <div class="lw-card space-y-6 mb-8">
+            <h2 class="text-lg font-bold">1. Selecione o seu Perfil e Modelo de Negócio</h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="opPerfil" class="text-sm font-semibold block mb-1">Seu Perfil Principal</label>
+                    <select id="opPerfil" class="lw-input" onchange="buscarOportunidades()">
+                        <option value="freelancer">Freelancer / Consultor Independente</option>
+                        <option value="microsaas">Criador de Micro-SaaS / Produto Proprio</option>
+                        <option value="backend">Dev Backend / Engenheiro de Software</option>
+                        <option value="ia_automation">Especialista em Automação & IA</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="opNivelTicket" class="text-sm font-semibold block mb-1">Foco de Ticket</label>
+                    <select id="opNivelTicket" class="lw-input" onchange="buscarOportunidades()">
+                        <option value="alto">Alto Valor (Enterprise / PMEs estruturadas)</option>
+                        <option value="recorrente">Receita Recorrente (Assinatura / MRR)</option>
+                        <option value="rapido">Projetos Rápidos (Entregas de 1 a 2 semanas)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Oportunidades Recomendadas -->
+            <div>
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">🔥 Oportunidades de Alto Retorno Identificadas</h3>
+                <div id="containerOportunidades" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+        </div>
+
+        <!-- 2. Calculadora de Precificação / Hora Freela -->
+        <div class="lw-card space-y-4 mb-8">
+            <h2 class="text-lg font-bold">2. Calculadora de Precificação (Taxa Horária Ideal)</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label for="calcMeta" class="text-sm font-semibold block mb-1">Meta Líquida Mensal (R$)</label>
+                    <input id="calcMeta" type="number" value="8000" class="lw-input" oninput="calcularPrecificacao()" />
+                </div>
+                <div>
+                    <label for="calcHoras" class="text-sm font-semibold block mb-1">Horas Vendáveis / Mês</label>
+                    <input id="calcHoras" type="number" value="100" class="lw-input" placeholder="Ex: 100 horas" oninput="calcularPrecificacao()" />
+                </div>
+                <div>
+                    <label for="calcImposto" class="text-sm font-semibold block mb-1">Impostos & Custos (%)</label>
+                    <input id="calcImposto" type="number" value="15" class="lw-input" placeholder="Ex: 15%" oninput="calcularPrecificacao()" />
+                </div>
+            </div>
+
+            <div class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs text-neutral-400 block uppercase font-semibold">Valor Recomendado por Hora</span>
+                    <span id="resValorHora" class="text-3xl font-extrabold" style="color: var(--success);">R$ 106,00 / hora</span>
+                </div>
+                <div>
+                    <span class="text-xs text-neutral-400 block uppercase font-semibold">Estimativa Projeto 40h</span>
+                    <span id="resValorProjeto" class="text-xl font-bold font-mono text-neutral-200">R$ 4.240,00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Gerador de Pitch Comercial / Abordagem -->
+        <div class="lw-card space-y-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold">3. Gerador de Proposta / Pitch Comercial</h2>
+                <button type="button" onclick="copiarTexto('pitchSaida', this)" class="lw-copy-btn text-xs">Copiar Proposta</button>
+            </div>
+            <textarea id="pitchSaida" class="lw-input lw-mono text-sm" rows="8" readonly></textarea>
+        </div>
+
+    </div>
+</section>
+
+<script>
+function buscarOportunidades() {
+    const perfil = document.getElementById('opPerfil').value;
+    const ticket = document.getElementById('opNivelTicket').value;
+    const container = document.getElementById('containerOportunidades');
+
+    let items = [];
+
+    if (perfil === 'freelancer' || perfil === 'ia_automation') {
+        items.push({
+            titulo: 'Automação de Atendimento com IA para PMEs',
+            desc: 'Criar robôs integrados ao WhatsApp/CRM que respondem dúvidas de clientes usando a API do OpenAI/Claude com a base de dados da empresa.',
+            demanda: 'MUITO ALTA',
+            ticket: 'R$ 3.000 a R$ 8.000 / projeto'
+        });
+        items.push({
+            titulo: 'Integração de Gateway de Pagamento PIX + Webhooks',
+            desc: 'Implementar checkout transparente com confirmação instantânea via WebSockets para e-commerces e plataformas de cursos.',
+            demanda: 'ALTA',
+            ticket: 'R$ 2.000 a R$ 5.000 / projeto'
+        });
+    }
+
+    if (perfil === 'microsaas') {
+        items.push({
+            titulo: 'Micro-SaaS de Monitoramento de Uptime & SLAs',
+            desc: 'Ferramenta simples para agências monitorarem a disponibilidade dos sites dos seus clientes e enviarem relatórios mensais automáticos.',
+            demanda: 'RECORRENTE (MRR)',
+            ticket: 'R$ 49 a R$ 199 / mês por cliente'
+        });
+        items.push({
+            titulo: 'Gerador de Documentação & Diagramas com IA',
+            desc: 'Aplicação web que consome repositórios do GitHub e gera arquivos README.md e diagramas Mermaid automaticamente.',
+            demanda: 'ALTA',
+            ticket: 'R$ 29 a R$ 99 / mês'
+        });
+    }
+
+    if (perfil === 'backend') {
+        items.push({
+            titulo: 'Migração & Otimização de SQL em MySQL/PostgreSQL',
+            desc: 'Refatoração de queries lentas, criação de índices eficientes e remoção de gargalos de I/O em bancos de dados de sistemas legados.',
+            demanda: 'MUITO ALTA',
+            ticket: 'R$ 120 a R$ 200 / hora'
+        });
+        items.push({
+            titulo: 'Construção de APIs REST/GraphQL Escaláveis em Django',
+            desc: 'Desenvolvimento de APIs robustas com autenticação JWT, rate-limiting por IP e documentação Swagger/OpenAPI.',
+            demanda: 'ALTA',
+            ticket: 'R$ 4.000 a R$ 12.000 / projeto'
+        });
+    }
+
+    container.innerHTML = items.map(it => `
+        <div class="lw-card space-y-2" style="background: var(--bg); border-top: 3px solid var(--accent);">
+            <div class="flex justify-between items-start">
+                <h4 class="font-bold text-base text-neutral-100">${it.titulo}</h4>
+                <span class="lw-badge text-xs" style="background: rgba(154,176,146,0.2); color: var(--success);">${it.demanda}</span>
+            </div>
+            <p class="lw-muted text-xs leading-relaxed">${it.desc}</p>
+            <span class="text-xs font-mono font-bold block pt-2" style="color: var(--accent-light);">${it.ticket}</span>
+        </div>
+    `).join('');
+
+    gerarPitchComercial();
+}
+
+function calcularPrecificacao() {
+    const meta = parseFloat(document.getElementById('calcMeta').value) || 0;
+    const horas = parseFloat(document.getElementById('calcHoras').value) || 1;
+    const impostoPct = parseFloat(document.getElementById('calcImposto').value) || 0;
+
+    // Valor Bruto necessário = Meta / (1 - Imposto)
+    const brutoNecessario = meta / (1 - (impostoPct / 100));
+    const valorHora = brutoNecessario / horas;
+    const valorProjeto40h = valorHora * 40;
+
+    document.getElementById('resValorHora').textContent = `R$ ${valorHora.toFixed(2)} / hora`;
+    document.getElementById('resValorProjeto').textContent = `R$ ${valorProjeto40h.toFixed(2)}`;
+}
+
+function gerarPitchComercial() {
+    const perfil = document.getElementById('opPerfil').value;
+
+    const pitch = `Olá [Nome do Cliente / Recrutador],
+
+Notei que sua empresa busca otimizar processos e garantir alta performance no ambiente web.
+
+Como Engenheiro de Software especializado em Python, Django e arquiteturas de alta disponibilidade, ajudo empresas a:
+- Reduzir tempo de resposta em APIs e consultas SQL em até 60%.
+- Implementar automações inteligentes e integração com WebSockets em tempo real.
+- Desenvolver sistemas seguros e escaláveis alinhados às melhores práticas da OWASP.
+
+Teria 10 minutos nesta semana para trocarmos uma breve ideia sobre como podemos acelerar suas entregas?
+
+Atenciosamente,
+[Seu Nome]
+Desenvolvedor Full-Stack | Makis Digital`;
+
+    document.getElementById('pitchSaida').value = pitch;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    buscarOportunidades();
+    calcularPrecificacao();
+});
+</script>
+{% endblock %}

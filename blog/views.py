@@ -79,3 +79,10 @@ def posts_por_categoria(request, slug):
         'categoria_ativa': slug,
         'categoria_obj': categoria,
     })
+
+
+def gerenciador_ia(request):
+    return render(request, 'blog/gerenciador_ia.html', {
+        'categorias': Categoria.objects.all()
+    })
+

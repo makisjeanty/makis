@@ -12,6 +12,7 @@ from decouple import config
 from django.conf.urls.static import static
 from django.http import HttpResponse
 from django.shortcuts import render
+from core.views_monitoria import painel_monitoria, api_monitoria, moderar_comentario, webhook_kiwify
 
 from blog.sitemaps import PostSitemap
 from comunidade.sitemaps import TopicoSitemap
@@ -40,6 +41,26 @@ def home(request):
     })
 
 
+# View de solicitação de orçamento & consultoria
+def solicitar_orcamento(request):
+    from core.antispam import gerar_timestamp_assinado, formulario_parece_bot
+    enviado = False
+
+    if request.method == 'POST':
+        if not formulario_parece_bot(request):
+            enviado = True
+
+    return render(request, 'core/solicitar_orcamento.html', {
+        'antispam_ts': gerar_timestamp_assinado(),
+        'enviado': enviado,
+    })
+
+
+# View da página de vendas do produto digital
+def produto_digital(request):
+    return render(request, 'core/produto_digital.html')
+
+
 # robots.txt: libera indexação geral, esconde o painel admin (mesmo já tendo URL
 # ofuscada) e aponta para o sitemap
 def robots_txt(request):
@@ -60,8 +81,19 @@ def page_not_found(request, exception=None):
 def server_error(request):
     return render(request, '500.html', status=500)
 
+# URL do painel de monitoria (pode ser ofuscada via env)
+MONITORIA_URL = config('MONITORIA_URL', default='monitoria')
+
 urlpatterns = [
     path('', home, name='home'),
+    path('solicitar-orcamento/', solicitar_orcamento, name='solicitar_orcamento'),
+    # Monitoria
+    path(f'{MONITORIA_URL}/', painel_monitoria, name='painel_monitoria'),
+    path(f'{MONITORIA_URL}/api/', api_monitoria, name='api_monitoria'),
+    path(f'{MONITORIA_URL}/moderar/<int:comentario_id>/', moderar_comentario, name='moderar_comentario'),
+    # Webhook de pagamento (Kiwify)
+    path('api/webhook/kiwify/', webhook_kiwify, name='webhook_kiwify'),
+    path('produtos/kit-dev-pro/', produto_digital, name='produto_digital'),
     path(f'{ADMIN_URL}/', admin.site.urls),
     path('sitemap.xml', sitemap, {'sitemaps': SITEMAPS}, name='sitemap'),
     path('robots.txt', robots_txt, name='robots_txt'),
@@ -73,6 +105,8 @@ urlpatterns = [
     path('comunidade/', include('comunidade.urls')),
     path('chat/', include('chat.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
 
 # Não expor stack trace nem caminhos internos em produção
 handler404 = page_not_found

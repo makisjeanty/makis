@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mini-Curso IA & Produtos Low-Ticket · Mimo Style · Makis Digital{% endblock %}
+{% block meta_description %}Curso gratuito e prático em formato de árvore: aprenda a usar APIs de IA gratuitas, rodar o Ollama localmente e construir produtos digitais low-ticket.{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilos específicos para a árvore Mimo */
+    .mimo-tree {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2.5rem;
+        position: relative;
+        padding: 2rem 0;
+    }
+    .mimo-node {
+        position: relative;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+        border: 4px solid var(--accent);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        z-index: 10;
+    }
+    .mimo-node:hover {
+        transform: scale(1.1);
+    }
+    .mimo-node.completed {
+        background-color: var(--success) !important;
+        border-color: #0d9488 !important;
+        color: white !important;
+    }
+    .mimo-node.active {
+        background-color: var(--accent) !important;
+        border-color: var(--accent-light) !important;
+        color: white !important;
+        animation: pulseActive 2s infinite;
+    }
+    .mimo-node.locked {
+        background-color: #27272a !important;
+        border-color: #3f3f46 !important;
+        color: #71717a !important;
+        cursor: not-allowed;
+    }
+    .mimo-connector {
+        position: absolute;
+        width: 6px;
+        background-color: #3f3f46;
+        z-index: 1;
+        transform: translateX(-50%);
+        left: 50%;
+    }
+    .mimo-connector.active-line {
+        background-color: var(--accent) !important;
+    }
+    .mimo-connector.completed-line {
+        background-color: var(--success) !important;
+    }
+    @keyframes pulseActive {
+        0% { box-shadow: 0 0 0 0 rgba(204, 120, 92, 0.7); }
+        70% { box-shadow: 0 0 0 12px rgba(204, 120, 92, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(204, 120, 92, 0); }
+    }
+</style>
+
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Mini-Curso</span>
+        </nav>
+
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <span class="lw-pill" style="background: rgba(16,185,129,0.15); color: var(--success);">🎓 Gratuito & Prático</span>
+            <h1 class="lw-display text-3xl md:text-5xl mt-4">Jornada Mimo: IA & Low-Ticket</h1>
+            <p class="lw-muted mt-3">Aprenda a criar produtos digitais lucrativos usando modelos de IA gratuitos e ferramentas locais como o Ollama. Clique nas esferas para iniciar as lições curtas!</p>
+        </div>
+
+        <!-- Árvore de Aprendizado Mimo -->
+        <div class="relative max-w-md mx-auto bg-neutral-900/40 p-8 rounded-3xl border border-neutral-800 shadow-2xl">
+            <div class="mimo-tree">
+                
+                <!-- Conectores (Linhas de conexão entre nós) -->
+                <div class="mimo-connector completed-line" style="top: 35px; height: 110px;"></div>
+                <div id="line-1-2" class="mimo-connector" style="top: 145px; height: 110px;"></div>
+                <div id="line-2-3" class="mimo-connector" style="top: 255px; height: 110px;"></div>
+                <div id="line-3-4" class="mimo-connector" style="top: 365px; height: 110px;"></div>
+                <div id="line-4-5" class="mimo-connector" style="top: 475px; height: 110px;"></div>
+
+                <!-- Nós das Lições -->
+                <!-- Lição 1 -->
+                <div class="flex flex-col items-center">
+                    <div id="node-1" onclick="abrirLicao(1)" class="mimo-node active" title="Modelos de IA Gratuitos">⚡</div>
+                    <span class="text-xs font-bold mt-2 text-neutral-300">1. APIs Gratuitas</span>
+                </div>
+
+                <!-- Lição 2 -->
+                <div class="flex flex-col items-center">
+                    <div id="node-2" onclick="abrirLicao(2)" class="mimo-node locked" title="Ollama Local">🤖</div>
+                    <span class="text-xs font-bold mt-2 text-neutral-300">2. Ollama Local</span>
+                </div>
+
+                <!-- Lição 3 -->
+                <div class="flex flex-col items-center">
+                    <div id="node-3" onclick="abrirLicao(3)" class="mimo-node locked" title="Low-Ticket Concept">💰</div>
+                    <span class="text-xs font-bold mt-2 text-neutral-300">3. Modelo Low-Ticket</span>
+                </div>
+
+                <!-- Lição 4 -->
+                <div class="flex flex-col items-center">
+                    <div id="node-4" onclick="abrirLicao(4)" class="mimo-node locked" title="Boilerplate & Código">📦</div>
+                    <span class="text-xs font-bold mt-2 text-neutral-300">4. Estruturando Produto</span>
+                </div>
+
+                <!-- Lição 5 -->
+                <div class="flex flex-col items-center">
+                    <div id="node-5" onclick="abrirLicao(5)" class="mimo-node locked" title="Checkout e Lançamento">💸</div>
+                    <span class="text-xs font-bold mt-2 text-neutral-300">5. Checkout & Vendas</span>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal de Lição Interativa -->
+<div id="licaoModal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 hidden">
+    <div class="lw-card max-w-xl w-full p-6 space-y-6" style="border: 1px solid var(--accent-light);">
+        <div class="flex justify-between items-center border-b border-neutral-700 pb-3">
+            <h2 id="modalTitulo" class="text-lg font-bold text-neutral-100">Título da Lição</h2>
+            <button onclick="fecharModal()" class="text-neutral-400 hover:text-white font-bold">&times;</button>
+        </div>
+
+        <!-- Conteúdo Teórico e Código -->
+        <div class="space-y-3">
+            <p id="modalConteudo" class="text-sm text-neutral-300 leading-relaxed">Conteúdo teórico da lição...</p>
+            <div id="modalCodigoContainer" class="bg-black/40 p-4 rounded-xl border border-neutral-800 text-xs font-mono text-emerald-400 overflow-x-auto hidden">
+                <pre id="modalCodigo"></pre>
+            </div>
+        </div>
+
+        <!-- Pergunta / Quiz Mimo -->
+        <div class="p-4 rounded-xl bg-neutral-900 border border-neutral-800 space-y-3">
+            <span class="text-xs uppercase font-mono font-bold tracking-wider text-amber-500">Desafio Rápido</span>
+            <p id="modalPergunta" class="text-sm font-bold text-neutral-200">Pergunta do quiz...</p>
+            
+            <div id="modalAlternativas" class="space-y-2">
+                <!-- Injetado dinamicamente -->
+            </div>
+        </div>
+
+        <!-- Ações do Modal -->
+        <div class="flex justify-end gap-3 pt-3 border-t border-neutral-800">
+            <button onclick="fecharModal()" class="lw-btn lw-btn--secondary text-xs">Cancelar</button>
+            <button id="btnVerificar" onclick="verificarResposta()" class="lw-btn lw-btn--primary text-xs font-bold">Verificar Resposta ➔</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Banco de dados das lições e quizzes do curso
+const licoes = {
+    1: {
+        titulo: "Lição 1.1: Usando APIs de IA Gratuitas (Gemini & Groq)",
+        conteudo: "Para iniciar sem custos, você pode usar os planos gratuitos das APIs do Google Gemini (1.5 Flash) ou Groq. Eles fornecem milhares de requisições mensais gratuitas que são ideais para validar ideias de produtos digitais ou MVPs robustos.",
+        codigo: `import google.generativeai as genai\n\ngenai.configure(api_key="SUA_GEMINI_KEY")\nmodel = genai.GenerativeModel('gemini-1.5-flash')\nresponse = model.generate_content("Crie 3 ideias de micro-SaaS")\nprint(response.text)`,
+        pergunta: "Qual modelo gratuito do Google é altamente recomendado para velocidade e baixo custo em MVPs?",
+        alternativas: [
+            "Gemini 1.5 Flash",
+            "GPT-4 Enterprise",
+            "Gemini 1.5 Ultra"
+        ],
+        correta: 0
+    },
+    2: {
+        titulo: "Lição 1.2: Rodando Modelos de IA Localmente com Ollama",
+        conteudo: "O Ollama permite rodar modelos de linguagem open-source (como Llama 3 ou Phi-3) diretamente na sua própria máquina local sem pagar nada por tokens e de forma totalmente offline. Perfeito para privacidade absoluta.",
+        codigo: `curl http://localhost:11434/api/generate -d '{\n  "model": "llama3",\n  "prompt": "Explique o que é micro-SaaS"\n}'`,
+        pergunta: "Qual porta local padrão o Ollama utiliza para receber requisições HTTP API?",
+        alternativas: [
+            "Porta 8000",
+            "Porta 11434",
+            "Porta 3306"
+        ],
+        correta: 1
+    },
+    3: {
+        titulo: "Lição 2.1: O que é um Produto Low-Ticket de Sucesso?",
+        conteudo: "Produtos Low-Ticket são infoprodutos ou micro-softwares precificados entre R$ 9,00 e R$ 97,00. A grande vantagem é que o cliente toma a decisão de compra de forma impulsiva, permitindo um volume massivo de vendas consistente sem funis complexos.",
+        codigo: `# Exemplo de estrutura de produto low-ticket:\n# 1. E-book prático / Guia em PDF\n# 2. Boilerplate / Código-fonte inicial configurado\n# 3. Pacotes de Prompts prontos e validados`,
+        pergunta: "Qual é a principal vantagem comercial de ofertar produtos de baixo preço (Low-Ticket)?",
+        alternativas: [
+            "Ciclo de vendas longo e consultivo",
+            "Compra impulsiva devido à baixa barreira de preço",
+            "Necessidade de suporte via telefone 24h"
+        ],
+        correta: 1
+    },
+    4: {
+        titulo: "Lição 2.2: Criando e Empacotando o Boilerplate",
+        conteudo: "Para empacotar seu código como produto digital, organize um repositório limpo contendo Dockerfile, documentação exemplar e guias de migração. Reduzir a fricção de instalação para o cliente garante reembolsos nulos.",
+        codigo: `makis-home/\n├── core/ (configurações do Django)\n├── templates/ (interfaces otimizadas)\n├── docker-compose.yml (subida rápida)\n└── README.md (guia passo a passo)`,
+        pergunta: "Qual arquivo é essencial na raiz do boilerplate para orientar o cliente a subir o projeto?",
+        alternativas: [
+            "settings.py",
+            "README.md contendo o passo a passo",
+            "index.html"
+        ],
+        correta: 1
+    },
+    5: {
+        titulo: "Lição 2.3: Integrando Checkout Automatizado & Vendas",
+        conteudo: "Com tudo pronto, conecte seu produto a uma plataforma de vendas (Stripe, Kiwify ou Hotmart). Após a aprovação do Pix ou cartão, a entrega do código-fonte e dos PDFs é feita de forma 100% automatizada e escalável.",
+        codigo: `# Exemplo de webhook de pagamento aprovado:\n@csrf_exempt\ndef webhook_pagamento(request):\n    if request.POST.get('status') == 'approved':\n        liberar_acesso_email(request.POST.get('email'))\n    return HttpResponse(status=200)`,
+        pergunta: "Qual mecanismo web permite que a plataforma de pagamento avise seu sistema para liberar o produto automaticamente?",
+        alternativas: [
+            "Webhooks de callback de pagamento",
+            "Email marketing semanal",
+            "Consultas manuais a cada hora"
+        ],
+        correta: 0
+    }
+};
+
+let licaoAberta = null;
+let progresso = 1; // Lição ativa atual
+
+function abrirLicao(id) {
+    if (id > progresso) {
+        alert("🔒 Esta lição está trancada! Conclua as lições anteriores primeiro.");
+        return;
+    }
+
+    licaoAberta = id;
+    const licao = licoes[id];
+    
+    document.getElementById('modalTitulo').textContent = licao.titulo;
+    document.getElementById('modalConteudo').textContent = licao.conteudo;
+    
+    const pre = document.getElementById('modalCodigo');
+    const container = document.getElementById('modalCodigoContainer');
+    if (licao.codigo) {
+        pre.textContent = licao.codigo;
+        container.classList.remove('hidden');
+    } else {
+        container.classList.add('hidden');
+    }
+
+    document.getElementById('modalPergunta').textContent = licao.pergunta;
+
+    // Renderizar alternativas
+    const altContainer = document.getElementById('modalAlternativas');
+    altContainer.innerHTML = '';
+    licao.alternativas.forEach((alt, index) => {
+        altContainer.innerHTML += `
+            <label class="p-3 rounded-xl border border-neutral-700 bg-neutral-950/60 cursor-pointer flex items-center gap-3 hover:border-amber-500 transition-colors">
+                <input type="radio" name="opcaoQuiz" value="${index}" class="w-4 h-4" />
+                <span class="text-sm text-neutral-300">${alt}</span>
+            </label>
+        `;
+    });
+
+    document.getElementById('licaoModal').classList.remove('hidden');
+}
+
+function fecharModal() {
+    document.getElementById('licaoModal').classList.add('hidden');
+    licaoAberta = null;
+}
+
+function verificarResposta() {
+    if (!licaoAberta) return;
+    const selecionado = document.querySelector('input[name="opcaoQuiz"]:checked');
+    if (!selecionado) {
+        alert("Por favor, selecione uma resposta!");
+        return;
+    }
+
+    const resposta = parseInt(selecionado.value);
+    const licao = licoes[licaoAberta];
+
+    if (resposta === licao.correta) {
+        alert("🎉 Resposta Correta! Excelente trabalho.");
+        
+        // Marcar nó atual como concluído
+        const nodeObj = document.getElementById(`node-${licaoAberta}`);
+        nodeObj.classList.remove('active');
+        nodeObj.classList.add('completed');
+        nodeObj.textContent = '✓';
+
+        // Atualizar linha de conexão
+        if (licaoAberta < 5) {
+            const line = document.getElementById(`line-${licaoAberta}-${licaoAberta + 1}`);
+            if (line) {
+                line.classList.add('completed-line');
+            }
+        }
+
+        // Desbloquear próximo nó se houver
+        if (licaoAberta === progresso && progresso < 5) {
+            progresso++;
+            const nextNode = document.getElementById(`node-${progresso}`);
+            if (nextNode) {
+                nextNode.classList.remove('locked');
+                nextNode.classList.add('active');
+            }
+        }
+
+        fecharModal();
+    } else {
+        alert("❌ Resposta Incorreta. Revise o material e tente novamente!");
+    }
+}
+</script>
+{% endblock %}

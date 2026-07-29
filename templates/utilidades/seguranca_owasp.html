@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analisador & Checklist de Segurança OWASP Top 10 · Utilidades · Makis Digital{% endblock %}
+{% block meta_description %}Audite a segurança da sua aplicação web contra as 10 principais vulnerabilidades do OWASP Top 10 com recomendações para Django e Python.{% endblock %}
+{% block og_title %}Analisador de Segurança OWASP Top 10 · Makis Digital{% endblock %}
+{% block og_description %}Audite a segurança da sua aplicação web contra as 10 principais vulnerabilidades do OWASP Top 10.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <a href="{% url 'utilidades:lista' %}">Utilidades</a>
+            <span>/</span>
+            <span>Segurança OWASP Top 10</span>
+        </nav>
+
+        <span class="lw-pill mb-4" style="background: rgba(221,149,141,0.15); color: var(--danger);">Segurança & Hardening</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Analisador & Checklist OWASP Top 10</h1>
+        <p class="lw-muted mb-8">Avalie a conformidade de segurança do seu projeto web com as 10 principais categorias do OWASP Top 10 e obtenha recomendações técnicas.</p>
+
+        <!-- Score Banner -->
+        <div class="lw-card mb-6 flex flex-col sm:flex-row items-center justify-between gap-4" style="border-left: 4px solid var(--accent);">
+            <div>
+                <span class="text-xs uppercase font-semibold text-neutral-400 block">Nível de Segurança Estimado</span>
+                <div class="flex items-baseline gap-2">
+                    <span id="scorePercentage" class="text-3xl font-extrabold" style="color: var(--accent);">0%</span>
+                    <span id="scoreBadge" class="text-xs font-bold px-2 py-0.5 rounded" style="background: var(--surface); color: var(--danger);">Crítico</span>
+                </div>
+            </div>
+            <button type="button" onclick="gerarRelatorioOWASP()" class="lw-btn lw-btn--primary text-xs">Gerar Relatório de Auditoria</button>
+        </div>
+
+        <!-- Lista OWASP Top 10 -->
+        <div class="space-y-4 mb-8">
+
+            <!-- A01 -->
+            <div class="lw-card space-y-3">
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" id="owaspA01" class="w-5 h-5 rounded mt-0.5 cursor-pointer" onchange="calcularScoreOWASP()" />
+                    <div>
+                        <label for="owaspA01" class="font-bold text-base cursor-pointer">A01:2021 – Quebra de Controle de Acesso (Broken Access Control)</label>
+                        <p class="lw-muted text-sm mt-1">Garantir que usuários só acedam a recursos autorizados. Uso de decoradores como <code>@login_required</code>, checagem de <code>request.user</code> e prevenção de IDOR (Indirect Object References).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A02 -->
+            <div class="lw-card space-y-3">
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" id="owaspA02" class="w-5 h-5 rounded mt-0.5 cursor-pointer" onchange="calcularScoreOWASP()" />
+                    <div>
+                        <label for="owaspA02" class="font-bold text-base cursor-pointer">A02:2021 – Falhas Criptográficas (Cryptographic Failures)</label>
+                        <p class="lw-muted text-sm mt-1">Proteção de dados em trânsito (HTTPS/HSTS) e em repouso. Uso de hashes fortes para senhas (PBKDF2, Argon2) e chave secreta (<code>SECRET_KEY</code>) protegida em variáveis de ambiente (<code>.env</code>).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A03 -->
+            <div class="lw-card space-y-3">
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" id="owaspA03" class="w-5 h-5 rounded mt-0.5 cursor-pointer" onchange="calcularScoreOWASP()" />
+                    <div>
+                        <label for="owaspA03" class="font-bold text-base cursor-pointer">A03:2021 – Injeção (SQL Injection, XSS, Command Injection)</label>
+                        <p class="lw-muted text-sm mt-1">Evitar montar SQL cru (usar ORM com queries parametrizadas), sanitizar inputs e escapar automaticamente código HTML/JS em templates para barrar ataques XSS.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A04 -->
+            <div class="lw-card space-y-3">
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" id="owaspA04" class="w-5 h-5 rounded mt-0.5 cursor-pointer" onchange="calcularScoreOWASP()" />
+                    <div>
+                        <label for="owaspA04" class="font-bold text-base cursor-pointer">A04:2021 – Design Inseguro (Insecure Design)</label>
+                        <p class="lw-muted text-sm mt-1">Modelagem de ameaças e mecanismos de defesa proativos. Proteção anti-bot (Honeypot + Timestamps assinados em formulários anônimos) e limitação de tentativas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A05 -->
+            <div class="lw-card space-y-3">
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" id="owaspA05" class="w-5 h-5 rounded mt-0.5 cursor-pointer" onchange="calcularScoreOWASP()" />
+                    <div>
+                        <label for="owaspA05" class="font-bold text-base cursor-pointer">A05:2021 – Configuração Insegura (Security Misconfiguration)</label>
+                        <p class="lw-muted text-sm mt-1">Manter <code>DEBUG = False</code> em produção, desativar diretórios de testes expostos, alterar a URL do painel administrativo padrão (não usar <code>/admin/</code>) e definir cabeçalhos de segurança (X-Frame-Options: DENY).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A06 -->
+            <div class="lw-card space-y-3">
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" id="owaspA06" class="w-5 h-5 rounded mt-0.5 cursor-pointer" onchange="calcularScoreOWASP()" />
+                    <div>
+                        <label for="owaspA06" class="font-bold text-base cursor-pointer">A06:2021 – Componentes Desatualizados / Vulneráveis</label>
+                        <p class="lw-muted text-sm mt-1">Manter bibliotecas e pacotes Python/Django atualizados no <code>requirements.txt</code> e auditar dependências com ferramentas de análise (ex: <code>pip audit</code> ou GitHub Dependabot).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A07 -->
+            <div class="lw-card space-y-3">
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" id="owaspA07" class="w-5 h-5 rounded mt-0.5 cursor-pointer" onchange="calcularScoreOWASP()" />
+                    <div>
+                        <label for="owaspA07" class="font-bold text-base cursor-pointer">A07:2021 – Falhas de Identificação e Autenticação</label>
+                        <p class="lw-muted text-sm mt-1">Proteção contra ataques de força bruta. Implementação de Rate Limiting por IP (ex: <code>django-ratelimit</code>), políticas de senha forte e invalidação correta de sessões.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A08 -->
+            <div class="lw-card space-y-3">
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" id="owaspA08" class="w-5 h-5 rounded mt-0.5 cursor-pointer" onchange="calcularScoreOWASP()" />
+                    <div>
+                        <label for="owaspA08" class="font-bold text-base cursor-pointer">A08:2021 – Falhas na Integridade de Software e Dados</label>
+                        <p class="lw-muted text-sm mt-1">Verificação de integridade no deploy, pipelines de CI/CD protegidos com assinaturas de commits e validação de deslocalização/desserialização de dados de terceiros.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A09 -->
+            <div class="lw-card space-y-3">
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" id="owaspA09" class="w-5 h-5 rounded mt-0.5 cursor-pointer" onchange="calcularScoreOWASP()" />
+                    <div>
+                        <label for="owaspA09" class="font-bold text-base cursor-pointer">A09:2021 – Falhas no Registro e Monitoramento de Segurança</label>
+                        <p class="lw-muted text-sm mt-1">Registro (Logging) de tentativas de login malsucedidas, exceções e erros 500 sem expor stack traces sensíveis para os usuários finais (Página 500 customizada).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- A10 -->
+            <div class="lw-card space-y-3">
+                <div class="flex items-start gap-3">
+                    <input type="checkbox" id="owaspA10" class="w-5 h-5 rounded mt-0.5 cursor-pointer" onchange="calcularScoreOWASP()" />
+                    <div>
+                        <label for="owaspA10" class="font-bold text-base cursor-pointer">A10:2021 – Falsificação de Requisição no Lado do Servidor (SSRF)</label>
+                        <p class="lw-muted text-sm mt-1">Evitar que o servidor faça requisições HTTP para URLs arbitrárias fornecidas pelo usuário sem validação prévia de IP e domínio (whitelist strict).</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Banner Comercial de Monetização / Consultoria -->
+        <div class="lw-card mb-8 p-6 flex flex-col md:flex-row items-center justify-between gap-6" style="background: linear-gradient(135deg, rgba(204,120,92,0.15), rgba(30,30,35,0.9)); border: 1px solid var(--accent-light);">
+            <div class="space-y-1">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">🛡️ Auditoria Profissional de Código & Penetration Test</span>
+                <h3 class="text-xl font-bold">Precisa de um PenTest completo ou Hardening de Segurança no seu projeto?</h3>
+                <p class="lw-muted text-sm">Nossa equipe realiza auditorias profundas de código-fonte em Django/Python, análise de vulnerabilidades em servidores e adequação à LGPD.</p>
+            </div>
+            <a href="{% url 'solicitar_orcamento' %}" class="lw-btn lw-btn--primary text-sm whitespace-nowrap px-6 py-3 font-bold">Solicitar Auditoria ➔</a>
+        </div>
+
+        <!-- Relatório de Auditoria Modal/Area -->
+        <div id="areaRelatorio" class="lw-card space-y-4 hidden">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold">Relatório de Auditoria de Segurança</h2>
+                <button type="button" onclick="copiarTexto('relatorioMarkdown', this)" class="lw-copy-btn">Copiar Relatório</button>
+            </div>
+            <textarea id="relatorioMarkdown" class="lw-input lw-mono text-sm" rows="10" readonly></textarea>
+        </div>
+
+    </div>
+</section>
+
+
+<script>
+function calcularScoreOWASP() {
+    let Marcados = 0;
+    for (let i = 1; i <= 10; i++) {
+        const id = 'owaspA0' + (i < 10 ? i : '10');
+        const chk = document.getElementById(id);
+        if (chk && chk.checked) Marcados++;
+    }
+
+    const pct = Math.round((Marcados / 10) * 100);
+    const scoreElem = document.getElementById('scorePercentage');
+    const badgeElem = document.getElementById('scoreBadge');
+
+    scoreElem.textContent = pct + '%';
+
+    if (pct < 50) {
+        badgeElem.textContent = 'Crítico / Baixo';
+        badgeElem.style.background = 'rgba(221,149,141,0.2)';
+        badgeElem.style.color = 'var(--danger)';
+    } else if (pct < 80) {
+        badgeElem.textContent = 'Moderado';
+        badgeElem.style.background = 'rgba(223,149,124,0.2)';
+        badgeElem.style.color = 'var(--accent-light)';
+    } else {
+        badgeElem.textContent = 'Excelente / Fortalecido';
+        badgeElem.style.background = 'rgba(154,176,146,0.2)';
+        badgeElem.style.color = 'var(--success)';
+    }
+}
+
+function gerarRelatorioOWASP() {
+    const area = document.getElementById('areaRelatorio');
+    const txt = document.getElementById('relatorioMarkdown');
+    area.classList.remove('hidden');
+
+    let marcadosCount = 0;
+    let md = `# Relatório de Auditoria de Segurança - OWASP Top 10\n\n`;
+    md += `**Data da Auditoria**: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}\n`;
+
+    for (let i = 1; i <= 10; i++) {
+        const id = 'owaspA0' + (i < 10 ? i : '10');
+        const chk = document.getElementById(id);
+        const label = document.querySelector(`label[for="${id}"]`).textContent;
+        const status = (chk && chk.checked) ? '✅ CONFORME' : '❌ PENDENTE';
+        if (chk && chk.checked) marcadosCount++;
+
+        md += `- **${label}**: ${status}\n`;
+    }
+
+    const pct = Math.round((marcadosCount / 10) * 100);
+    md += `\n### Nível Global de Conformidade: ${pct}%\n`;
+
+    txt.value = md;
+    area.scrollIntoView({ behavior: 'smooth' });
+}
+
+document.addEventListener('DOMContentLoaded', calcularScoreOWASP);
+</script>
+{% endblock %}

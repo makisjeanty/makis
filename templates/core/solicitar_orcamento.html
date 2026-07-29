@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Solicitar Orçamento & Consultoria Tech · Makis Digital{% endblock %}
+{% block meta_description %}Solicite um orçamento sob medida para desenvolvimento web, mobile, automações com IA, APIs e consultoria em Django e Python.{% endblock %}
+{% block og_title %}Solicitar Orçamento & Consultoria Tech · Makis Digital{% endblock %}
+{% block og_description %}Solicite um orçamento sob medida para desenvolvimento web, mobile, automações com IA e consultoria.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="lw-breadcrumb">
+            <a href="{% url 'home' %}">Início</a>
+            <span>/</span>
+            <span>Solicitar Orçamento</span>
+        </nav>
+
+        <span class="lw-pill mb-4" style="background: rgba(154,176,146,0.15); color: var(--success);">Orçamento Sob Medida</span>
+        <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">Monte o seu Orçamento & Solicite Consultoria</h1>
+        <p class="lw-muted mb-8">Utilize o nosso estimador interativo abaixo para calcular a faixa de investimento aproximada e enviar a sua solicitação diretamente para nossa equipe.</p>
+
+        {% if enviado %}
+        <div class="p-6 rounded-2xl mb-8 space-y-2" style="background: rgba(154,176,146,0.2); border: 1px solid var(--success);">
+            <h3 class="text-lg font-bold text-emerald-400">✅ Solicitação Enviada com Sucesso!</h3>
+            <p class="text-sm text-neutral-200">Recebemos os detalhes do seu projeto. Nossa equipe técnica analisará os requisitos e retornará o contato comercial em até 24 horas úteis.</p>
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'solicitar_orcamento' %}" class="space-y-8">
+            {% csrf_token %}
+
+            <!-- Anti-Spam Honeypot & Timestamp -->
+            <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off" />
+            <input type="hidden" name="ts_form" value="{{ antispam_ts }}" />
+
+
+            <!-- 1. Tipo de Projeto -->
+            <div class="lw-card space-y-4">
+                <h2 class="text-lg font-bold">1. Qual é o tipo de solução que você precisa?</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <label class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/60 cursor-pointer flex items-start gap-3 hover:border-amber-500 transition-colors">
+                        <input type="checkbox" name="tipo_projeto" value="web" class="w-5 h-5 mt-0.5 rounded" onchange="calcularOrcamentoEstimado()" checked />
+                        <div>
+                            <span class="font-bold block text-sm">Sistema Web / Portal Sob Medida</span>
+                            <span class="text-xs text-neutral-400">Django, React/Vanilla JS, MySQL, APIs RESTful e Painel Administrativo.</span>
+                        </div>
+                    </label>
+                    <label class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/60 cursor-pointer flex items-start gap-3 hover:border-amber-500 transition-colors">
+                        <input type="checkbox" name="tipo_projeto" value="ia" class="w-5 h-5 mt-0.5 rounded" onchange="calcularOrcamentoEstimado()" />
+                        <div>
+                            <span class="font-bold block text-sm">Automação & Integração com IA</span>
+                            <span class="text-xs text-neutral-400">Chatbots inteligentes, extratores de dados, IA generativa e agentes autonomos.</span>
+                        </div>
+                    </label>
+                    <label class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/60 cursor-pointer flex items-start gap-3 hover:border-amber-500 transition-colors">
+                        <input type="checkbox" name="tipo_projeto" value="api" class="w-5 h-5 mt-0.5 rounded" onchange="calcularOrcamentoEstimado()" />
+                        <div>
+                            <span class="font-bold block text-sm">Engenharia de APIs & WebSockets</span>
+                            <span class="text-xs text-neutral-400">APIs de alta performance, microserviços, pagamentos PIX e chats em tempo real.</span>
+                        </div>
+                    </label>
+                    <label class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/60 cursor-pointer flex items-start gap-3 hover:border-amber-500 transition-colors">
+                        <input type="checkbox" name="tipo_projeto" value="consultoria" class="w-5 h-5 mt-0.5 rounded" onchange="calcularOrcamentoEstimado()" />
+                        <div>
+                            <span class="font-bold block text-sm">Consultoria & Auditoria (OWASP/SEO)</span>
+                            <span class="text-xs text-neutral-400">Refatoração de código, hardening de segurança, otimização de SQL e SEO.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 2. Nível de Complexidade e Prazo -->
+            <div class="lw-card space-y-4">
+                <h2 class="text-lg font-bold">2. Complexidade e Prazo Estimado</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="campoPrazo" class="text-sm font-semibold block mb-1">Prazo Desejado</label>
+                        <select id="campoPrazo" name="prazo" class="lw-input" onchange="calcularOrcamentoEstimado()">
+                            <option value="normal">Normal (4 a 8 semanas)</option>
+                            <option value="urgente">Urgente (2 a 3 semanas - Adicional de 25%)</option>
+                            <option value="longo">Longo Prazo / Contínuo (Squad Dedicada)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="campoSuporte" class="text-sm font-semibold block mb-1">Manutenção & Suporte Pós-Entrega</label>
+                        <select id="campoSuporte" name="suporte" class="lw-input" onchange="calcularOrcamentoEstimado()">
+                            <option value="30d">30 Dias Incluídos (Garantia Padrão)</option>
+                            <option value="mensal">Suporte Mensal Recorrente (+ R$ 490/mês)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Banner de Estimativa em Tempo Real -->
+                <div class="p-5 rounded-xl border border-neutral-700 bg-neutral-900/80 flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+                    <div>
+                        <span class="text-xs text-neutral-400 uppercase font-semibold block">Estimativa de Investimento Aproximada</span>
+                        <span id="txtInvestimentoEstimado" class="text-3xl font-extrabold" style="color: var(--success);">R$ 3.500,00 - R$ 5.000,00</span>
+                    </div>
+                    <span class="text-xs text-neutral-400 max-w-xs text-right hidden sm:block">*Valor final sujeito à análise detalhada do escopo técnico.</span>
+                </div>
+            </div>
+
+            <!-- 3. Dados de Contato e Detalhes do Projeto -->
+            <div class="lw-card space-y-4">
+                <h2 class="text-lg font-bold">3. Seus Dados de Contato</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="nome" class="text-sm font-semibold block mb-1">Seu Nome / Nome da Empresa *</label>
+                        <input id="nome" type="text" name="nome" class="lw-input" placeholder="Ex: João Silva ou Tech Solutions" required />
+                    </div>
+                    <div>
+                        <label for="email" class="text-sm font-semibold block mb-1">E-mail Profissional *</label>
+                        <input id="email" type="email" name="email" class="lw-input" placeholder="joao@empresa.com.br" required />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="whatsapp" class="text-sm font-semibold block mb-1">WhatsApp / Telefone para Contato</label>
+                    <input id="whatsapp" type="text" name="whatsapp" class="lw-input" placeholder="(11) 99999-8888" />
+                </div>
+
+                <div>
+                    <label for="descricao" class="text-sm font-semibold block mb-1">Descrição Breve do Projeto ou Desafio *</label>
+                    <textarea id="descricao" name="descricao" class="lw-input" rows="4" placeholder="Conte-nos um pouco sobre o seu projeto, os objetivos de negócio e as funcionalidades principais esperadas..." required></textarea>
+                </div>
+
+                <button type="submit" class="lw-btn lw-btn--primary w-full py-4 text-base font-bold">Enviar Solicitação de Orçamento ➔</button>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+<script>
+function calcularOrcamentoEstimado() {
+    const checkboxes = document.querySelectorAll('input[name="tipo_projeto"]:checked');
+    const prazo = document.getElementById('campoPrazo').value;
+    const suporte = document.getElementById('campoSuporte').value;
+    const txtEst = document.getElementById('txtInvestimentoEstimado');
+
+    let min = 0;
+    let max = 0;
+
+    checkboxes.forEach(cb => {
+        if (cb.value === 'web') { min += 3500; max += 6500; }
+        if (cb.value === 'ia') { min += 2500; max += 5500; }
+        if (cb.value === 'api') { min += 2000; max += 4500; }
+        if (cb.value === 'consultoria') { min += 1500; max += 3000; }
+    });
+
+    if (min === 0) {
+        min = 1500;
+        max = 3000;
+    }
+
+    if (prazo === 'urgente') {
+        min = Math.round(min * 1.25);
+        max = Math.round(max * 1.25);
+    }
+
+    txtEst.textContent = `R$ ${min.toLocaleString('pt-BR')},00 - R$ ${max.toLocaleString('pt-BR')},00`;
+}
+
+document.addEventListener('DOMContentLoaded', calcularOrcamentoEstimado);
+</script>
+{% endblock %}

@@ -45,7 +45,7 @@ class Post(models.Model):
     imagem_capa = models.ImageField(upload_to='blog/capas/', null=True, blank=True)
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_atualizacao = models.DateTimeField(auto_now=True)
-    publicado = models.BooleanField(default=False)
+    publicado = models.BooleanField(default=False, db_index=True)
     data_publicacao = models.DateTimeField(null=True, blank=True)
     
     class Meta:
@@ -75,8 +75,8 @@ class Comentario(models.Model):
     email = models.EmailField()
     conteudo = models.TextField(max_length=1000)
     data_criacao = models.DateTimeField(auto_now_add=True)
-    aprovado = models.BooleanField(default=False)
-    
+    aprovado = models.BooleanField(default=False, db_index=True)
+
     class Meta:
         ordering = ['-data_criacao']
         verbose_name = 'Comentário'
