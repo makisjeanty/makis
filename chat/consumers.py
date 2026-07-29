@@ -65,16 +65,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def salvar_mensagem(self, nome, texto):
         return Mensagem.objects.create(sala=SALA_PADRAO, nome=nome, texto=texto)
 
-    async def _dentro_do_limite(self):
+    def _client_ip(self):
+        # Atrás do nginx (docker-compose.yml), a conexão TCP chega de dentro
+        # da rede docker — o IP real do visitante vem no X-Forwarded-For que
+        # o nginx anexa (proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for).
+        # Pegamos o ÚLTIMO valor da lista (o mais próximo do nosso proxy
+        # confiável), não o primeiro: um cliente malicioso pode mandar seu
+        # próprio X-Forwarded-For, mas o nginx sempre acrescenta o IP real
+        # observado no final da lista.
+        for nome_header, valor in self.scope.get('headers', []):
+            if nome_header == b'x-forwarded-for':
+                partes = valor.decode('latin1').split(',')
+                return partes[-1].strip()
         cliente = self.scope.get('client')
-        ip = cliente[0] if cliente else 'desconhecido'
-        chave = f'chat_ratelimit:{ip}'
+        return cliente[0] if cliente else 'desconhecido'
 
-        contagem = await sync_to_async(cache.get)(chave)
-        if contagem is None:
-            await sync_to_async(cache.set)(chave, 1, timeout=RATE_LIMIT_JANELA)
-            return True
-        if contagem >= RATE_LIMIT_MAX:
-            return False
-        await sync_to_async(cache.incr)(chave)
-        return True
+    async def _dentro_do_limite(self):
+        chave = f'chat_ratelimit:{self._client_ip()}'
+
+        # add() só grava se a chave ainda não existir — é atômico no backend
+        # de cache (Redis/locmem), então duas mensagens concorrentes não
+        # conseguem as duas passar pelo "contagem is None" ao mesmo tempo.
+        await sync_to_async(cache.add)(chave, 0, timeout=RATE_LIMIT_JANELA)
+        contagem = await sync_to_async(cache.incr)(chave)
+        return contagem <= RATE_LIMIT_MAX

@@ -75,3 +75,27 @@ class ChatConsumerRateLimitTests(TransactionTestCase):
 
         salva = await Mensagem.objects.filter(texto='mensagem excedente').aexists()
         self.assertFalse(salva)
+
+    async def test_limite_usa_ultimo_ip_do_x_forwarded_for(self):
+        """Atrás de um proxy (nginx), o IP real é o último da lista X-Forwarded-For, não o primeiro (que o cliente pode forjar)."""
+        headers = [(b'x-forwarded-for', b'1.2.3.4, 9.9.9.9')]
+        comunicador_a = WebsocketCommunicator(ChatConsumer.as_asgi(), '/ws/chat/', headers=headers)
+        await comunicador_a.connect()
+        for i in range(RATE_LIMIT_MAX):
+            await comunicador_a.send_json_to({'nome': 'Ana', 'texto': f'a{i}'})
+            await comunicador_a.receive_json_from()
+        await comunicador_a.send_json_to({'nome': 'Ana', 'texto': 'excedente'})
+        resposta = await comunicador_a.receive_json_from()
+        self.assertIn('erro', resposta)
+        await comunicador_a.disconnect()
+
+        # Mesmo header, mas o cliente "forjado" (1.2.3.4) muda — como o real
+        # (9.9.9.9, o último da lista, vindo do nginx) é o mesmo, ainda deve
+        # estar limitado.
+        headers_ip_forjado_diferente = [(b'x-forwarded-for', b'5.5.5.5, 9.9.9.9')]
+        comunicador_b = WebsocketCommunicator(ChatConsumer.as_asgi(), '/ws/chat/', headers=headers_ip_forjado_diferente)
+        await comunicador_b.connect()
+        await comunicador_b.send_json_to({'nome': 'Ana', 'texto': 'ainda limitado'})
+        resposta_b = await comunicador_b.receive_json_from()
+        self.assertIn('erro', resposta_b)
+        await comunicador_b.disconnect()
