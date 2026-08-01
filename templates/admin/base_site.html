@@ -9,26 +9,24 @@
 
 <style>
 /* ==========================================================================
-   Makis Digital - Premium High-End Theme para Django Admin 5/6
+   Makis Digital - Unified Persistent Sidebar & Luxury Admin Navigation
    ========================================================================== */
 
 :root {
     --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
     --font-heading: 'Space Grotesk', system-ui, -apple-system, sans-serif;
     
-    /* Modos de Cor - Variáveis Padrão (Dark Theme Elegante) */
+    --adm-sidebar-width: 260px;
     --adm-bg: #0F172A;
     --adm-surface: #1E293B;
     --adm-surface-hover: #334155;
     --adm-border: rgba(255, 255, 255, 0.08);
-    --adm-border-strong: rgba(255, 255, 255, 0.15);
     --adm-accent: #38BDF8;
-    --adm-accent-glow: rgba(56, 189, 248, 0.2);
+    --adm-accent-glow: rgba(56, 189, 248, 0.15);
     --adm-accent-hover: #0EA5E9;
     --adm-text-main: #F8FAFC;
     --adm-text-muted: #94A3B8;
     --adm-input-bg: #0F172A;
-    --adm-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="light"] {
@@ -36,244 +34,297 @@
     --adm-surface: #FFFFFF;
     --adm-surface-hover: #F1F5F9;
     --adm-border: #E2E8F0;
-    --adm-border-strong: #CBD5E1;
     --adm-accent: #0284C7;
-    --adm-accent-glow: rgba(2, 132, 199, 0.15);
+    --adm-accent-glow: rgba(2, 132, 199, 0.12);
     --adm-accent-hover: #0369A1;
     --adm-text-main: #0F172A;
     --adm-text-muted: #64748B;
     --adm-input-bg: #F8FAFC;
-    --adm-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
 }
 
 body {
     background-color: var(--adm-bg) !important;
     color: var(--adm-text-main) !important;
     font-family: var(--font-primary) !important;
-    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
 }
 
-/* Header Principal */
+/* Ocultar a nav-sidebar original do Django se existir */
+#nav-sidebar { display: none !important; }
+
+/* Estrutura Principal */
+#container {
+    display: flex !important;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Header Superior Fixo */
 #header {
+    position: fixed;
+    top: 0;
+    left: var(--adm-sidebar-width);
+    right: 0;
+    height: 60px;
+    z-index: 100;
     background: var(--adm-surface) !important;
     border-bottom: 1px solid var(--adm-border) !important;
-    padding: 12px 24px !important;
-    box-shadow: var(--adm-card-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px !important;
+    box-sizing: border-box;
 }
 
 #site-name a {
     font-family: var(--font-heading) !important;
-    font-size: 19px !important;
+    font-size: 18px !important;
     font-weight: 700 !important;
     color: var(--adm-text-main) !important;
-    letter-spacing: -0.3px;
+    text-decoration: none;
 }
 
-#user-tools {
-    font-size: 13px !important;
-    color: var(--adm-text-muted) !important;
+/* Sidebar Customizada Persistente */
+#custom-admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--adm-sidebar-width);
+    background: var(--adm-surface);
+    border-right: 1px solid var(--adm-border);
+    z-index: 110;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
-#user-tools a {
-    color: var(--adm-accent) !important;
-    font-weight: 600;
-    transition: color 0.2s ease;
+.sidebar-brand {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--adm-border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-/* Sidebar de Navegação (#nav-sidebar) */
-#nav-sidebar {
-    background: var(--adm-surface) !important;
-    border-right: 1px solid var(--adm-border) !important;
-}
-
-#nav-filter {
-    padding: 12px 14px !important;
-    border-bottom: 1px solid var(--adm-border) !important;
-}
-
-#nav-sidebar .app-accounts th::before { content: "👤 "; }
-#nav-sidebar .app-blog th::before { content: "📝 "; }
-#nav-sidebar .app-chat th::before { content: "💬 "; }
-#nav-sidebar .app-comunidade th::before { content: "🌐 "; }
-#nav-sidebar .app-portfolio th::before { content: "💼 "; }
-#nav-sidebar .app-core th::before { content: "⚡ "; }
-#nav-sidebar .app-auth th::before { content: "🛡️ "; }
-
-#nav-sidebar .module table {
-    margin-bottom: 8px;
-}
-
-#nav-sidebar .module th {
-    font-family: var(--font-heading) !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.6px !important;
-    color: var(--adm-text-muted) !important;
-    padding: 10px 14px !important;
-    background: rgba(0, 0, 0, 0.1) !important;
-}
-
-#nav-sidebar .module td a {
-    color: var(--adm-text-main) !important;
-    font-size: 13.5px !important;
-    font-weight: 500;
-    padding: 8px 14px !important;
-    display: block;
-    border-radius: 6px;
-    transition: background 0.15s ease, color 0.15s ease;
-}
-
-#nav-sidebar .module tr.current-model td a,
-#nav-sidebar .module td a:hover {
-    background: var(--adm-accent-glow) !important;
-    color: var(--adm-accent) !important;
-    font-weight: 600;
-}
-
-#nav-sidebar .addlink {
-    opacity: 0.7;
-    transition: opacity 0.2s;
-}
-#nav-sidebar .addlink:hover {
-    opacity: 1;
-}
-
-/* Breadcrumbs */
-div.breadcrumbs {
-    background: var(--adm-surface) !important;
-    border: 1px solid var(--adm-border) !important;
-    color: var(--adm-text-muted) !important;
-    padding: 10px 20px !important;
-    font-size: 13px !important;
+.sidebar-brand-logo {
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(135deg, var(--adm-accent) 0%, #0284C7 100%);
     border-radius: 8px;
-    margin: 16px 24px 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 16px;
+    font-family: var(--font-heading);
 }
 
-div.breadcrumbs a {
-    color: var(--adm-accent) !important;
+.sidebar-brand-title {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--adm-text-main);
+}
+
+.sidebar-brand-subtitle {
+    font-size: 11px;
+    color: var(--adm-accent);
     font-weight: 600;
-}
-
-/* Cards & Conteúdo Principal */
-#content {
-    padding: 24px !important;
-}
-
-.module {
-    background: var(--adm-surface) !important;
-    border: 1px solid var(--adm-border) !important;
-    border-radius: 12px !important;
-    box-shadow: var(--adm-card-shadow) !important;
-    overflow: hidden;
-    margin-bottom: 24px !important;
-}
-
-.module h2, .inline-group h2 {
-    background: rgba(0, 0, 0, 0.08) !important;
-    color: var(--adm-text-main) !important;
-    font-family: var(--font-heading) !important;
-    font-weight: 700 !important;
-    font-size: 14px !important;
-    padding: 12px 18px !important;
-    border-bottom: 1px solid var(--adm-border) !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-/* Tabelas da Listagem (Changelist) */
-#changelist table {
-    border-radius: 8px;
-    overflow: hidden;
-    background: var(--adm-surface) !important;
+.sidebar-menu {
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-#changelist table thead th {
-    background: rgba(0, 0, 0, 0.12) !important;
-    color: var(--adm-text-muted) !important;
-    font-weight: 700 !important;
-    font-size: 12px !important;
+.sidebar-group-title {
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
-    border-bottom: 1px solid var(--adm-border) !important;
-    padding: 12px 14px !important;
+    letter-spacing: 0.8px;
+    color: var(--adm-text-muted);
+    padding: 0 10px 6px 10px;
 }
 
-#changelist table tbody tr {
-    transition: background 0.15s ease;
-    border-bottom: 1px solid var(--adm-border);
+.sidebar-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-#changelist table tbody tr:hover {
-    background: var(--adm-surface-hover) !important;
+.sidebar-nav-item a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    color: var(--adm-text-main);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background 0.15s ease, color 0.15s ease;
 }
 
-#changelist table tbody td, #changelist table tbody th {
-    padding: 12px 14px !important;
-    color: var(--adm-text-main) !important;
-    font-size: 13.5px !important;
+.sidebar-nav-item a:hover, .sidebar-nav-item.active a {
+    background: var(--adm-accent-glow);
+    color: var(--adm-accent);
+    font-weight: 600;
 }
 
-/* Inputs & Controles */
-input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="number"], select, textarea {
-    background-color: var(--adm-input-bg) !important;
-    border: 1px solid var(--adm-border-strong) !important;
-    color: var(--adm-text-main) !important;
-    border-radius: 8px !important;
-    padding: 9px 13px !important;
-    font-size: 14px !important;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+.sidebar-nav-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
 }
 
-input:focus, select:focus, textarea:focus {
-    border-color: var(--adm-accent) !important;
-    box-shadow: 0 0 0 3px var(--adm-accent-glow) !important;
-    outline: none !important;
+/* Ajuste do Wrapper de Conteúdo Principal */
+.main, #main, div.main {
+    margin-left: var(--adm-sidebar-width) !important;
+    margin-top: 60px !important;
+    width: calc(100% - var(--adm-sidebar-width)) !important;
+    box-sizing: border-box;
 }
 
-/* Botões */
-.button, input[type=submit], input[type=button], .submit-row input, a.addlink {
-    background: var(--adm-accent) !important;
-    color: #FFFFFF !important;
-    border: none !important;
-    border-radius: 8px !important;
-    padding: 9px 18px !important;
-    font-weight: 700 !important;
-    font-size: 13px !important;
-    cursor: pointer !important;
-    transition: transform 0.15s ease, background-color 0.15s ease !important;
+#content {
+    padding: 24px !important;
 }
 
-.button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.addlink:hover {
-    background: var(--adm-accent-hover) !important;
-    transform: translateY(-1px) !important;
-}
-
-.button.deletelink, a.deletelink {
-    background: #EF4444 !important;
-}
-
-/* Painel de Filtros (#changelist-filter) */
-#changelist-filter {
+div.breadcrumbs {
+    margin: 0 0 20px 0 !important;
     background: var(--adm-surface) !important;
-    border-left: 1px solid var(--adm-border) !important;
-    border-radius: 12px;
-    padding: 16px !important;
+    border: 1px solid var(--adm-border) !important;
+    border-radius: 8px;
 }
 
-#changelist-filter h2 {
-    font-size: 13px !important;
-    color: var(--adm-accent) !important;
-    margin-bottom: 12px !important;
-}
-
-#changelist-filter a {
-    color: var(--adm-text-muted) !important;
-    font-size: 13px !important;
-}
-
-#changelist-filter li.selected a {
-    color: var(--adm-accent) !important;
-    font-weight: 700 !important;
+@media (max-width: 768px) {
+    #custom-admin-sidebar { display: none; }
+    #header { left: 0; }
+    .main, #main, div.main { margin-left: 0 !important; width: 100% !important; }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Injetar Sidebar Persistente se não existir no DOM
+    if (!document.getElementById('custom-admin-sidebar')) {
+        const sidebarHTML = `
+        <aside id="custom-admin-sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-logo">M</div>
+                <div>
+                    <div class="sidebar-brand-title">Makis OS</div>
+                    <div class="sidebar-brand-subtitle">Painel de Gestão</div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <div>
+                    <div class="sidebar-group-title">Visão Geral</div>
+                    <ul class="sidebar-nav-list">
+                        <li class="sidebar-nav-item" data-path="/gestao-dmh8g6skcx/">
+                            <a href="/gestao-dmh8g6skcx/"><span class="sidebar-nav-icon">📊</span> Dashboard</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="sidebar-group-title">Conteúdo & Blog</div>
+                    <ul class="sidebar-nav-list">
+                        <li class="sidebar-nav-item" data-path="/blog/post/">
+                            <a href="/gestao-dmh8g6skcx/blog/post/"><span class="sidebar-nav-icon">📝</span> Artigos / Posts</a>
+                        </li>
+                        <li class="sidebar-nav-item" data-path="/blog/categoria/">
+                            <a href="/gestao-dmh8g6skcx/blog/categoria/"><span class="sidebar-nav-icon">🏷️</span> Categorias</a>
+                        </li>
+                        <li class="sidebar-nav-item" data-path="/blog/comentario/">
+                            <a href="/gestao-dmh8g6skcx/blog/comentario/"><span class="sidebar-nav-icon">💬</span> Comentários</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="sidebar-group-title">Portfólio & Projetos</div>
+                    <ul class="sidebar-nav-list">
+                        <li class="sidebar-nav-item" data-path="/portfolio/projeto/">
+                            <a href="/gestao-dmh8g6skcx/portfolio/projeto/"><span class="sidebar-nav-icon">💼</span> Projetos</a>
+                        </li>
+                        <li class="sidebar-nav-item" data-path="/portfolio/imagemprojeto/">
+                            <a href="/gestao-dmh8g6skcx/portfolio/imagemprojeto/"><span class="sidebar-nav-icon">🖼️</span> Galeria de Fotos</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="sidebar-group-title">Comunidade & Interação</div>
+                    <ul class="sidebar-nav-list">
+                        <li class="sidebar-nav-item" data-path="/comunidade/topico/">
+                            <a href="/gestao-dmh8g6skcx/comunidade/topico/"><span class="sidebar-nav-icon">🌐</span> Tópicos Fórum</a>
+                        </li>
+                        <li class="sidebar-nav-item" data-path="/comunidade/resposta/">
+                            <a href="/gestao-dmh8g6skcx/comunidade/resposta/"><span class="sidebar-nav-icon">↩️</span> Respostas</a>
+                        </li>
+                        <li class="sidebar-nav-item" data-path="/chat/mensagem/">
+                            <a href="/gestao-dmh8g6skcx/chat/mensagem/"><span class="sidebar-nav-icon">⚡</span> Mensagens Chat</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="sidebar-group-title">Usuários & Habilidades</div>
+                    <ul class="sidebar-nav-list">
+                        <li class="sidebar-nav-item" data-path="/accounts/perfilusuario/">
+                            <a href="/gestao-dmh8g6skcx/accounts/perfilusuario/"><span class="sidebar-nav-icon">👤</span> Perfis de Usuários</a>
+                        </li>
+                        <li class="sidebar-nav-item" data-path="/accounts/habilidade/">
+                            <a href="/gestao-dmh8g6skcx/accounts/habilidade/"><span class="sidebar-nav-icon">🛠️</span> Habilidades (Skills)</a>
+                        </li>
+                        <li class="sidebar-nav-item" data-path="/core/compra/">
+                            <a href="/gestao-dmh8g6skcx/core/compra/"><span class="sidebar-nav-icon">🛒</span> Vendas & Pedidos</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="sidebar-group-title">Atalhos Externos</div>
+                    <ul class="sidebar-nav-list">
+                        <li class="sidebar-nav-item">
+                            <a href="/" target="_blank"><span class="sidebar-nav-icon">🚀</span> Ver Site Público</a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="/solicitar-orcamento/" target="_blank"><span class="sidebar-nav-icon">💰</span> Orçamentos</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        `;
+        document.body.insertAdjacentHTML('afterbegin', sidebarHTML);
+
+        // Destacar o item ativo com base na URL atual
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.sidebar-nav-item').forEach(item => {
+            const targetPath = item.getAttribute('data-path');
+            if (targetPath && currentPath.includes(targetPath)) {
+                item.classList.add('active');
+            } else if (targetPath === '/gestao-dmh8g6skcx/' && (currentPath === '/gestao-dmh8g6skcx/' || currentPath === '/gestao-dmh8g6skcx')) {
+                item.classList.add('active');
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
