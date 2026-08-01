@@ -10,3 +10,4 @@ staticfiles/
 media/
 *.log
 .claude/
+nginx/ssl/
