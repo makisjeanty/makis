@@ -4,30 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Makis Digital{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}Desenvolvimento web, mobile, automação e dados sob medida, com foco em performance, escalabilidade e experiência do usuário.{% endblock %}">
+    <title>{% block title %}Makis Jeanty — Software Architect • AI Engineer • Entrepreneur{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Makis Jeanty — Building software, AI products, developer tools and digital businesses.{% endblock %}">
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
 
-    <meta property="og:site_name" content="Makis Digital">
+    <meta property="og:site_name" content="Makis Jeanty">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:title" content="{% block og_title %}Makis Digital{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Desenvolvimento web, mobile, automação e dados sob medida, com foco em performance e resultados.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Makis Jeanty — Software Architect • AI Engineer{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Makis Jeanty — Building software, AI products, developer tools and digital businesses.{% endblock %}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     {% if og_image_url %}
     <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ og_image_url }}">
     {% endif %}
     <meta name="twitter:card" content="summary_large_image">
 
-    <link rel="alternate" type="application/rss+xml" title="Makis Digital — Estudos" href="{% url 'blog:rss' %}">
+    <link rel="alternate" type="application/rss+xml" title="Makis Jeanty — Blog & Estudos" href="{% url 'blog:rss' %}">
 
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Makis Digital",
+        "@type": "Person",
+        "name": "Makis Jeanty",
+        "jobTitle": "Software Architect & AI Engineer",
         "url": "{{ request.scheme }}://{{ request.get_host }}/",
-        "email": "contato@makisdigital.com",
-        "description": "Desenvolvimento web, mobile, automação e dados sob medida para pequenas e médias empresas."
+        "email": "contato@makisjeanty.com",
+        "description": "Building software, AI products, developer tools and digital businesses."
     }
     </script>
     {% block structured_data %}{% endblock %}
@@ -44,7 +45,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="{% url 'home' %}" class="lw-nav__logo flex items-center gap-2">
-                    <span>Makis<span class="lw-nav__logo-accent">Digital</span></span>
+                    <span>Makis<span class="lw-nav__logo-accent">Jeanty</span></span>
                 </a>
 
                 <!-- Desktop Menu -->
@@ -61,14 +62,14 @@
                         </button>
                         <div class="lw-nav__dropdown-menu absolute left-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                             <a href="{% url 'portfolio:lista' %}" class="lw-nav__dropdown-item">Todos os projetos</a>
-                            <a href="{% url 'portfolio:cases' %}" class="lw-nav__dropdown-item">Cases</a>
+                            <a href="{% url 'portfolio:cases' %}" class="lw-nav__dropdown-item">Cases de Sucesso</a>
                         </div>
                     </div>
 
                     <!-- Estudos dropdown -->
                     <div class="lw-nav__dropdown relative">
                         <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)" aria-haspopup="true" aria-expanded="false">
-                            Estudos
+                            Artigos & Pesquisa
                             <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
@@ -77,23 +78,24 @@
                             <a href="{% url 'blog:lista' %}" class="lw-nav__dropdown-item">Todos os artigos</a>
                             <a href="{% url 'blog:categoria' 'estudos-de-caso' %}" class="lw-nav__dropdown-item">Estudos de Caso</a>
                             <a href="{% url 'blog:categoria' 'resumos-tecnicos' %}" class="lw-nav__dropdown-item">Resumos Técnicos</a>
-                            <a href="{% url 'blog:categoria' 'desafios' %}" class="lw-nav__dropdown-item">Desafios</a>
+                            <a href="{% url 'blog:categoria' 'desafios' %}" class="lw-nav__dropdown-item">Desafios Tech</a>
                             <a href="{% url 'blog:categorias' %}" class="lw-nav__dropdown-item">Todas categorias</a>
                         </div>
                     </div>
 
-                    <!-- Utilidades dropdown -->
+                    <!-- Makis Hub dropdown -->
                     <div class="lw-nav__dropdown relative">
                         <button class="lw-nav__link flex items-center gap-1" onclick="toggleDropdown(this)" aria-haspopup="true" aria-expanded="false">
-                            Utilidades
+                            Makis Hub 🛠️
                             <svg class="w-4 h-4 dropdown-arrow transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
                         <div class="lw-nav__dropdown-menu absolute left-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                            <a href="{% url 'utilidades:gerador_senha' %}" class="lw-nav__dropdown-item">Gerador de senha</a>
-                            <a href="{% url 'utilidades:validador_documento' %}" class="lw-nav__dropdown-item">Validador de CPF/CNPJ</a>
-                            <a href="{% url 'utilidades:formatador_json' %}" class="lw-nav__dropdown-item">Formatador de JSON</a>
+                            <a href="{% url 'utilidades:lista' %}" class="lw-nav__dropdown-item font-bold">🌐 Hub de Ferramentas</a>
+                            <a href="{% url 'utilidades:gerador_senha' %}" class="lw-nav__dropdown-item">Gerador de Senha</a>
+                            <a href="{% url 'utilidades:validador_documento' %}" class="lw-nav__dropdown-item">Validador CPF/CNPJ</a>
+                            <a href="{% url 'utilidades:formatador_json' %}" class="lw-nav__dropdown-item">Formatador JSON</a>
                             <a href="{% url 'utilidades:conversor_base64' %}" class="lw-nav__dropdown-item">Conversor Base64</a>
                         </div>
                     </div>
@@ -161,10 +163,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
                 <div>
-                    <span class="text-xl font-bold">Makis<span class="text-[var(--accent)]">Digital</span></span>
-                    <p class="lw-muted text-sm mt-3 leading-relaxed">Soluções digitais sob medida para pequenas e médias empresas: sites, sistemas, e-commerce e APIs.</p>
+                    <span class="text-xl font-bold">Makis<span class="text-[var(--accent)]">Jeanty</span></span>
+                    <p class="lw-muted text-sm mt-3 leading-relaxed">Software Architect • AI Engineer • Entrepreneur.<br>Building software, AI products and digital businesses.</p>
                     <div class="flex items-center gap-3 mt-5">
-                        <a href="mailto:contato@makisdigital.com" class="lw-footer__icon" aria-label="E-mail" title="E-mail">
+                        <a href="mailto:contato@makisjeanty.com" class="lw-footer__icon" aria-label="E-mail" title="E-mail">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
@@ -178,32 +180,31 @@
                 </div>
 
                 <div>
-                    <h3 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: var(--text)">Navegação</h3>
+                    <h3 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: var(--text)">Ecossistema</h3>
                     <div class="flex flex-col gap-2 text-sm">
-                        <a href="{% url 'home' %}" class="lw-nav__link">Início</a>
-                        <a href="{% url 'portfolio:lista' %}" class="lw-nav__link">Projetos</a>
-                        <a href="{% url 'blog:lista' %}" class="lw-nav__link">Estudos</a>
-                        <a href="{% url 'utilidades:lista' %}" class="lw-nav__link">Utilidades</a>
-                        <a href="{% url 'comunidade:lista' %}" class="lw-nav__link">Fórum</a>
-                        <a href="{% url 'chat:sala' %}" class="lw-nav__link">Chat ao vivo</a>
+                        <a href="{% url 'home' %}" class="lw-nav__link">Makis Jeanty (Início)</a>
+                        <a href="{% url 'utilidades:lista' %}" class="lw-nav__link">Makis Hub (Ferramentas)</a>
+                        <a href="{% url 'portfolio:lista' %}" class="lw-nav__link">Projetos & Cases</a>
+                        <a href="{% url 'blog:lista' %}" class="lw-nav__link">Artigos & Pesquisa</a>
+                        <a href="{% url 'comunidade:lista' %}" class="lw-nav__link">Fórum Dev</a>
                         <a href="{% url 'accounts:sobre' %}" class="lw-nav__link">Sobre</a>
                     </div>
                 </div>
 
                 <div>
-                    <h3 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: var(--text)">Serviços</h3>
+                    <h3 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: var(--text)">Especialidades</h3>
                     <div class="flex flex-col gap-2 text-sm">
-                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">Sites Institucionais</a>
-                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">Sistemas Web</a>
-                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">E-commerce</a>
-                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">APIs e Integrações</a>
+                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">Arquitetura de Sistemas</a>
+                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">Engenharia de IA & Agentes</a>
+                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">Plataformas & APIs</a>
+                        <a href="{% url 'home' %}#servicos" class="lw-nav__link">Automação de Processos</a>
                     </div>
                 </div>
 
                 <div>
                     <h3 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: var(--text)">Contato</h3>
                     <div class="flex flex-col gap-2 text-sm lw-muted">
-                        <a href="mailto:contato@makisdigital.com" class="lw-nav__link">contato@makisdigital.com</a>
+                        <a href="mailto:contato@makisjeanty.com" class="lw-nav__link">contato@makisjeanty.com</a>
                         <a href="https://wa.me/5551993692512" target="_blank" rel="noopener" class="lw-nav__link">(51) 99369-2512</a>
                         <span>Canoas, RS - Brasil</span>
                     </div>
@@ -211,7 +212,9 @@
             </div>
 
             <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm opacity-70" style="border-top: 1px solid var(--line);">
-                <span>&copy; {% now 'Y' %} Makis Digital. Todos os direitos reservados.</span>
+                <span>&copy; {% now 'Y' %} Makis Jeanty. Todos os direitos reservados.</span>
+                <a href="{% url 'blog:rss' %}" class="lw-nav__link">RSS</a>
+            </div>
                 <a href="{% url 'blog:rss' %}" class="lw-nav__link">RSS</a>
             </div>
         </div>

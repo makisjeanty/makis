@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Makis Digital — Soluções digitais para pequenas e médias empresas{% endblock %}
-{% block meta_description %}Analista de Sistemas especializado em sites institucionais, sistemas web, web apps, e-commerce e APIs para pequenas e médias empresas.{% endblock %}
-{% block og_title %}Makis Digital — Soluções digitais para pequenas e médias empresas{% endblock %}
-{% block og_description %}Analista de Sistemas especializado em sites institucionais, sistemas web, web apps, e-commerce e APIs para pequenas e médias empresas.{% endblock %}
+{% block title %}Makis Jeanty — Software Architect • AI Engineer • Entrepreneur{% endblock %}
+{% block meta_description %}Software Architect & AI Engineer. Building software, AI products, developer tools and digital businesses.{% endblock %}
+{% block og_title %}Makis Jeanty — Software Architect • AI Engineer{% endblock %}
+{% block og_description %}Software Architect & AI Engineer. Building software, AI products, developer tools and digital businesses.{% endblock %}
 
 {% block content %}
 <!-- Hero -->
@@ -14,16 +14,16 @@
         <span class="lwh-blob lwh-blob--2"></span>
     </div>
     <div class="lwh-hero__content">
-        <span class="lw-pill lwh-rise">Soluções para Pequenas e Médias Empresas</span>
+        <span class="lw-pill lwh-rise">Makis Jeanty • Software Architect & AI Engineer</span>
         <h1 class="lw-display text-4xl md:text-5xl lg:text-6xl mb-6 lwh-rise" style="animation-delay: 0.1s">
-            Transformamos ideias em produtos digitais
+            Building software, AI products and digital businesses.
         </h1>
         <p class="text-lg md:text-xl lw-muted mb-8 max-w-2xl mx-auto lwh-rise" style="animation-delay: 0.2s">
-            Sou Analista de Sistemas e desenvolvo sites institucionais, sistemas web, web apps, e-commerce e APIs sob medida para pequenas e médias empresas.
+            Desenvolvendo arquiteturas resilientes, produtos acionados por Inteligência Artificial, utilidades para devs e soluções digitais sob medida.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center lwh-rise" style="animation-delay: 0.3s">
-            <a href="mailto:contato@makisdigital.com" class="lw-btn lw-btn--primary">Entre em contato</a>
-            <a href="https://wa.me/5551993692512" target="_blank" rel="noopener" class="lw-btn lw-btn--secondary">Falar no WhatsApp</a>
+            <a href="{% url 'solicitar_orcamento' %}" class="lw-btn lw-btn--primary">Solicitar Orçamento ➔</a>
+            <a href="{% url 'utilidades:lista' %}" class="lw-btn lw-btn--secondary">Explorar Makis Hub 🛠️</a>
         </div>
     </div>
 </section>
