@@ -134,6 +134,7 @@ urlpatterns = [
     path('utilidades/', include('utilidades.urls')),
     path('comunidade/', include('comunidade.urls')),
     path('chat/', include('chat.urls')),
+    path('cursos/', include('cursos.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 

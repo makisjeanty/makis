@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'utilidades',
     'comunidade',
     'chat',
+    'cursos',
 ]
 
 MIDDLEWARE = [

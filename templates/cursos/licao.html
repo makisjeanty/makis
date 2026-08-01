@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ licao.titulo }} — Lição Interativa · Makis Academy{% endblock %}
+
+{% block content %}
+<style>
+    .quiz-runner-container {
+        max-width: 520px;
+        margin: 0 auto;
+        padding-top: 5rem;
+        padding-bottom: 8rem;
+        min-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .quiz-progress-bar {
+        height: 10px;
+        background: #1e1e2d;
+        border-radius: 999px;
+        overflow: hidden;
+        flex: 1;
+    }
+
+    .quiz-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f59e0b, #cc785c);
+        border-radius: 999px;
+        transition: width 0.4s ease;
+    }
+
+    /* Opção de Múltipla Escolha */
+    .quiz-option-card {
+        background: rgba(30, 30, 42, 0.8);
+        border: 2px solid var(--line);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--text);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: left;
+        width: 100%;
+    }
+
+    .quiz-option-card:hover {
+        border-color: rgba(204, 120, 92, 0.5);
+        background: rgba(40, 40, 56, 0.9);
+    }
+
+    .quiz-option-card.selected {
+        border-color: #f59e0b;
+        background: rgba(245, 158, 11, 0.12);
+        box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+    }
+
+    .quiz-option-card.correct {
+        border-color: #10b981 !important;
+        background: rgba(16, 185, 129, 0.15) !important;
+        color: #34d399 !important;
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3) !important;
+    }
+
+    .quiz-option-card.wrong {
+        border-color: #ef4444 !important;
+        background: rgba(239, 68, 68, 0.15) !important;
+        color: #fca5a5 !important;
+    }
+
+    /* Feedback Mascot Box */
+    .mascot-feedback-box {
+        background: rgba(20, 20, 30, 0.95);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 1.25rem;
+        display: flex;
+        items-center;
+        gap: 1rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .mascot-speech-bubble {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 0.75rem 1rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    /* Bloco de Código & Chips */
+    .code-editor-box {
+        background: #0f172a;
+        border: 1px solid #1e293b;
+        border-radius: 16px;
+        padding: 1rem;
+        font-family: 'Space Mono', monospace;
+    }
+
+    .code-chip {
+        background: #1e293b;
+        border: 1px solid #334155;
+        color: #e2e8f0;
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .code-chip:hover {
+        background: var(--accent);
+        border-color: var(--accent-light);
+        color: white;
+    }
+
+    /* Botão Continuar Laranja do Sistema */
+    .btn-continuar {
+        background: linear-gradient(135deg, #f59e0b, #cc785c);
+        color: white;
+        font-weight: 800;
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
+        border-radius: 16px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 8px 0 #9e4e37, 0 0 20px rgba(245, 158, 11, 0.3);
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-continuar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 0 #9e4e37, 0 0 30px rgba(245, 158, 11, 0.5);
+    }
+</style>
+
+<div class="quiz-runner-container px-4">
+    <!-- Top Bar com Barra de Progresso Laranja -->
+    <div class="flex items-center gap-4 mb-8">
+        <a href="{% url 'cursos:trilha' licao.modulo.curso.slug %}" class="text-neutral-400 hover:text-white text-2xl font-bold p-1">&times;</a>
+        <div class="quiz-progress-bar">
+            <div id="progress-fill" class="quiz-progress-fill" style="width: 20%;"></div>
+        </div>
+    </div>
+
+    <!-- Container das Etapas (Slides / Quizes / Código) -->
+    <div id="etapas-wrapper" class="flex-1 flex flex-col justify-center my-4">
+
+        <!-- ETAPA 1: Slide de Teoria (Python é uma linguagem de programação fantástica...) -->
+        <div class="etapa-card space-y-6" data-etapa="1">
+            <div class="text-center space-y-4">
+                <div class="inline-flex p-6 rounded-3xl" style="background: rgba(245, 158, 11, 0.1); border: 2px solid rgba(245, 158, 11, 0.3);">
+                    <span class="text-6xl">🐍🤖</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-extrabold text-white leading-snug" style="font-family: 'Space Grotesk', sans-serif;">
+                    Python é uma linguagem de programação fantástica tanto para iniciantes quanto para especialistas.
+                </h2>
+                <p class="lw-muted text-base leading-relaxed max-w-md mx-auto">
+                    É a linguagem escolhida por muitas empresas e uma escolha popular para projetos pessoais. Você pode usá-la para automatizar tarefas, criar inteligências artificiais e web apps!
+                </p>
+            </div>
+        </div>
+
+        <!-- ETAPA 2: Quiz de Múltipla Escolha (Para que os computadores usam variáveis?) -->
+        <div class="etapa-card space-y-6 hidden" data-etapa="2">
+            <div>
+                <span class="text-xs uppercase font-mono font-bold text-amber-400">Pergunta 1 de 3</span>
+                <h2 class="text-2xl font-extrabold text-white mt-1 mb-2">Para que os computadores usam variáveis?</h2>
+                <p class="text-sm lw-muted flex items-center gap-1">ℹ️ Toque na resposta correta</p>
+            </div>
+
+            <div class="space-y-3">
+                <button class="quiz-option-card" onclick="selecionarOpcao(this, true)">
+                    Para armazenar informações para uso posterior
+                </button>
+                <button class="quiz-option-card" onclick="selecionarOpcao(this, false)">
+                    Para exibir informações diretamente na tela
+                </button>
+            </div>
+        </div>
+
+        <!-- ETAPA 3: Completar Código (Toque na palavra city...) -->
+        <div class="etapa-card space-y-6 hidden" data-etapa="3">
+            <div>
+                <span class="text-xs uppercase font-mono font-bold text-amber-400">Prática de Código</span>
+                <h2 class="text-xl font-extrabold text-white mt-1 mb-2">Para criar uma variável, começamos digitando seu nome sem espaços.</h2>
+                <p class="text-sm lw-muted">Toque no trecho de código abaixo para preencher o script.py:</p>
+            </div>
+
+            <!-- Box do Editor script.py -->
+            <div class="code-editor-box">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-2 border-b border-slate-800 pb-2 font-mono">
+                    <span>📄 script.py</span>
+                    <span class="text-emerald-400">● Python 3</span>
+                </div>
+                <div class="min-h-[50px] flex items-center gap-2">
+                    <span id="code-slot" class="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-amber-400 font-mono font-bold">___</span>
+                    <span class="text-slate-400 font-mono">= "Canoas"</span>
+                </div>
+            </div>
+
+            <!-- Chips de Código Escolhíveis -->
+            <div class="flex gap-3 justify-center pt-2">
+                <button class="code-chip" onclick="preencherCodigo('home city')">home city</button>
+                <button class="code-chip" onclick="preencherCodigo('city')">city</button>
+            </div>
+        </div>
+
+        <!-- ETAPA 4: Conclusão da Lição -->
+        <div class="etapa-card space-y-6 hidden text-center" data-etapa="4">
+            <div class="p-8 rounded-3xl space-y-4" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(20, 20, 30, 0.95)); border: 2px solid var(--accent);">
+                <span class="text-6xl block mb-2">🎉</span>
+                <h2 class="text-3xl font-extrabold text-white">Lição Concluída!</h2>
+                <p class="text-amber-400 font-bold text-lg">+50 XP · 100% de Precisão</p>
+                <p class="lw-muted text-sm">Você dominou o conceito de variáveis em Python!</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bot Feedback Box (Aparece ao responder a pergunta) -->
+    <div id="mascot-feedback" class="mascot-feedback-box hidden mb-4">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-2xl">
+            🤖
+        </div>
+        <div>
+            <span id="mascot-status" class="text-sm font-extrabold text-emerald-400 block">Muito bem!</span>
+            <span id="mascot-text" class="text-xs text-neutral-300">Vamos continuar assim.</span>
+        </div>
+    </div>
+
+    <!-- Botão de Ação Laranja do Sistema -->
+    <div class="pt-4">
+        <button id="btn-continuar" class="btn-continuar" onclick="proximaEtapa()">Continuar ➔</button>
+    </div>
+</div>
+
+<script>
+    let etapaAtual = 1;
+    const totalEtapas = 4;
+    let opcaoSelecionada = false;
+
+    function proximaEtapa() {
+        if (etapaAtual < totalEtapas) {
+            // Esconde etapa atual
+            document.querySelector(`.etapa-card[data-etapa="${etapaAtual}"]`).classList.add('hidden');
+            etapaAtual++;
+            // Mostra próxima etapa
+            document.querySelector(`.etapa-card[data-etapa="${etapaAtual}"]`).classList.remove('hidden');
+            
+            // Atualiza barra de progresso em Laranja
+            const pct = (etapaAtual / totalEtapas) * 100;
+            document.getElementById('progress-fill').style.width = pct + '%';
+            
+            // Esconde feedback do bot ao trocar de etapa
+            document.getElementById('mascot-feedback').classList.add('hidden');
+            
+            if (etapaAtual === totalEtapas) {
+                document.getElementById('btn-continuar').innerText = 'Concluir Lição 🎉';
+                document.getElementById('btn-continuar').onclick = function() {
+                    window.location.href = "{% url 'cursos:trilha' licao.modulo.curso.slug %}";
+                };
+            }
+        }
+    }
+
+    function selecionarOpcao(el, eCorreta) {
+        document.querySelectorAll('.quiz-option-card').forEach(card => {
+            card.classList.remove('selected', 'correct', 'wrong');
+        });
+
+        if (eCorreta) {
+            el.classList.add('correct');
+            document.getElementById('mascot-status').innerText = 'Muito bem! 🎉';
+            document.getElementById('mascot-status').className = 'text-sm font-extrabold text-emerald-400 block';
+            document.getElementById('mascot-text').innerText = 'Sua resposta está correta. Vamos continuar assim.';
+        } else {
+            el.classList.add('wrong');
+            document.getElementById('mascot-status').innerText = 'Ops! Quase lá... 💡';
+            document.getElementById('mascot-status').className = 'text-sm font-extrabold text-amber-400 block';
+            document.getElementById('mascot-text').innerText = 'Variáveis servem para armazenar dados na memória para reutilização.';
+        }
+
+        document.getElementById('mascot-feedback').classList.remove('hidden');
+    }
+
+    function preencherCodigo(valor) {
+        const slot = document.getElementById('code-slot');
+        slot.innerText = valor;
+        if (valor === 'city') {
+            slot.className = 'px-3 py-1 bg-emerald-950 border border-emerald-500 rounded text-emerald-400 font-mono font-bold';
+            document.getElementById('mascot-status').innerText = 'Excelente! 🚀';
+            document.getElementById('mascot-status').className = 'text-sm font-extrabold text-emerald-400 block';
+            document.getElementById('mascot-text').innerText = 'Em Python, nomes de variáveis não podem conter espaços.';
+            document.getElementById('mascot-feedback').classList.remove('hidden');
+        } else {
+            slot.className = 'px-3 py-1 bg-red-950 border border-red-500 rounded text-red-400 font-mono font-bold';
+            document.getElementById('mascot-status').innerText = 'Ops! Nomes com espaço são inválidos em Python.';
+            document.getElementById('mascot-status').className = 'text-sm font-extrabold text-red-400 block';
+            document.getElementById('mascot-text').innerText = 'Tente escolher a opção "city".';
+            document.getElementById('mascot-feedback').classList.remove('hidden');
+        }
+    }
+</script>
+{% endblock %}

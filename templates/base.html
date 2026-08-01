@@ -114,6 +114,7 @@
                         </div>
                     </div>
 
+                    <a href="{% url 'cursos:lista' %}" class="lw-nav__link {% if 'cursos' in request.path %}active{% endif %}">Cursos 🎓</a>
                     <a href="{% url 'produto_digital' %}" class="lw-nav__link {% if request.resolver_match.view_name == 'produto_digital' %}active{% endif %}" style="color: var(--admin-gold); font-weight: 700;">🎁 Starter Kit Pro <span style="font-size: 10px; background: rgba(245, 158, 11, 0.2); padding: 2px 6px; border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.4); margin-left: 2px;">Em breve</span></a>
                     <a href="{% url 'accounts:sobre' %}" class="lw-nav__link {% if request.resolver_match.view_name == 'accounts:sobre' %}active{% endif %}">Sobre</a>
                     <a href="{% url 'solicitar_orcamento' %}" class="lw-btn lw-btn--primary text-xs ml-2 py-2 px-4 font-bold">Solicitar Orçamento ➔</a>

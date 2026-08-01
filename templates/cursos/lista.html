@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Makis Academy — Cursos Interativos & Trilhas de Aprendizado{% endblock %}
+{% block meta_description %}Aprenda Python, Django, Engenharia de IA e Arquitetura de Software com lições práticas e interativas.{% endblock %}
+
+{% block content %}
+<section class="lw-section" style="padding-top: 7rem;">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <span class="lw-pill mb-4" style="background: rgba(204, 120, 92, 0.15); color: var(--accent); border: 1px solid rgba(204, 120, 92, 0.3);">🎓 Makis Academy · Aprendizado Interativo</span>
+            <h1 class="lw-display text-4xl md:text-5xl mb-4 mt-2">Trilhas de Código & IA</h1>
+            <p class="lw-muted text-lg max-w-2xl mx-auto">Domine programação do zero ao nível avançado com lições em formato de desafios, quizes interativos e feedback em tempo real.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for curso in cursos %}
+            <div class="lw-card relative flex flex-col justify-between p-6 transition-all hover:-translate-y-1" style="background: linear-gradient(135deg, rgba(30, 30, 42, 0.9), rgba(20, 20, 28, 0.95)); border: 1px solid var(--line); border-radius: 20px;">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-4xl">{{ curso.icone }}</span>
+                        <span class="lw-badge uppercase text-[10px]" style="background: rgba(245, 158, 11, 0.15); color: var(--admin-gold); border: 1px solid rgba(245, 158, 11, 0.3);">{{ curso.get_nivel_display }}</span>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-white mb-2" style="font-family: 'Space Grotesk', sans-serif;">{{ curso.titulo }}</h2>
+                    <p class="lw-muted text-sm leading-relaxed mb-6">{{ curso.descricao }}</p>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between text-xs lw-muted border-t border-neutral-800 pt-4 mb-4">
+                        <span>📚 {{ curso.modulos.count }} Módulos</span>
+                        <span>⚡ 100% Prático</span>
+                    </div>
+                    <a href="{% url 'cursos:trilha' curso.slug %}" class="lw-btn lw-btn--primary text-center w-full block py-3 text-sm font-bold">Iniciar Trilha ➔</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-16 lw-card">
+                <p class="lw-muted">Nenhum curso disponível no momento.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
