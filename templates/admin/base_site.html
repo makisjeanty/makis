@@ -1,0 +1,279 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   Makis Digital - Premium High-End Theme para Django Admin 5/6
+   ========================================================================== */
+
+:root {
+    --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    
+    /* Modos de Cor - Variáveis Padrão (Dark Theme Elegante) */
+    --adm-bg: #0F172A;
+    --adm-surface: #1E293B;
+    --adm-surface-hover: #334155;
+    --adm-border: rgba(255, 255, 255, 0.08);
+    --adm-border-strong: rgba(255, 255, 255, 0.15);
+    --adm-accent: #38BDF8;
+    --adm-accent-glow: rgba(56, 189, 248, 0.2);
+    --adm-accent-hover: #0EA5E9;
+    --adm-text-main: #F8FAFC;
+    --adm-text-muted: #94A3B8;
+    --adm-input-bg: #0F172A;
+    --adm-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] {
+    --adm-bg: #F8FAFC;
+    --adm-surface: #FFFFFF;
+    --adm-surface-hover: #F1F5F9;
+    --adm-border: #E2E8F0;
+    --adm-border-strong: #CBD5E1;
+    --adm-accent: #0284C7;
+    --adm-accent-glow: rgba(2, 132, 199, 0.15);
+    --adm-accent-hover: #0369A1;
+    --adm-text-main: #0F172A;
+    --adm-text-muted: #64748B;
+    --adm-input-bg: #F8FAFC;
+    --adm-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    background-color: var(--adm-bg) !important;
+    color: var(--adm-text-main) !important;
+    font-family: var(--font-primary) !important;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Header Principal */
+#header {
+    background: var(--adm-surface) !important;
+    border-bottom: 1px solid var(--adm-border) !important;
+    padding: 12px 24px !important;
+    box-shadow: var(--adm-card-shadow);
+}
+
+#site-name a {
+    font-family: var(--font-heading) !important;
+    font-size: 19px !important;
+    font-weight: 700 !important;
+    color: var(--adm-text-main) !important;
+    letter-spacing: -0.3px;
+}
+
+#user-tools {
+    font-size: 13px !important;
+    color: var(--adm-text-muted) !important;
+}
+
+#user-tools a {
+    color: var(--adm-accent) !important;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+/* Sidebar de Navegação (#nav-sidebar) */
+#nav-sidebar {
+    background: var(--adm-surface) !important;
+    border-right: 1px solid var(--adm-border) !important;
+}
+
+#nav-filter {
+    padding: 12px 14px !important;
+    border-bottom: 1px solid var(--adm-border) !important;
+}
+
+#nav-sidebar .app-accounts th::before { content: "👤 "; }
+#nav-sidebar .app-blog th::before { content: "📝 "; }
+#nav-sidebar .app-chat th::before { content: "💬 "; }
+#nav-sidebar .app-comunidade th::before { content: "🌐 "; }
+#nav-sidebar .app-portfolio th::before { content: "💼 "; }
+#nav-sidebar .app-core th::before { content: "⚡ "; }
+#nav-sidebar .app-auth th::before { content: "🛡️ "; }
+
+#nav-sidebar .module table {
+    margin-bottom: 8px;
+}
+
+#nav-sidebar .module th {
+    font-family: var(--font-heading) !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    color: var(--adm-text-muted) !important;
+    padding: 10px 14px !important;
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+
+#nav-sidebar .module td a {
+    color: var(--adm-text-main) !important;
+    font-size: 13.5px !important;
+    font-weight: 500;
+    padding: 8px 14px !important;
+    display: block;
+    border-radius: 6px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+#nav-sidebar .module tr.current-model td a,
+#nav-sidebar .module td a:hover {
+    background: var(--adm-accent-glow) !important;
+    color: var(--adm-accent) !important;
+    font-weight: 600;
+}
+
+#nav-sidebar .addlink {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+#nav-sidebar .addlink:hover {
+    opacity: 1;
+}
+
+/* Breadcrumbs */
+div.breadcrumbs {
+    background: var(--adm-surface) !important;
+    border: 1px solid var(--adm-border) !important;
+    color: var(--adm-text-muted) !important;
+    padding: 10px 20px !important;
+    font-size: 13px !important;
+    border-radius: 8px;
+    margin: 16px 24px 0 24px;
+}
+
+div.breadcrumbs a {
+    color: var(--adm-accent) !important;
+    font-weight: 600;
+}
+
+/* Cards & Conteúdo Principal */
+#content {
+    padding: 24px !important;
+}
+
+.module {
+    background: var(--adm-surface) !important;
+    border: 1px solid var(--adm-border) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--adm-card-shadow) !important;
+    overflow: hidden;
+    margin-bottom: 24px !important;
+}
+
+.module h2, .inline-group h2 {
+    background: rgba(0, 0, 0, 0.08) !important;
+    color: var(--adm-text-main) !important;
+    font-family: var(--font-heading) !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    padding: 12px 18px !important;
+    border-bottom: 1px solid var(--adm-border) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Tabelas da Listagem (Changelist) */
+#changelist table {
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--adm-surface) !important;
+}
+
+#changelist table thead th {
+    background: rgba(0, 0, 0, 0.12) !important;
+    color: var(--adm-text-muted) !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--adm-border) !important;
+    padding: 12px 14px !important;
+}
+
+#changelist table tbody tr {
+    transition: background 0.15s ease;
+    border-bottom: 1px solid var(--adm-border);
+}
+
+#changelist table tbody tr:hover {
+    background: var(--adm-surface-hover) !important;
+}
+
+#changelist table tbody td, #changelist table tbody th {
+    padding: 12px 14px !important;
+    color: var(--adm-text-main) !important;
+    font-size: 13.5px !important;
+}
+
+/* Inputs & Controles */
+input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="number"], select, textarea {
+    background-color: var(--adm-input-bg) !important;
+    border: 1px solid var(--adm-border-strong) !important;
+    color: var(--adm-text-main) !important;
+    border-radius: 8px !important;
+    padding: 9px 13px !important;
+    font-size: 14px !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--adm-accent) !important;
+    box-shadow: 0 0 0 3px var(--adm-accent-glow) !important;
+    outline: none !important;
+}
+
+/* Botões */
+.button, input[type=submit], input[type=button], .submit-row input, a.addlink {
+    background: var(--adm-accent) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 9px 18px !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+    transition: transform 0.15s ease, background-color 0.15s ease !important;
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.addlink:hover {
+    background: var(--adm-accent-hover) !important;
+    transform: translateY(-1px) !important;
+}
+
+.button.deletelink, a.deletelink {
+    background: #EF4444 !important;
+}
+
+/* Painel de Filtros (#changelist-filter) */
+#changelist-filter {
+    background: var(--adm-surface) !important;
+    border-left: 1px solid var(--adm-border) !important;
+    border-radius: 12px;
+    padding: 16px !important;
+}
+
+#changelist-filter h2 {
+    font-size: 13px !important;
+    color: var(--adm-accent) !important;
+    margin-bottom: 12px !important;
+}
+
+#changelist-filter a {
+    color: var(--adm-text-muted) !important;
+    font-size: 13px !important;
+}
+
+#changelist-filter li.selected a {
+    color: var(--adm-accent) !important;
+    font-weight: 700 !important;
+}
+</style>
+{% endblock %}
