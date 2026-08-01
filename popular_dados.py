@@ -14,7 +14,11 @@ admin_user = User.objects.filter(is_superuser=True).first()
 if not admin_user:
     admin_user = User.objects.first()
 
-print(f"--> Usando usuário autor: {admin_user.username if admin_user else 'None'}")
+if admin_user:
+    admin_user.first_name = "Makis"
+    admin_user.last_name = "Jeanty"
+    admin_user.save()
+    print(f"--> Usando usuário autor: {admin_user.get_full_name()}")
 
 # -----------------------------------------------------------------------------
 # 1. Cadastrar Projetos no Portfólio

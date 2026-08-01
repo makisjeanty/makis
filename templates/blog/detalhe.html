@@ -14,7 +14,7 @@
     "@type": "Article",
     "headline": "{{ post.titulo|escapejs }}",
     "description": "{{ post.resumo|escapejs }}",
-    "author": {"@type": "Person", "name": "{{ post.autor.get_full_name|default:post.autor.username|escapejs }}"},
+    "author": {"@type": "Person", "name": "{{ post.autor.get_full_name|default:'Makis Jeanty'|escapejs }}"},
     "datePublished": "{{ post.data_publicacao|date:'c' }}",
     "dateModified": "{{ post.data_atualizacao|date:'c' }}",
     "mainEntityOfPage": "{{ request.build_absolute_uri }}"{% if post.imagem_capa %},
@@ -39,7 +39,7 @@
         {% endif %}
         <h1 class="lw-display text-3xl md:text-4xl mb-4 mt-4">{{ post.titulo }}</h1>
         <div class="lw-media-card__meta mb-8">
-            <a href="{% url 'accounts:perfil' post.autor.username %}" style="color: inherit; text-decoration: none;">{{ post.autor.get_full_name|default:post.autor.username }}</a>
+            <a href="{% url 'accounts:sobre' %}" style="color: inherit; text-decoration: none;">{{ post.autor.get_full_name|default:"Makis Jeanty" }}</a>
             {% if post.data_publicacao %}
             <span>&middot;</span>
             <span>{{ post.data_publicacao|date:"d \d\e F \d\e Y" }}</span>
