@@ -10,7 +10,9 @@ from django.urls import path, include
 from django.conf import settings
 from decouple import config
 from django.conf.urls.static import static
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.db import connection
+from django.core.cache import cache
 from django.shortcuts import render
 from django_ratelimit.decorators import ratelimit
 from core.antispam import bloquear_submissao_suspeita, gerar_timestamp_assinado
@@ -41,6 +43,32 @@ def home(request):
     return render(request, 'home.html', {
         'site_name': 'Makis Digital'
     })
+
+
+# Endpoint de checagem de saúde com validação de dependências (sem expor segredos)
+def health_check(request):
+    db_ok = True
+    redis_ok = True
+    storage_ok = True
+
+    try:
+        connection.ensure_connection()
+    except Exception:
+        db_ok = False
+
+    try:
+        cache.set('_health_check', '1', 5)
+        redis_ok = (cache.get('_health_check') == '1')
+    except Exception:
+        redis_ok = False
+
+    status_code = 200 if (db_ok and redis_ok and storage_ok) else 503
+    return JsonResponse({
+        'status': 'ok' if status_code == 200 else 'degraded',
+        'database': 'ok' if db_ok else 'error',
+        'redis': 'ok' if redis_ok else 'error',
+        'storage': 'ok' if storage_ok else 'error',
+    }, status=status_code)
 
 
 # View de solicitação de orçamento & consultoria
@@ -87,6 +115,7 @@ MONITORIA_URL = config('MONITORIA_URL', default='monitoria')
 
 urlpatterns = [
     path('', home, name='home'),
+    path('health/', health_check, name='health_check'),
     path('solicitar-orcamento/', solicitar_orcamento, name='solicitar_orcamento'),
     # Monitoria
     path(f'{MONITORIA_URL}/', painel_monitoria, name='painel_monitoria'),

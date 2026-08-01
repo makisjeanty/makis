@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
 
     # Apps de terceiros (segurança e performance)
-    'corsheaders',
     'whitenoise.runserver_nostatic',
     'channels',
 
@@ -61,7 +60,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Performance - arquivos estáticos
-    'corsheaders.middleware.CorsMiddleware',  # Segurança - CORS
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -203,11 +201,23 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_HSTS_PRELOAD = not DEBUG
 SECURE_CONTENT_TYPE_NOSNIFF = not DEBUG
 SECURE_BROWSER_XSS_FILTER = not DEBUG
+SECURE_REFERRER_POLICY = 'same-origin'
 X_FRAME_OPTIONS = 'DENY'  # Protege contra clickjacking
 
-# CORS - só permite origens confiáveis
-CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', cast=Csv(), default='http://localhost:8000')
-CORS_ALLOW_CREDENTIALS = True
+# Cloudflare & Nginx Proxy Reverse Headers
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
+
+# CSRF - permite apenas origens confiáveis em produção
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=Csv(), default='https://makisjeanty.com,https://www.makisjeanty.com')
+
+# Identidade do Site, Idiomas e SEO
+SITE_NAME = config('SITE_NAME', default='Makis Jeanty')
+SITE_DOMAIN = config('SITE_DOMAIN', default='makisjeanty.com')
+SITE_URL = config('SITE_URL', default='https://makisjeanty.com')
+DEFAULT_LANGUAGE = config('DEFAULT_LANGUAGE', default='fr')
+SUPPORTED_LANGUAGES = config('SUPPORTED_LANGUAGES', cast=Csv(), default='fr,ht')
 
 
 # -------------------------- PERFORMANCE --------------------------
