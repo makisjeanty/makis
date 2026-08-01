@@ -80,6 +80,76 @@ Etapa.objects.get_or_create(
     }
 )
 
+# Etapas da Lição 2
+Etapa.objects.get_or_create(
+    licao=licao2_python,
+    ordem=1,
+    defaults={
+        'tipo': 'slide',
+        'titulo': 'Python guarda tipos diferentes de informação',
+        'conteudo': 'Os tipos mais comuns são: int (números inteiros, como 10), float (números com casas decimais, como 3.14), str (texto, como "olá") e bool (verdadeiro ou falso).',
+    }
+)
+
+Etapa.objects.get_or_create(
+    licao=licao2_python,
+    ordem=2,
+    defaults={
+        'tipo': 'quiz',
+        'pergunta': 'Qual tipo de dado representa números com casas decimais, como 9.99?',
+        'opcoes_json': ['int', 'float', 'str', 'bool'],
+        'resposta_correta': 'float',
+    }
+)
+
+Etapa.objects.get_or_create(
+    licao=licao2_python,
+    ordem=3,
+    defaults={
+        'tipo': 'code',
+        'titulo': 'Guardando um Nome',
+        'conteudo': 'Nomes de pessoas são texto, então precisam ficar entre aspas. Qual das opções guarda corretamente o nome "Maria" na variável nome?',
+        'opcoes_json': ['nome = Maria', 'nome = "Maria"'],
+        'resposta_correta': 'nome = "Maria"',
+        'nome_arquivo': 'script.py',
+    }
+)
+
+# Etapas da Lição 3
+Etapa.objects.get_or_create(
+    licao=licao3_python,
+    ordem=1,
+    defaults={
+        'tipo': 'slide',
+        'titulo': 'Tomando decisões com if/else',
+        'conteudo': 'O "if" testa uma condição: se ela for verdadeira, o bloco dentro dele roda. Se for falsa e existir um "else", o bloco do "else" roda no lugar.',
+    }
+)
+
+Etapa.objects.get_or_create(
+    licao=licao3_python,
+    ordem=2,
+    defaults={
+        'tipo': 'quiz',
+        'pergunta': 'O que acontece se a condição do "if" for falsa e existir um "else"?',
+        'opcoes_json': ['O bloco do else é executado', 'Nada acontece', 'O programa trava'],
+        'resposta_correta': 'O bloco do else é executado',
+    }
+)
+
+Etapa.objects.get_or_create(
+    licao=licao3_python,
+    ordem=3,
+    defaults={
+        'tipo': 'code',
+        'titulo': 'Comparando Valores',
+        'conteudo': 'Para comparar se duas coisas são iguais dentro de um "if", usamos "==" (dois sinais de igual), não "=". Qual linha está correta?',
+        'opcoes_json': ['if idade = 18:', 'if idade == 18:'],
+        'resposta_correta': 'if idade == 18:',
+        'nome_arquivo': 'script.py',
+    }
+)
+
 # -----------------------------------------------------------------------------
 # Curso 2: Engenharia de IA & Prompting
 # -----------------------------------------------------------------------------
@@ -105,6 +175,44 @@ licao1_ia, _ = Licao.objects.get_or_create(
     modulo=mod1_ia,
     ordem=1,
     defaults={'titulo': 'O que é um System Prompt?', 'duracao_minutos': 6}
+)
+
+# Etapas da Lição 1
+Etapa.objects.get_or_create(
+    licao=licao1_ia,
+    ordem=1,
+    defaults={
+        'tipo': 'slide',
+        'titulo': 'O System Prompt define as regras do jogo',
+        'conteudo': 'Antes da conversa começar, o system prompt diz ao modelo quem ele é, como deve se comportar e quais limites deve respeitar — o usuário nunca vê essa instrução diretamente.',
+    }
+)
+
+Etapa.objects.get_or_create(
+    licao=licao1_ia,
+    ordem=2,
+    defaults={
+        'tipo': 'quiz',
+        'pergunta': 'Qual é o principal objetivo de um system prompt?',
+        'opcoes_json': [
+            'Definir o comportamento e as regras do assistente antes da conversa começar',
+            'Armazenar o histórico de mensagens do usuário',
+        ],
+        'resposta_correta': 'Definir o comportamento e as regras do assistente antes da conversa começar',
+    }
+)
+
+Etapa.objects.get_or_create(
+    licao=licao1_ia,
+    ordem=3,
+    defaults={
+        'tipo': 'code',
+        'titulo': 'Montando a Requisição',
+        'conteudo': 'Para dar instruções ao modelo antes da conversa do usuário, o campo "role" dessa mensagem deve receber qual valor?',
+        'opcoes_json': ['"role": "user"', '"role": "system"'],
+        'resposta_correta': '"role": "system"',
+        'nome_arquivo': 'api_request.py',
+    }
 )
 
 print("✅ Cursos, Módulos, Lições e Etapas criadas com sucesso!")
