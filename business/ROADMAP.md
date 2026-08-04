@@ -18,58 +18,56 @@
 ## 🔵 Fase P1: Execução Visível (Meses 2-4) — FOCO ÚNICO AGORA
 
 **Objetivo**: construir a história pública que valida tudo que vem depois.
-Sem isso, produto, consultoria e audiência não têm fundação.
 
-- [ ] **Série "Build in Public"** — 1 post por semana no LinkedIn (30-60min/semana):
+- [ ] **Série "Build in Public"** — 1 post/semana no LinkedIn (30-60min/semana):
   - Formato: o que construí/quebrei essa semana + 1 aprendizado.
-  - Manter por 8 semanas sem falhar. É o único ativo que ninguém te copia.
-- [ ] **1 artigo técnico/mês no blog** (não 5 em 2 meses — 1 artigo profundo = 8-15h):
-  - Mês 2: "Do Zero à Produção: Django + Docker em VPS de Baixo Custo"
-  - Mês 3: "Arquitetura de Resposta a Incidentes: RUNBOOK que funciona às 3h"
-  - Mês 4: "Construindo SaaS sendo júnior, trabalhando à noite, com R$ 0 de marketing"
+  - Manter por 8 semanas sem falhar.
+  - Publicar: 7-8h ou 12h (quando Persona A consome LinkedIn).
+
+- [ ] **1 artigo técnico/mês no blog** — critérios por artigo:
+
+  | # | Título | Tamanho | Formato | Canais | Métrica de sucesso |
+  |---|---|---|---|---|---|
+  | 1 | Do Zero à Produção: Django + Docker em VPS | 2.500-3.500 palavras | Tutorial com screenshots reais | Blog + Dev.to + LinkedIn resumo | 300 views em 60 dias |
+  | 2 | RUNBOOK que funciona às 3h: Arquitetura de Incidentes | 2.000-3.000 palavras | Caso pessoal + tutorial | Blog + LinkedIn | 200 views em 60 dias |
+  | 3 | Construindo SaaS sendo júnior, à noite, com R$ 0 de marketing | 1.500-2.000 palavras | História + aprendizado | Blog + LinkedIn (principal) | 500 views em 60 dias |
+
+  > Cada artigo vira experimento no EXPERIMENTS.md com hipótese, canal e métrica antes de escrever.
+
 - [ ] Otimização SEO on-page nas páginas existentes (portfolio, blog).
-- [ ] **NÃO FAZER nesta fase**: newsletter, novo produto, landin page de vendas.
+
+- [ ] **NÃO FAZER nesta fase**: newsletter, novo produto, landing page de vendas, atualizar business/ sem motivo real.
 
 ---
 
 ## 🟡 Fase P2: Primeiro Ativo de Audiência (Meses 5-6)
 
-**Pré-requisito**: ter 8+ posts públicos rodando e pelo menos 1 artigo publicado.
+**Pré-requisito**: 8+ posts LinkedIn publicados + pelo menos 1 artigo publicado.
 
-- [ ] Newsletter quinzenal (não semanal — cabe em 3-4h por edição):
-  - "O que aprendi construindo SaaS de noite" — 1 aprendizado técnico + 1 coisa da vida real.
-- [ ] 2-3 checklists interativos como landing pages SEO (ex: "VPS Hardening pra Júnior", "Django Deploy", "Segurança Básica"):
-  - Baixo custo (3-5h cada), cauda longa, posicionamento de referência.
-- [ ] Rascunho do `business/SAAS-LOGISTICA.md` — micro-SaaS de inventário/pedido pra pequeno comerciante (não lançar agora, só documentar a ideia).
+- [ ] Newsletter quinzenal: "O que aprendi construindo SaaS de noite" — 1 aprendizado técnico + 1 coisa real.
+- [ ] 2-3 checklists interativos como landing pages SEO (VPS Hardening, Django Deploy, Segurança Básica).
+- [ ] Rascunho de `business/SAAS-LOGISTICA.md` em cold storage (não construir, só validar conversas informais).
 
 ---
 
 ## 🟠 Fase P3: Primeiro Produto (Meses 7-9)
 
-**Pré-requisito**: ter lista de e-mails (mesmo que pequena) e 3+ meses de execução visível.
+**Pré-requisito**: lista de e-mails (mesmo que pequena) + 3+ meses de execução visível.
 
-- [ ] Produto digital de entrada (R$ 47-97):
-  - **Opção A**: Checklist interativo de Segurança para VPS (low-cost, usa o que já existe)
-  - **Opção B**: Kit Django Deploy (template + scripts + runbook) — só se o mercado pedir via build in public
-- [ ] 1-2 mentorias avulsas 1:1 (R$ 200-400/h) via LinkedIn direto:
-  - Valida se Persona A paga de verdade antes de criar curso.
-- [ ] Lançar oferta de consultoria de diagnóstico de infra (R$ 1.500) para Persona B — apenas após ter 2+ cases documentados.
+- [ ] Produto digital de entrada (R$ 47-97) — só após validar que Persona A pede.
+- [ ] 1-2 mentorias avulsas 1:1 (R$ 200-400/h) via LinkedIn DM.
+- [ ] Consultoria de diagnóstico (R$ 1.500) apenas após 2+ cases documentados.
 
 ---
 
 ## 🔴 Fase P4: Escala (Meses 10-18)
 
-Depende do que validar nas fases anteriores. Não planejar agora com detalhes.
-
-- Micro-SaaS de logística se houver validação de Persona de domínio.
-- Curso se houver demanda comprovada via newsletter/mentoria.
-- Mercado francófono se houver tração nos artigos FR.
+Não planejar agora. Depende do que P1-P3 validarem.
 
 ---
 
 ## ⚠️ Avisos honestos
 
 - P1 em 2h/dia = **1 post/semana + 1 artigo/mês**. Nada mais cabe sem esgotamento.
-- "5 artigos em 2 meses" não existe com sua agenda. O plano original estava errado.
-- A diferença entre "tenho um plano" e "tenho um negócio" é **execução visível por 6-12 meses**.
+- A diferença entre "tenho um plano" e "tenho um negócio" é execução visível por 6-12 meses.
 - Você tem o plano. Falta o caderno de execução público.

@@ -31,7 +31,7 @@ Pequeno comerciante / loja física / depósito:
 
 ---
 
-## MVP (mínimo viável para validar)
+## MVP (mínimo viável)
 
 - Cadastro de produtos + movimentação (entrada/saída)
 - Alerta de estoque mínimo (e-mail ou WhatsApp)
@@ -49,11 +49,21 @@ Pequeno comerciante / loja física / depósito:
 
 ---
 
-## Validação necessária antes de construir
+## Cronograma de validação (antes de construir qualquer linha)
 
-1. [ ] 3 conversas com pessoas do meu círculo de trabalho sobre a dor real.
-2. [ ] 1 pessoa disposta a pagar R$ 49/mês antes de eu construir (pré-venda).
-3. [ ] Verificar se existe concorrente direto acessível no Brasil nesse ticket.
+| Fase | Mês | Ação | Critério de avanço |
+|---|---|---|---|
+| Conversas informais | Mês 6 | 1 conversa com 1 pessoa do círculo de trabalho sobre a dor real | Ela confirma que o problema existe e é frequente |
+| Mais conversas | Mês 7-8 | +2 conversas com o framework de perguntas abaixo | 2 de 3 descrevem o mesmo problema sem você induzir |
+| Pré-venda | Mês 9 | Oferta: R$ 49 × 3 meses = R$ 147 à vista, com garantia de devolução | **1+ pessoa paga** → ativa P4. 0 pessoas pagam → documenta e decide |
+
+### Framework de perguntas (conversas de validação)
+1. "Como você controla o estoque hoje?"
+2. "O que acontece quando o estoque acaba sem você perceber?"
+3. "Já perdeu venda por isso? Quanto mais ou menos?"
+4. "O que você faz quando precisa fazer pedido pro fornecedor?"
+5. "Quanto você pagaria por mês pra isso não acontecer mais?"
+*Não mencionar o produto até a pergunta 5. Deixar eles descreverem o problema.*
 
 ---
 
@@ -65,8 +75,9 @@ Pequeno comerciante / loja física / depósito:
 
 ---
 
-## Quando ativar
+## Quando ativar P4 (construir)
 
-- Fase P4 (Mês 10+)
-- Após ter ao menos 1 cliente piloto do círculo profissional concordando em testar
-- Com pelo menos R$ 1.000/mês de outra receita (pra não depender do SaaS antes de validar)
+- Mês 10+ (nunca antes)
+- 1+ pessoa pagou na pré-venda
+- R$ 1.000/mês de outra receita (não depender do SaaS pra pagar a VPS)
+- Pelo menos 1 conversa de validação documentada com transcrição/notas
