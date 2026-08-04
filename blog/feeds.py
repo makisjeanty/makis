@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.syndication.views import Feed
 from django.urls import reverse
 
@@ -5,9 +6,9 @@ from .models import Post
 
 
 class PostsFeed(Feed):
-    title = 'Makis Digital — Estudos'
+    title = f'{settings.SITE_NAME} — Blog'
     link = '/blog/'
-    description = 'Últimos artigos publicados na trilha de estudos da Makis Digital.'
+    description = f'Últimos artigos publicados no blog de {settings.SITE_NAME}.'
 
     def items(self):
         return Post.objects.filter(publicado=True).order_by('-data_publicacao')[:20]

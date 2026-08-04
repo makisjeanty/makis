@@ -1,0 +1,230 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checklist do Analista Júnior</title>
+  <meta name="description" content="7 coisas que separam um RF bom de um RF furado. Checklist prático para levantamento, escrita e homologação." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#1a1a18;--surface:#242422;--surface-2:#2e2e2b;--border:#3a3a36;
+      --accent:#CC785C;--accent-dim:rgba(204,120,92,.12);--accent-hover:#d98b70;
+      --green:#5c9e6e;--green-dim:rgba(92,158,110,.12);
+      --amber:#c9973a;--amber-dim:rgba(201,151,58,.12);
+      --blue:#5a8fc4;--blue-dim:rgba(90,143,196,.12);
+      --text:#e8e8e4;--text-muted:#8a8a82;--text-faint:#5a5a54;
+      --radius:10px;--radius-sm:6px;
+    }
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+    .page{max-width:800px;margin:0 auto;padding:2rem 1.25rem 4rem}
+    .progress-wrapper{position:sticky;top:0;z-index:100;background:var(--bg);padding:.75rem 0;border-bottom:1px solid var(--border);margin-bottom:2rem}
+    .progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}
+    .progress-label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted)}
+    .progress-count{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent);font-weight:600}
+    .progress-bar-track{height:4px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-hover));border-radius:99px;width:0%;transition:width .4s cubic-bezier(.4,0,.2,1)}
+    .hero{margin-bottom:2.5rem}
+    .hero-badge{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent-dim);border:1px solid rgba(204,120,92,.25);color:var(--accent);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.3rem .7rem;border-radius:99px;margin-bottom:1rem}
+    .hero h1{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;line-height:1.2;margin-bottom:.75rem;letter-spacing:-.02em}
+    .hero h1 em{color:var(--accent);font-style:normal}
+    .hero-sub{font-size:.875rem;color:var(--text-muted);max-width:580px;line-height:1.7}
+    .why-box{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:2.5rem;font-size:.85rem;color:var(--text-muted);line-height:1.75}
+    .why-box strong{color:var(--text)}
+    .phase{margin-bottom:2.5rem}
+    .phase-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+    .phase-number{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0;letter-spacing:.05em}
+    .phase-1 .phase-number{background:var(--green-dim);color:var(--green);border:1px solid rgba(92,158,110,.3)}
+    .phase-2 .phase-number{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(201,151,58,.3)}
+    .phase-3 .phase-number{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(90,143,196,.3)}
+    .phase-title{font-size:1.05rem;font-weight:700;color:var(--text)}
+    .phase-sub{font-size:.75rem;color:var(--text-muted);margin-top:.1rem}
+    .card-list{display:flex;flex-direction:column;gap:.6rem}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1rem;cursor:pointer;transition:border-color .2s,background .2s,transform .15s;user-select:none;-webkit-tap-highlight-color:transparent}
+    .card:hover{border-color:var(--accent);background:var(--surface-2);transform:translateY(-1px)}
+    .card.done{border-color:transparent;opacity:.55}
+    .phase-1 .card.done{background:var(--green-dim)}
+    .phase-2 .card.done{background:var(--amber-dim)}
+    .phase-3 .card.done{background:var(--blue-dim)}
+    .card-inner{display:flex;gap:.75rem;align-items:flex-start}
+    .check-wrap{width:18px;height:18px;border-radius:5px;border:2px solid var(--border);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s}
+    .card:hover .check-wrap{border-color:var(--text-muted)}
+    .phase-1 .card.done .check-wrap{border-color:var(--green);background:var(--green)}
+    .phase-2 .card.done .check-wrap{border-color:var(--amber);background:var(--amber)}
+    .phase-3 .card.done .check-wrap{border-color:var(--blue);background:var(--blue)}
+    .check-wrap svg{display:none}
+    .card.done .check-wrap svg{display:block}
+    .card-content{flex:1;min-width:0}
+    .card-title{font-size:.875rem;font-weight:600;color:var(--text);margin-bottom:.25rem;line-height:1.4}
+    .card.done .card-title{text-decoration:line-through;color:var(--text-faint)}
+    .card-desc{font-size:.78rem;color:var(--text-muted);line-height:1.65}
+    .card.done .card-desc{color:var(--text-faint)}
+    .card-number{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600;color:var(--text-faint);min-width:1.5rem;text-align:right;flex-shrink:0;margin-top:3px}
+    .actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+    .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:var(--radius-sm);font-size:.78rem;font-weight:600;cursor:pointer;border:none;transition:background .2s,transform .15s}
+    .btn:active{transform:scale(.97)}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-primary:hover{background:var(--accent-hover)}
+    .btn-ghost{background:var(--surface-2);color:var(--text-muted);border:1px solid var(--border)}
+    .btn-ghost:hover{background:var(--border);color:var(--text)}
+    .done-banner{display:none;margin-top:2rem;background:linear-gradient(135deg,rgba(92,158,110,.15),rgba(204,120,92,.1));border:1px solid rgba(92,158,110,.25);border-radius:var(--radius);padding:1.25rem 1.5rem;text-align:center}
+    .done-banner.show{display:block}
+    .done-banner .emoji{font-size:2rem;margin-bottom:.5rem}
+    .done-banner h3{font-size:1rem;font-weight:700;margin-bottom:.25rem}
+    .done-banner p{font-size:.8rem;color:var(--text-muted)}
+    @media print{
+      :root{--bg:#fff;--surface:#f9f9f9;--surface-2:#f0f0f0;--border:#ddd;--text:#111;--text-muted:#555;--text-faint:#888}
+      body{background:#fff;color:#111}
+      .progress-wrapper,.actions,.done-banner{display:none!important}
+      .page{padding:1rem;max-width:100%}
+      .card{break-inside:avoid;border:1px solid #ddd}
+      .card.done{opacity:1}
+    }
+    @media(max-width:480px){.page{padding:1rem .9rem 3rem}.hero h1{font-size:1.5rem}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="progress-wrapper">
+    <div class="progress-header">
+      <span class="progress-label">Progresso da sessão</span>
+      <span class="progress-count" id="progressCount">0 / 30</span>
+    </div>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-badge">Analista Júnior · Ferramenta prática</div>
+    <h1>Checklist do<br><em>Analista Júnior</em></h1>
+    <p class="hero-sub">7 coisas que você sempre esquece — e que separam um RF bom de um RF furado. Use uma vez por reunião, uma vez por RF, uma vez por homologação.</p>
+  </div>
+
+  <div class="why-box">
+    <strong>Por que este checklist existe:</strong> Analista júnior sabe a teoria: UML, BPMN, casos de uso. O que falta é o instinto de <em>o que perguntar</em>, <em>o que documentar</em>, e <em>o que cobrar do dev</em> antes de subir pra produção. Sem fluff acadêmico — só o que efetivamente protege o seu projeto.
+  </div>
+
+  <!-- FASE 1 -->
+  <div class="phase phase-1">
+    <div class="phase-header">
+      <div class="phase-number">F1</div>
+      <div><div class="phase-title">Levantamento com stakeholder</div><div class="phase-sub">Você está antes do RF, em reunião com o cliente</div></div>
+    </div>
+    <div class="card-list" id="phase1">
+      <div class="card" onclick="toggle(this)" id="f1-1" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">01</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Quem é o solicitante × quem é o usuário final?</div><div class="card-desc">Se forem pessoas diferentes (gerente pede, balconista usa), os requisitos vão brigar. Mapeie os dois. Em rede de unidades tem ainda um terceiro: franqueado vs matriz.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f1-2" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">02</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Qual é o PROBLEMA, não a solução?</div><div class="card-desc">"Quero um app" é solução. O problema é "pedido por WhatsApp se perde" ou "fechamento de caixa demora 3h". Pergunte: "me conta como é hoje, sem falar de sistema."</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f1-3" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">03</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Volume real — número, não adjetivo</div><div class="card-desc">"Muitos pedidos" pode ser 50/dia ou 5.000/dia. Banco, performance e infra mudam completamente. Pergunte: usuários ativos, transações/dia no pico, total de registros.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f1-4" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">04</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Tem dado pessoal? LGPD entra AGORA</div><div class="card-desc">CPF, endereço, pagamento = dado sensível. Refazer isso no fim custa 5× mais. Mapeie agora: base legal, quem acessa, retenção, direito de esquecimento.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f1-5" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">05</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">O que está FORA de escopo?</div><div class="card-desc">Force o stakeholder a dizer o que não vai fazer. Senão na entrega ele cobra de tudo. Sugira ele mesmo: integrações, módulos, multi-idioma, fidelidade.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f1-6" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">06</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">O que dá errado? As exceções</div><div class="card-desc">Internet cai, item esgota, cliente cancela, integração externa fora. Sistema bom é o que se comporta bem quando dá merda. Se o cliente não pensou nisso — anote e devolva pra ele decidir.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f1-7" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">07</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Quem mais precisa ser ouvido?</div><div class="card-desc">Se você fechar só com o dono e o gerente de loja falar "mas eu faço diferente", você refaz. Identifique todos os perfis que vão operar o sistema antes de fechar o RF.</div></div></div></div>
+    </div>
+  </div>
+
+  <!-- FASE 2 -->
+  <div class="phase phase-2">
+    <div class="phase-header">
+      <div class="phase-number">F2</div>
+      <div><div class="phase-title">Escrita do RF / Documento de análise</div><div class="phase-sub">Confirme que o documento tem tudo isto, na ordem</div></div>
+    </div>
+    <div class="card-list">
+      <div class="card" onclick="toggle(this)" id="f2-1" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">01</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Identificação</div><div class="card-desc">Solicitante, autor, data, versão, status.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-2" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">02</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Contexto e problema de negócio</div><div class="card-desc">Não a solução — o problema que motivou o projeto.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-3" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">03</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Stakeholders e personas</div><div class="card-desc">Diferencie solicitante de usuário final. Mapeie perfis.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-4" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">04</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Escopo — dentro E fora</div><div class="card-desc">Júnior SEMPRE esquece o "fora". Liste explicitamente o que não está no escopo.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-5" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">05</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Requisitos funcionais numerados</div><div class="card-desc">Com ator, ação e resultado esperado. Numerados sequencialmente.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-6" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">06</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Critério de aceite em CADA RF</div><div class="card-desc">Sem isso o dev implementa do jeito dele. Defina o que "funcionar" significa objetivamente.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-7" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">07</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Requisitos não funcionais</div><div class="card-desc">Desempenho, segurança, usabilidade, disponibilidade, manutenibilidade, LGPD.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-8" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">08</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Casos de borda e exceções</div><div class="card-desc">Dado duplicado, permissão negada, integração fora, submissão dupla. Documente o comportamento esperado em cada um.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-9" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">09</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Premissas e dependências</div><div class="card-desc">O que o projeto assume como verdade e do que depende para existir.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-10" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">10</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Riscos</div><div class="card-desc">O que pode dar errado no projeto, não no sistema.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-11" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">11</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Glossário</div><div class="card-desc">Termos do domínio que o dev pode não conhecer.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-12" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">12</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Pendências e dúvidas em aberto</div><div class="card-desc">Mais honesto do que fingir que está tudo fechado. Lista o que ainda não foi decidido.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f2-13" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">13</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Histórico de versões</div><div class="card-desc">Quem mudou o quê, quando, e por quê.</div></div></div></div>
+    </div>
+  </div>
+
+  <!-- FASE 3 -->
+  <div class="phase phase-3">
+    <div class="phase-header">
+      <div class="phase-number">F3</div>
+      <div><div class="phase-title">Validação com dev / Homologação</div><div class="phase-sub">O dev entregou — antes de aprovar, confira</div></div>
+    </div>
+    <div class="card-list">
+      <div class="card" onclick="toggle(this)" id="f3-1" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">01</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Cobertura dos RFs</div><div class="card-desc">Cada requisito funcional do doc tem tela/comportamento que atende? Cruze item a item.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f3-2" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">02</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Casos de borda do RF foram tratados?</div><div class="card-desc">Os que você esqueceu no RF, agora cobra do dev. Não deixe passar.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f3-3" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">03</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Critérios de aceite alinhados</div><div class="card-desc">O dev entendeu igual você? Alinhe antes de homologar — evita o "ah, mas eu entendi diferente".</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f3-4" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">04</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">NFRs medidos</div><div class="card-desc">Desempenho, segurança, LGPD foram testados — ou só "achamos que funciona"?</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f3-5" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">05</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Cenários de erro testados</div><div class="card-desc">O sistema se comporta bem quando dá errado? Júnior testa o caminho feliz. Teste o caminho feio também.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f3-6" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">06</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Logs e observabilidade</div><div class="card-desc">Dá pra saber o que aconteceu se der problema em produção? Sem log, sem diagnóstico.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f3-7" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">07</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Plano de rollback</div><div class="card-desc">Se subir e der ruim, como volta? Sem plano de rollback, cada deploy é uma aposta.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f3-8" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">08</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Dados reais vs dados de teste</div><div class="card-desc">Foi testado com volume, perfil e sujeira de produção? Dado limpo de teste não representa o caos real.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f3-9" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">09</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Acessos e permissões</div><div class="card-desc">Cada perfil de usuário só faz o que deve? Testa com cada perfil, não só com o admin.</div></div></div></div>
+      <div class="card" onclick="toggle(this)" id="f3-10" role="checkbox" aria-checked="false" tabindex="0"><div class="card-inner"><div class="card-number">10</div><div class="check-wrap" aria-hidden="true"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="card-content"><div class="card-title">Documentação de apoio</div><div class="card-desc">Manual, FAQ, treinamento. Quem opera isso depois? O sistema existe além do go-live.</div></div></div></div>
+    </div>
+  </div>
+
+  <div class="done-banner" id="doneBanner">
+    <div class="emoji">✅</div>
+    <h3>Checklist 100% concluído</h3>
+    <p>Você cobriu todas as 30 perguntas. Agora sim o RF tem fundação sólida.</p>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="window.print()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="2" y="1" width="9" height="3" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="4" width="11" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="3.5" y="8" width="6" height="3.5" rx=".5" fill="currentColor" opacity=".6"/></svg>
+      Imprimir
+    </button>
+    <button class="btn btn-ghost" onclick="resetAll()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5A4.5 4.5 0 1 1 6.5 11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M2 3.5V6.5H5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Reiniciar
+    </button>
+    <button class="btn btn-ghost" id="copyBtn" onclick="copyLink()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4.5" y="1" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M1 5v6a1 1 0 0 0 1 1h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Copiar link
+    </button>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 30;
+  const STORAGE_KEY = 'checklist_analista_jr_v1';
+  function getState(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}catch{return{}}}
+  function saveState(s){localStorage.setItem(STORAGE_KEY,JSON.stringify(s))}
+  function toggle(card){
+    const id=card.id,s=getState(),done=card.classList.contains('done');
+    if(done){card.classList.remove('done');card.setAttribute('aria-checked','false');delete s[id]}
+    else{card.classList.add('done');card.setAttribute('aria-checked','true');s[id]=1}
+    saveState(s);updateProgress()
+  }
+  function updateProgress(){
+    const n=document.querySelectorAll('.card.done').length;
+    document.getElementById('progressCount').textContent=n+' / '+TOTAL;
+    document.getElementById('progressFill').style.width=(n/TOTAL*100)+'%';
+    document.getElementById('doneBanner').classList.toggle('show',n===TOTAL)
+  }
+  function resetAll(){
+    if(!confirm('Reiniciar checklist? O progresso será apagado.'))return;
+    localStorage.removeItem(STORAGE_KEY);
+    document.querySelectorAll('.card.done').forEach(c=>{c.classList.remove('done');c.setAttribute('aria-checked','false')});
+    updateProgress()
+  }
+  function copyLink(){
+    navigator.clipboard.writeText(window.location.href).then(()=>{
+      const btn=document.getElementById('copyBtn'),orig=btn.innerHTML;
+      btn.textContent='✓ Copiado!';setTimeout(()=>{btn.innerHTML=orig},1800)
+    })
+  }
+  document.querySelectorAll('.card').forEach(c=>{
+    c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle(c)}})
+  });
+  (function restore(){
+    const s=getState();
+    Object.keys(s).forEach(id=>{const c=document.getElementById(id);if(c){c.classList.add('done');c.setAttribute('aria-checked','true')}});
+    updateProgress()
+  })()
+</script>
+</body>
+</html>

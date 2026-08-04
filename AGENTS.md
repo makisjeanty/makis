@@ -23,7 +23,7 @@ MySQL database must exist first: `CREATE DATABASE base_central CHARACTER SET utf
 No MySQL locally? Validate migrations/tests/admin against a throwaway SQLite DB via a settings module that does `from core.settings import *` then reassigns `DATABASES` (and adds `'testserver'` to `ALLOWED_HOSTS` for `Client()`), kept outside the repo — don't edit `core/settings.py` for this. Treat it as a proxy, not proof: it can pass while the real MySQL backend fails (see the `TransactionTestCase` note above).
 
 ## App Structure
-- `core/` — project settings (`core/settings.py`), root urls (`core/urls.py`), **and** a real app: `Compra` model (`core/models.py`, `status`/`referencia_externa` indexed, `referencia_externa` unique-but-nullable), `core/views_monitoria.py` (superuser-only monitoring dashboard at `MONITORIA_URL`, default `monitoria/`, plus the `webhook_kiwify` payment-webhook view and `moderar_comentario` AJAX endpoint), `core/antispam.py`, `core/testing_helpers.py` (shared `antispam_ok()` fixture), `core/test_settings.py` (throwaway SQLite settings)
+- `core/` — project settings (`core/settings.py`), root urls (`core/urls.py`), **and** a real app: `Compra` model (`core/models.py`, `status`/`referencia_externa` indexed, `referencia_externa` unique-but-nullable), `core/views.py` (public views + health check + superuser-only monitoring dashboard at `MONITORIA_URL`, default `monitoria/`, plus the `webhook_kiwify` payment-webhook view and `moderar_comentario` AJAX endpoint), `core/antispam.py`, `core/testing_helpers.py` (shared `antispam_ok()` fixture), `core/test_settings.py` (throwaway SQLite settings), `core/fixtures/site.json` (updates `django_site` id=1 to `makisjeanty.com`)
 - `accounts/` — custom user model `PerfilUsuario` (extends `AbstractUser`) + `Habilidade` (skill with `nivel` 1-3 and `categoria`, FK via `related_name='skills'`), admin registered; public profile views implemented (`sobre` = first superuser's profile, `perfil` = profile by username). Profile page groups skills by category with a 3-star meter, and shows `perfil.filosofia` as a "Minha filosofia" card when filled in
 - `portfolio/` — `Projeto` (has both `categoria` — web/mobile/data/automacao/outro — **and** a separate `tipo` — pessoal/academico/fork, independently filterable) + `ImagemProjeto` models, admin registered with inline gallery; public views implemented (list/filter by categoria and/or tipo, cases, detail by slug)
 - `blog/` — `Categoria`, `Tag`, `Post`, `Comentario` models, admin registered; public views implemented (list/filter, categories index, detail by slug, plus a `ComentarioForm` for the comment form — new comments save with `aprovado=False` and need admin approval). Data migration seeds "Estudos de Caso"/"Resumos Técnicos"/"Desafios" categories; **nav labels this app "Estudos"** even though the app/URLs/templates are still named `blog`
@@ -39,7 +39,7 @@ No MySQL locally? Validate migrations/tests/admin against a throwaway SQLite DB 
 - `/` → `home` view (renders `templates/home.html`)
 - `/solicitar-orcamento/` → `solicitar_orcamento` (rate-limited 5/m + antispam) — lead-gen budget-estimator form; **currently only sets `enviado=True` after passing antispam/rate-limit checks, doesn't persist the submission or email/notify anyone** — real leads aren't actually captured server-side yet
 - `/produtos/kit-dev-pro/` → `produto_digital` (static sales page for the product `Compra` tracks)
-- `/<MONITORIA_URL>/`, `/<MONITORIA_URL>/api/`, `/<MONITORIA_URL>/moderar/<id>/` → `core.views_monitoria` — superuser-only dashboard, path obfuscated like `ADMIN_URL`
+- `/<MONITORIA_URL>/`, `/<MONITORIA_URL>/api/`, `/<MONITORIA_URL>/moderar/<id>/` → `core.views` (seção Monitoria) — superuser-only dashboard, path obfuscated like `ADMIN_URL`
 - `/api/webhook/kiwify/` → `webhook_kiwify` — Kiwify payment webhook, requires `KIWIFY_TOKEN` (query param or `X-Kiwify-Token` header, `hmac.compare_digest`); **fails closed (503) if `KIWIFY_TOKEN` isn't configured**, never accepts unverified requests. Idempotent via `get_or_create` on the unique `referencia_externa` column, safe against webhook retries
 - `/portfolio/`, `/portfolio/cases/`, `/portfolio/<slug>/` → `portfolio.urls` (namespace `portfolio`)
 - `/blog/`, `/blog/rss/`, `/blog/categories/`, `/blog/categoria/<slug>/`, `/blog/<slug>/` → `blog.urls` (namespace `blog`)
@@ -78,7 +78,7 @@ No MySQL locally? Validate migrations/tests/admin against a throwaway SQLite DB 
 
 ## SEO
 - `base.html` defines overridable blocks `meta_description`, `og_type`, `og_title`, `og_description` plus a conditional `og:image` tag driven by an `og_image_url` context variable that detail views pass explicitly.
-- `sitemap.xml` and `blog/rss/` build absolute URLs via `django.contrib.sites` (`SITE_ID = 1`), not the request host. The Site row is still the default `example.com` placeholder — **update it before deploying** (`/<ADMIN_URL>/sites/site/1/change/`) or sitemap/RSS links will point to the wrong domain.
+- `sitemap.xml` and `blog/rss/` build absolute URLs via `django.contrib.sites` (`SITE_ID = 1`), not the request host. The Site row must be `makisjeanty.com` — **apply the fixture before deploying**: `python manage.py loaddata core/fixtures/site.json`. Sitemap `location()` methods use `reverse()` (not hardcoded strings); `StaticViewSitemap` forces `protocol='https'`.
 - `robots.txt` is served by the `robots_txt` view in `core/urls.py` (plain text, not a static file) — disallows the admin path, points to `/sitemap.xml`.
 - JSON-LD: `base.html` emits `Organization` schema everywhere via `{% block structured_data %}`; `blog/detalhe.html` adds `Article`, `portfolio/detalhe.html` adds `CreativeWork` (both render alongside, not instead of, the base block). User-controlled fields go through `|escapejs` to stay JSON-safe.
 
@@ -110,3 +110,10 @@ No MySQL locally? Validate migrations/tests/admin against a throwaway SQLite DB 
 - Accessibility: skip-to-content link (`#conteudo-principal`) first in `base.html`'s body; nav dropdown buttons carry `aria-haspopup`/`aria-expanded` synced by `toggleDropdown()` in `main.js` (also closes on `Escape`). Heading hierarchy is h1→h2→h3 everywhere, no skipped levels — don't demote card-grid titles back to h3 for font-size reasons, use CSS classes for that.
 - Migrations dropping a field that might hold real data need a `RunPython` step to migrate that data into its replacement *before* the `RemoveField` — see `accounts/migrations/0002_remove_perfilusuario_habilidades_and_more.py` (`CreateModel` → `RunPython` → `RemoveField`) for the pattern. Don't assume the field is empty just because the local DB is.
 - Below-the-fold images (list/gallery/related cards) use `loading="lazy"`; each page's likely LCP element (avatar, blog cover, project hero image) intentionally doesn't.
+
+## Anti-patterns (don't do this)
+- Don't run `apply_patch` for refactors >50 lines (use Edit, not Patch)
+- Don't suggest changing `AUTH_USER_MODEL` (would require full migration rebuild)
+- Don't run `manage.py migrate` on production without backing up the DB first
+- Don't disable antispam on `/solicitar-orcamento/` "to test" (you'll get spammed in 5min)
+- Don't change `--accent` value without re-running the WCAG check on all 3 tiers

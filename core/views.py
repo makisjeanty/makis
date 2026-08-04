@@ -1,12 +1,10 @@
 """
-views_monitoria.py — Painel de Monitoria do Makis Digital
+views.py — Views do app core (Makis Digital)
 
-Três frentes:
-  1. Vendas — modelo Compra + webhook Kiwify
-  2. Servidor — saúde do banco, Redis, contadores
-  3. Moderação — comentários pendentes, tópicos, chat
-
-Acesso restrito a superusers via decorador customizado.
+Seções:
+  1. Views públicas  — home, produto_digital, solicitar_orcamento, robots_txt
+  2. Utilitários     — health_check, tratamento de erros (404/500)
+  3. Monitoria       — painel superuser, API JSON, moderação, webhook Kiwify
 """
 
 import hmac
@@ -16,26 +14,114 @@ from datetime import timedelta
 from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth.decorators import login_required
-from django.core.cache import caches
+from django.core.cache import cache, caches
 from django.db import connection
-from django.http import JsonResponse, HttpResponseForbidden
-from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.http import require_GET, require_POST
 from decouple import config
+from django_ratelimit.decorators import ratelimit
 
 from blog.models import Comentario, Post
 from chat.models import Mensagem
-from comunidade.models import Topico, Resposta
+from comunidade.models import Topico
+from core.antispam import bloquear_submissao_suspeita, gerar_timestamp_assinado
 from core.models import Compra
 from portfolio.models import Projeto
 
 logger = logging.getLogger('django.request')
 
+# URL secreta do admin (vinda do .env)
+ADMIN_URL = config('ADMIN_URL', default='gestao-dmh8g6skcx')
+
 
 # ─────────────────────────────────────────────────────────────
-#  Decorador: só superuser passa
+#  1. Views públicas
+# ─────────────────────────────────────────────────────────────
+
+def home(request):
+    return render(request, 'home.html', {
+        'site_name': 'Makis Digital'
+    })
+
+
+def produto_digital(request):
+    return render(request, 'core/produto_digital.html')
+
+
+@ratelimit(key='ip', rate='5/m', method='POST', block=False)
+def solicitar_orcamento(request):
+    enviado = False
+
+    if request.method == 'POST' and not bloquear_submissao_suspeita(request):
+        enviado = True
+
+    return render(request, 'core/solicitar_orcamento.html', {
+        'antispam_ts': gerar_timestamp_assinado(),
+        'enviado': enviado,
+    })
+
+
+def robots_txt(request):
+    """robots.txt: libera indexação geral, esconde o painel admin e aponta para o sitemap."""
+    linhas = [
+        'User-agent: *',
+        f'Disallow: /{ADMIN_URL}/',
+        '',
+        f'Sitemap: {request.scheme}://{request.get_host()}/sitemap.xml',
+    ]
+    return HttpResponse('\n'.join(linhas), content_type='text/plain')
+
+
+# ─────────────────────────────────────────────────────────────
+#  2. Utilitários — health check e tratamento de erros
+# ─────────────────────────────────────────────────────────────
+
+def health_check(request):
+    """Endpoint de checagem de saúde com validação de dependências (sem expor segredos)."""
+    db_ok = True
+    redis_ok = True
+    storage_ok = True
+
+    try:
+        connection.ensure_connection()
+    except Exception:
+        db_ok = False
+
+    try:
+        cache.set('_health_check', '1', 5)
+        redis_ok = (cache.get('_health_check') == '1')
+    except Exception:
+        redis_ok = False
+
+    status_code = 200 if (db_ok and redis_ok and storage_ok) else 503
+    return JsonResponse({
+        'status': 'ok' if status_code == 200 else 'degraded',
+        'database': 'ok' if db_ok else 'error',
+        'redis': 'ok' if redis_ok else 'error',
+        'storage': 'ok' if storage_ok else 'error',
+    }, status=status_code)
+
+
+def page_not_found(request, exception=None):
+    return render(request, '404.html', status=404)
+
+
+def server_error(request):
+    return render(request, '500.html', status=500)
+
+
+# ─────────────────────────────────────────────────────────────
+#  3. Monitoria — painel de administração interno
+#
+#  Três frentes:
+#    a. Vendas      — modelo Compra + webhook Kiwify
+#    b. Servidor    — saúde do banco, Redis, contadores
+#    c. Moderação   — comentários pendentes, tópicos, chat
+#
+#  Acesso restrito a superusers via decorador customizado.
 # ─────────────────────────────────────────────────────────────
 
 def superuser_required(view_func):
@@ -48,9 +134,7 @@ def superuser_required(view_func):
     return _wrapped
 
 
-# ─────────────────────────────────────────────────────────────
-#  Helpers de saúde do servidor
-# ─────────────────────────────────────────────────────────────
+# ── Helpers de saúde do servidor ──
 
 def _checar_banco():
     try:
@@ -110,9 +194,7 @@ def _contadores():
     }
 
 
-# ─────────────────────────────────────────────────────────────
-#  View principal: Painel de Monitoria
-# ─────────────────────────────────────────────────────────────
+# ── Views do painel ──
 
 @superuser_required
 def painel_monitoria(request):
@@ -169,13 +251,10 @@ def painel_monitoria(request):
     return render(request, 'core/monitoria.html', context)
 
 
-# ─────────────────────────────────────────────────────────────
-#  API JSON — dados em tempo real para o painel (fetch AJAX)
-# ─────────────────────────────────────────────────────────────
-
 @superuser_required
 @require_GET
 def api_monitoria(request):
+    """API JSON — dados em tempo real para o painel (fetch AJAX)."""
     dados = _contadores()
     dados['banco_ok'] = _checar_banco()
     dados['redis_ok'] = _checar_redis()
@@ -183,13 +262,10 @@ def api_monitoria(request):
     return JsonResponse(dados)
 
 
-# ─────────────────────────────────────────────────────────────
-#  AJAX inline — aprovar/rejeitar comentário sem sair do painel
-# ─────────────────────────────────────────────────────────────
-
 @superuser_required
 @require_POST
 def moderar_comentario(request, comentario_id):
+    """AJAX inline — aprovar/rejeitar comentário sem sair do painel."""
     acao = request.POST.get('acao')  # 'aprovar' ou 'rejeitar'
     comentario = get_object_or_404(Comentario, pk=comentario_id)
 
@@ -204,9 +280,7 @@ def moderar_comentario(request, comentario_id):
     return JsonResponse({'ok': False, 'mensagem': 'Ação inválida.'}, status=400)
 
 
-# ─────────────────────────────────────────────────────────────
-#  Webhook Kiwify — recebe POST com confirmação de compra
-# ─────────────────────────────────────────────────────────────
+# ── Webhook Kiwify ──
 
 KIWIFY_TOKEN = config('KIWIFY_TOKEN', default='')
 
