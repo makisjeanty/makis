@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Compra
+from .models import Compra, LeadOrcamento
 
 
 @admin.register(Compra)
@@ -43,3 +43,18 @@ class CompraAdmin(admin.ModelAdmin):
     @admin.action(description='Marcar como Reembolsada')
     def marcar_reembolsada(self, request, queryset):
         queryset.update(status='reembolsada')
+
+
+@admin.register(LeadOrcamento)
+class LeadOrcamentoAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'email', 'whatsapp', 'tipos_projeto', 'prazo', 'atendido', 'criado_em')
+    list_filter = ('atendido', 'prazo', 'criado_em')
+    search_fields = ('nome', 'email', 'whatsapp', 'descricao')
+    readonly_fields = ('criado_em',)
+    date_hierarchy = 'criado_em'
+    actions = ['marcar_atendido']
+
+    @admin.action(description='Marcar como Atendido')
+    def marcar_atendido(self, request, queryset):
+        queryset.update(atendido=True)
+

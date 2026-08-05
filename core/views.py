@@ -56,7 +56,25 @@ def solicitar_orcamento(request):
     enviado = False
 
     if request.method == 'POST' and not bloquear_submissao_suspeita(request):
-        enviado = True
+        nome = request.POST.get('nome', '').strip()
+        email = request.POST.get('email', '').strip()
+        whatsapp = request.POST.get('whatsapp', '').strip()
+        tipos_projeto = ', '.join(request.POST.getlist('tipo_projeto'))
+        prazo = request.POST.get('prazo', '').strip()
+        suporte = request.POST.get('suporte', '').strip()
+        descricao = request.POST.get('descricao', '').strip()
+
+        if nome and email and descricao:
+            LeadOrcamento.objects.create(
+                nome=nome,
+                email=email,
+                whatsapp=whatsapp,
+                tipos_projeto=tipos_projeto,
+                prazo=prazo,
+                suporte=suporte,
+                descricao=descricao
+            )
+            enviado = True
 
     return render(request, 'core/solicitar_orcamento.html', {
         'antispam_ts': gerar_timestamp_assinado(),

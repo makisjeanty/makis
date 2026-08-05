@@ -56,3 +56,27 @@ class Compra(models.Model):
 
     def __str__(self):
         return f'{self.comprador_nome} — {self.produto} ({self.get_status_display()})'
+
+
+class LeadOrcamento(models.Model):
+    """
+    Registra as solicitações de orçamento e consultoria recebidas via formulário público.
+    """
+    nome = models.CharField(max_length=200, verbose_name='Nome / Empresa')
+    email = models.EmailField(verbose_name='E-mail')
+    whatsapp = models.CharField(max_length=50, blank=True, verbose_name='WhatsApp')
+    tipos_projeto = models.CharField(max_length=255, verbose_name='Tipos de Projeto')
+    prazo = models.CharField(max_length=50, verbose_name='Prazo')
+    suporte = models.CharField(max_length=50, verbose_name='Suporte')
+    descricao = models.TextField(verbose_name='Descrição do Projeto')
+    atendido = models.BooleanField(default=False, verbose_name='Atendido/Respondido')
+    criado_em = models.DateTimeField(auto_now_add=True, verbose_name='Data de Envio')
+
+    class Meta:
+        ordering = ['-criado_em']
+        verbose_name = 'Solicitação de Orçamento'
+        verbose_name_plural = 'Solicitações de Orçamento'
+
+    def __str__(self):
+        return f'{self.nome} — {self.email} ({self.criado_em.strftime("%d/%m/%Y")})'
+
