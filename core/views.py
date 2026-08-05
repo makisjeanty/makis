@@ -28,7 +28,7 @@ from blog.models import Comentario, Post
 from chat.models import Mensagem
 from comunidade.models import Topico
 from core.antispam import bloquear_submissao_suspeita, gerar_timestamp_assinado
-from core.models import Compra
+from core.models import Compra, LeadOrcamento
 from portfolio.models import Projeto
 
 logger = logging.getLogger('django.request')
