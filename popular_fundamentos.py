@@ -479,24 +479,47 @@ Etapa.objects.get_or_create(licao=lic2_3, ordem=3, defaults={
 })
 
 # =============================================================================
-# PILAR 3 — Algoritmos: Busca, Ordenação e Complexidade
-# Binary search, sorting, complexidade na prática
+# PILAR 3 — Funções, Composição e o Poder dos Decorators
 # =============================================================================
 
 mod3, _ = Modulo.objects.get_or_create(
     curso=curso,
     ordem=3,
-    defaults={'titulo': 'Pilar 3: Algoritmos — Busca, Ordenação e Complexidade'}
+    defaults={'titulo': 'Pilar 3: Funções, Composição e Decorators'}
 )
 
 # --------------------------------------------------
-# Lição 3.1 — Busca Linear vs Busca Binária
+# Lição 3.1 — First-Class Functions, Closures e Decorators
 # --------------------------------------------------
 lic3_1, _ = Licao.objects.get_or_create(
     modulo=mod3,
     ordem=1,
-    defaults={'titulo': 'Busca Linear vs Busca Binária', 'duracao_minutos': 9}
+    defaults={'titulo': 'First-Class Functions, Closures e Decorators', 'duracao_minutos': 9}
 )
+
+Etapa.objects.get_or_create(licao=lic3_1, ordem=1, defaults={
+    'tipo': 'slide',
+    'titulo': 'First-Class Functions & Closures no Python',
+    'conteudo': (
+        '• First-Class Functions: Em Python, funções são objetos comuns. Podem ser passadas como argumentos, atribuídas a variáveis e retornadas de outras funções.\n'
+        '• Closure: Ocorre quando uma função interna "lembra" do ambiente e das variáveis onde foi criada, mesmo após a função externa ter finalizado.\n\n'
+        'Exemplo no seu Projeto (@ratelimit em blog/views.py):\n'
+        'A sintaxe @ratelimit(key="ip", rate="10/m") é um açúcar sintático (Syntax Sugar). '
+        'Ela equivale a: detalhe_post = ratelimit(key="ip", rate="10/m")(detalhe_post).'
+    ),
+})
+
+Etapa.objects.get_or_create(licao=lic3_1, ordem=2, defaults={
+    'tipo': 'quiz',
+    'pergunta': 'O que é uma Closure em Python?',
+    'opcoes_json': [
+        'Uma função interna que preserva o acesso a variáveis do escopo da função externa onde foi criada',
+        'Um método especial para fechar conexões de banco de dados',
+        'Uma função que só pode ser executada uma única vez',
+        'Um erro de compilação quando esquecemos do return',
+    ],
+    'resposta_correta': 'Uma função interna que preserva o acesso a variáveis do escopo da função externa onde foi criada',
+})
 
 Etapa.objects.get_or_create(licao=lic3_1, ordem=1, defaults={
     'tipo': 'slide',
