@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Makis Academy — Trilhas Interativas de Engenharia & Código{% endblock %}
+{% block title %}Makis Academy — Trilhas de Engenharia de Software & IA{% endblock %}
 {% block meta_description %}Aprenda Python, Django, Engenharia de IA e Arquitetura de Software com lições interativas, desafios práticos e feedback imediato.{% endblock %}
 
 {% block content %}
@@ -12,84 +12,194 @@
         <div class="text-center mb-16 relative">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style="background: rgba(204, 120, 92, 0.12); border: 1px solid rgba(204, 120, 92, 0.3); backdrop-filter: blur(8px);">
                 <span class="w-2 h-2 rounded-full animate-pulse" style="background: var(--accent);"></span>
-                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--accent);">🎓 Makis Academy · Aprendizado Prático</span>
+                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--accent);">🎓 Makis Academy · Formação Contínua</span>
             </div>
             
             <h1 class="lw-display text-4xl sm:text-5xl md:text-6xl mb-6 font-extrabold tracking-tight">
-                Trilhas de <span style="background: linear-gradient(135deg, var(--accent-light), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Código & Arquitetura</span>
+                Trilhas de <span style="background: linear-gradient(135deg, var(--accent-light), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Engenharia & IA</span>
             </h1>
             <p class="lw-muted text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-                Escolha a sua trilha de evolução. Cursos organizados por módulos sequenciais com lições práticas, quizzes e exercitadores de código.
+                Jornada estruturada por níveis de complexidade. Do primeiro script em Python até a arquitetura de alta escala e sistemas autônomos de IA.
             </p>
         </div>
 
-        <!-- Grid de Cursos Organizado -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for curso in cursos %}
-            <div class="group relative flex flex-col justify-between p-7 transition-all duration-300 hover:-translate-y-2" 
-                 style="background: linear-gradient(145deg, rgba(48, 48, 46, 0.9), rgba(34, 34, 32, 0.98)); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.35);">
-                
-                <!-- Glow Effect no Hover -->
-                <div class="absolute -inset-0.5 rounded-[24px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm pointer-events-none" 
-                     style="background: linear-gradient(135deg, rgba(204, 120, 92, 0.35), transparent);"></div>
+        <!-- Seção 1: Trilhas Fundamentais -->
+        <div class="mb-16">
+            <div class="flex items-center gap-3 mb-8 border-b border-neutral-800 pb-4">
+                <span class="text-2xl">🌱</span>
+                <div>
+                    <h2 class="text-xl font-bold text-white" style="font-family: 'Space Grotesk', sans-serif;">1. Fundamentos & Primeiros Passos</h2>
+                    <p class="lw-muted text-xs">Conceitos fundamentais de programação e lógica essencial.</p>
+                </div>
+            </div>
 
-                <div class="relative z-10">
-                    <!-- Top Bar Card -->
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner" style="background: rgba(38, 38, 36, 0.9); border: 1px solid rgba(255,255,255,0.1);">
-                            {{ curso.icone }}
-                        </div>
-                        
-                        {% if curso.nivel == 'iniciante' %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for curso in cursos %}
+                {% if curso.nivel == 'iniciante' %}
+                <div class="group relative flex flex-col justify-between p-7 transition-all duration-300 hover:-translate-y-2" 
+                     style="background: linear-gradient(145deg, rgba(48, 48, 46, 0.9), rgba(34, 34, 32, 0.98)); border: 1px solid rgba(154, 176, 146, 0.2); border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.35);">
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner" style="background: rgba(38, 38, 36, 0.9); border: 1px solid rgba(255,255,255,0.1);">
+                                {{ curso.icone }}
+                            </div>
                             <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider" style="background: rgba(154, 176, 146, 0.15); color: #9AB092; border: 1px solid rgba(154, 176, 146, 0.3);">Iniciante</span>
-                        {% elif curso.nivel == 'intermediario' %}
-                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3);">Intermediário</span>
-                        {% else %}
-                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider" style="background: rgba(204, 120, 92, 0.15); color: var(--accent); border: 1px solid rgba(204, 120, 92, 0.3);">Avançado</span>
-                        {% endif %}
-                    </div>
-
-                    <!-- Título & Descrição -->
-                    <h2 class="text-2xl font-bold mb-3 group-hover:text-white transition-colors" style="font-family: 'Space Grotesk', sans-serif; color: #F2F0E9;">
-                        {{ curso.titulo }}
-                    </h2>
-                    <p class="lw-muted text-sm leading-relaxed mb-6">
-                        {{ curso.descricao }}
-                    </p>
-
-                    <!-- Pílula de Estrutura Interna (Módulos & Lições) -->
-                    <div class="grid grid-cols-3 gap-2 p-3 rounded-xl mb-6 text-center" style="background: rgba(20, 20, 26, 0.6); border: 1px solid rgba(255,255,255,0.05);">
-                        <div>
-                            <span class="block text-base font-extrabold text-white">{{ curso.modulos.count }}</span>
-                            <span class="text-[10px] uppercase font-semibold text-neutral-400">Módulos</span>
                         </div>
-                        <div>
-                            <span class="block text-base font-extrabold text-white">{{ curso.total_licoes }}</span>
-                            <span class="text-[10px] uppercase font-semibold text-neutral-400">Lições</span>
-                        </div>
-                        <div>
-                            <span class="block text-base font-extrabold text-amber-400">~{{ curso.duracao_total }}m</span>
-                            <span class="text-[10px] uppercase font-semibold text-neutral-400">Duração</span>
+
+                        <h3 class="text-2xl font-bold mb-3 group-hover:text-white transition-colors" style="font-family: 'Space Grotesk', sans-serif; color: #F2F0E9;">
+                            {{ curso.titulo }}
+                        </h3>
+                        <p class="lw-muted text-sm leading-relaxed mb-6">
+                            {{ curso.descricao }}
+                        </p>
+
+                        <div class="grid grid-cols-3 gap-2 p-3 rounded-xl mb-6 text-center" style="background: rgba(20, 20, 26, 0.6); border: 1px solid rgba(255,255,255,0.05);">
+                            <div>
+                                <span class="block text-base font-extrabold text-white">{{ curso.modulos.count }}</span>
+                                <span class="text-[10px] uppercase font-semibold text-neutral-400">Módulos</span>
+                            </div>
+                            <div>
+                                <span class="block text-base font-extrabold text-white">{{ curso.total_licoes }}</span>
+                                <span class="text-[10px] uppercase font-semibold text-neutral-400">Lições</span>
+                            </div>
+                            <div>
+                                <span class="block text-base font-extrabold text-amber-400">~{{ curso.duracao_total }}m</span>
+                                <span class="text-[10px] uppercase font-semibold text-neutral-400">Duração</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Footer Card -->
-                <div class="relative z-10 pt-2">
-                    <a href="{% url 'cursos:trilha' curso.slug %}" 
-                       class="lw-btn lw-btn--primary w-full py-3.5 text-sm font-bold flex items-center justify-center gap-2 group-hover:shadow-lg transition-all"
-                       style="border-radius: 14px;">
-                        <span>Iniciar Trilha</span>
-                        <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </a>
+                    <div class="relative z-10 pt-2">
+                        <a href="{% url 'cursos:trilha' curso.slug %}" class="lw-btn lw-btn--primary w-full py-3.5 text-sm font-bold flex items-center justify-center gap-2 group-hover:shadow-lg transition-all" style="border-radius: 14px;">
+                            <span>Iniciar Trilha</span>
+                            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                    </div>
                 </div>
+                {% endif %}
+                {% endfor %}
             </div>
-            {% empty %}
-            <div class="col-span-full text-center py-20 lw-card" style="border-radius: 24px;">
-                <p class="lw-muted text-lg">Nenhuma trilha publicada no momento.</p>
-            </div>
-            {% endfor %}
         </div>
+
+        <!-- Seção 2: Arquitetura & Fundamentos Sólidos -->
+        <div class="mb-16">
+            <div class="flex items-center gap-3 mb-8 border-b border-neutral-800 pb-4">
+                <span class="text-2xl">🧱</span>
+                <div>
+                    <h2 class="text-xl font-bold text-white" style="font-family: 'Space Grotesk', sans-serif;">2. Arquitetura & Conhecimento Perpétuo</h2>
+                    <p class="lw-muted text-xs">Pilares de engenharia, estrutura de dados, concorrência e gerenciamento de memória.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for curso in cursos %}
+                {% if curso.nivel == 'intermediario' %}
+                <div class="group relative flex flex-col justify-between p-7 transition-all duration-300 hover:-translate-y-2" 
+                     style="background: linear-gradient(145deg, rgba(48, 48, 46, 0.9), rgba(34, 34, 32, 0.98)); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.35);">
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner" style="background: rgba(38, 38, 36, 0.9); border: 1px solid rgba(255,255,255,0.1);">
+                                {{ curso.icone }}
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3);">Intermediário</span>
+                        </div>
+
+                        <h3 class="text-2xl font-bold mb-3 group-hover:text-white transition-colors" style="font-family: 'Space Grotesk', sans-serif; color: #F2F0E9;">
+                            {{ curso.titulo }}
+                        </h3>
+                        <p class="lw-muted text-sm leading-relaxed mb-6">
+                            {{ curso.descricao }}
+                        </p>
+
+                        <div class="grid grid-cols-3 gap-2 p-3 rounded-xl mb-6 text-center" style="background: rgba(20, 20, 26, 0.6); border: 1px solid rgba(255,255,255,0.05);">
+                            <div>
+                                <span class="block text-base font-extrabold text-white">{{ curso.modulos.count }}</span>
+                                <span class="text-[10px] uppercase font-semibold text-neutral-400">Módulos</span>
+                            </div>
+                            <div>
+                                <span class="block text-base font-extrabold text-white">{{ curso.total_licoes }}</span>
+                                <span class="text-[10px] uppercase font-semibold text-neutral-400">Lições</span>
+                            </div>
+                            <div>
+                                <span class="block text-base font-extrabold text-amber-400">~{{ curso.duracao_total }}m</span>
+                                <span class="text-[10px] uppercase font-semibold text-neutral-400">Duração</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative z-10 pt-2">
+                        <a href="{% url 'cursos:trilha' curso.slug %}" class="lw-btn lw-btn--primary w-full py-3.5 text-sm font-bold flex items-center justify-center gap-2 group-hover:shadow-lg transition-all" style="border-radius: 14px;">
+                            <span>Iniciar Trilha</span>
+                            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Seção 3: Especialização Avançada & IA -->
+        <div>
+            <div class="flex items-center gap-3 mb-8 border-b border-neutral-800 pb-4">
+                <span class="text-2xl">🤖</span>
+                <div>
+                    <h2 class="text-xl font-bold text-white" style="font-family: 'Space Grotesk', sans-serif;">3. Especialização Avançada & Agentes Autônomos</h2>
+                    <p class="lw-muted text-xs">Sistemas distribuídos, engenharia de prompts e LLMs integrados ao backend.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for curso in cursos %}
+                {% if curso.nivel == 'avancado' %}
+                <div class="group relative flex flex-col justify-between p-7 transition-all duration-300 hover:-translate-y-2" 
+                     style="background: linear-gradient(145deg, rgba(48, 48, 46, 0.9), rgba(34, 34, 32, 0.98)); border: 1px solid rgba(204, 120, 92, 0.35); border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.35);">
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner" style="background: rgba(38, 38, 36, 0.9); border: 1px solid rgba(255,255,255,0.1);">
+                                {{ curso.icone }}
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider" style="background: rgba(204, 120, 92, 0.15); color: var(--accent); border: 1px solid rgba(204, 120, 92, 0.3);">Avançado</span>
+                        </div>
+
+                        <h3 class="text-2xl font-bold mb-3 group-hover:text-white transition-colors" style="font-family: 'Space Grotesk', sans-serif; color: #F2F0E9;">
+                            {{ curso.titulo }}
+                        </h3>
+                        <p class="lw-muted text-sm leading-relaxed mb-6">
+                            {{ curso.descricao }}
+                        </p>
+
+                        <div class="grid grid-cols-3 gap-2 p-3 rounded-xl mb-6 text-center" style="background: rgba(20, 20, 26, 0.6); border: 1px solid rgba(255,255,255,0.05);">
+                            <div>
+                                <span class="block text-base font-extrabold text-white">{{ curso.modulos.count }}</span>
+                                <span class="text-[10px] uppercase font-semibold text-neutral-400">Módulos</span>
+                            </div>
+                            <div>
+                                <span class="block text-base font-extrabold text-white">{{ curso.total_licoes }}</span>
+                                <span class="text-[10px] uppercase font-semibold text-neutral-400">Lições</span>
+                            </div>
+                            <div>
+                                <span class="block text-base font-extrabold text-amber-400">~{{ curso.duracao_total }}m</span>
+                                <span class="text-[10px] uppercase font-semibold text-neutral-400">Duração</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative z-10 pt-2">
+                        <a href="{% url 'cursos:trilha' curso.slug %}" class="lw-btn lw-btn--primary w-full py-3.5 text-sm font-bold flex items-center justify-center gap-2 group-hover:shadow-lg transition-all" style="border-radius: 14px;">
+                            <span>Iniciar Trilha</span>
+                            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
 </section>
 {% endblock %}
