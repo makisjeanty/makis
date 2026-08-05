@@ -143,11 +143,19 @@
         </div>
     </div>
 
-    <!-- Caminho Interativo de Nós (Nodes Path) -->
+    <!-- Caminho Interativo de Nós (Nodes Path Organizado por Módulo) -->
     <div class="node-path-container">
         <div class="node-path-line"></div>
 
         {% for modulo in modulos %}
+            <!-- Header do Módulo -->
+            <div class="relative z-10 my-4 text-center">
+                <span class="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg" 
+                      style="background: rgba(30, 30, 40, 0.95); color: var(--accent-light); border: 1px solid rgba(204, 120, 92, 0.3);">
+                    Módulo {{ modulo.ordem }}: {{ modulo.titulo }}
+                </span>
+            </div>
+
             {% for licao in modulo.licoes.all %}
             <div class="node-item">
                 {% if forloop.parentloop.first and forloop.first %}
@@ -159,21 +167,21 @@
                 </a>
                 <span class="node-title-badge" style="color: var(--accent-light);">▶ {{ licao.titulo }}</span>
                 {% elif forloop.parentloop.first and forloop.counter == 2 %}
-                <!-- Nó Bloqueado (Lock) -->
-                <div class="node-button node-button--locked" title="Complete a lição anterior para desbloquear">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                <!-- Nó Desbloqueado/Próximo -->
+                <a href="{% url 'cursos:licao' licao.id %}" class="node-button node-button--active" style="filter: brightness(0.85);" title="{{ licao.titulo }}">
+                    <svg class="w-7 h-7 fill-current ml-1" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
                     </svg>
-                </div>
-                <span class="node-title-badge opacity-60">🔒 {{ licao.titulo }}</span>
+                </a>
+                <span class="node-title-badge" style="color: var(--text);">▶ {{ licao.titulo }}</span>
                 {% else %}
-                <!-- Outros Nós Bloqueados -->
-                <div class="node-button node-button--locked">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                <!-- Outros Nós da Trilha -->
+                <a href="{% url 'cursos:licao' licao.id %}" class="node-button node-button--active" style="filter: brightness(0.75);" title="{{ licao.titulo }}">
+                    <svg class="w-7 h-7 fill-current ml-1" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
                     </svg>
-                </div>
-                <span class="node-title-badge opacity-40">🔒 {{ licao.titulo }}</span>
+                </a>
+                <span class="node-title-badge opacity-90">▶ {{ licao.titulo }}</span>
                 {% endif %}
             </div>
             {% endfor %}
