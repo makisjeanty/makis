@@ -184,10 +184,16 @@
         <div class="node-path-line"></div>
 
         {% for modulo in modulos %}
-            <!-- Marco do Módulo (Milestone Header) -->
-            <div class="module-milestone-header text-center">
-                <span class="text-[10px] font-extrabold uppercase tracking-widest block mb-0.5" style="color: var(--accent-light);">MÓDULO {{ modulo.ordem }}</span>
-                <h2 class="text-sm font-bold text-white">{{ modulo.titulo }}</h2>
+            <!-- Marco do Módulo / Capítulo (Milestone Header com Ícone e Descrição) -->
+            <div class="module-milestone-header text-center max-w-sm mx-auto">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-2 text-2xl" style="background: rgba(204, 120, 92, 0.15); border: 1px solid rgba(204, 120, 92, 0.3);">
+                    {{ modulo.icone|default:"📌" }}
+                </div>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest block mb-0.5" style="color: var(--accent-light);">CAPÍTULO {{ modulo.ordem }}</span>
+                <h2 class="text-base font-bold text-white mb-1">{{ modulo.titulo }}</h2>
+                {% if modulo.descricao %}
+                <p class="text-xs lw-muted max-w-xs mx-auto leading-relaxed">{{ modulo.descricao }}</p>
+                {% endif %}
             </div>
 
             {% for licao in modulo.licoes.all %}
@@ -195,39 +201,39 @@
                 {% if licao.concluidade %}
                 <!-- Lição Concluída (Emerald Green) -->
                 <a href="{% url 'cursos:licao' licao.id %}" class="node-button node-button--completed" title="{{ licao.titulo }} (Concluída)">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                    </svg>
+                    <span class="text-2xl">{{ licao.icone|default:"✓" }}</span>
                 </a>
-                <div class="node-title-card flex items-center gap-1.5" style="border-color: rgba(16, 185, 129, 0.4);">
-                    <span class="text-emerald-400">✓ {{ licao.titulo }}</span>
+                <div class="node-title-card text-center" style="border-color: rgba(16, 185, 129, 0.4);">
+                    <span class="text-emerald-400 font-bold block">{{ licao.icone|default:"🎯" }} {{ licao.titulo }}</span>
+                    {% if licao.descricao %}<span class="text-[10px] text-gray-400 block font-normal mt-0.5 max-w-[200px] whitespace-normal">{{ licao.descricao }}</span>{% endif %}
                 </div>
 
                 {% elif licao.liberada %}
-                <!-- Lição Liberada / Próxima (Terracota Active) -->
+                <!-- Lição Liberada / Próxima (Terracota Active com Ícone Cobra/Cérebro) -->
                 <a href="{% url 'cursos:licao' licao.id %}" class="node-button node-button--active" aria-label="Iniciar {{ licao.titulo }}">
-                    <svg class="w-9 h-9 fill-current ml-1" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
+                    <span class="text-3xl animate-bounce">{{ licao.icone|default:"🐍" }}</span>
                 </a>
-                <div class="node-title-card flex items-center gap-1.5" style="border-color: rgba(204, 120, 92, 0.4);">
-                    <span class="w-2 h-2 rounded-full animate-ping bg-amber-400"></span>
-                    <span style="color: var(--accent-light);">{{ licao.titulo }}</span>
+                <div class="node-title-card text-center" style="border-color: rgba(204, 120, 92, 0.4);">
+                    <div class="flex items-center justify-center gap-1">
+                        <span class="w-2 h-2 rounded-full animate-ping bg-amber-400"></span>
+                        <span style="color: var(--accent-light);" class="font-bold">{{ licao.titulo }}</span>
+                    </div>
+                    {% if licao.descricao %}<span class="text-[10px] text-gray-300 block font-normal mt-0.5 max-w-[200px] whitespace-normal">{{ licao.descricao }}</span>{% endif %}
                 </div>
 
                 {% else %}
                 <!-- Lição Bloqueada (Cadeado Lock) -->
                 <div class="node-button node-button--locked opacity-60" style="background: #1e1e28; border: 2px solid #2d2d3d; color: #656577; cursor: not-allowed; box-shadow: 0 6px 0 #12121a;" title="Conclua as lições anteriores para desbloquear">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
+                    <span class="text-2xl opacity-40">{{ licao.icone|default:"🔒" }}</span>
                 </div>
-                <div class="node-title-card opacity-50">
-                    <span>🔒 {{ licao.titulo }}</span>
+                <div class="node-title-card text-center opacity-50">
+                    <span class="font-bold block">🔒 {{ licao.titulo }}</span>
+                    {% if licao.descricao %}<span class="text-[10px] text-gray-500 block font-normal mt-0.5 max-w-[200px] whitespace-normal">{{ licao.descricao }}</span>{% endif %}
                 </div>
                 {% endif %}
             </div>
             {% endfor %}
+
 
         {% empty %}
         <div class="text-center py-12 lw-card" style="border-radius: 20px;">

@@ -35,7 +35,11 @@ curso, _ = Curso.objects.get_or_create(
 mod1, _ = Modulo.objects.get_or_create(
     curso=curso,
     ordem=1,
-    defaults={'titulo': 'Pilar 1: Como o Computador Executa Seu Código'}
+    defaults={
+        'titulo': 'Pilar 1: Como o Computador Executa Seu Código',
+        'descricao': 'Entenda a alocação de memória no Heap e na Stack, o ciclo de vida das variáveis e o comportamento de ponteiros em Python.',
+        'icone': '💾'
+    }
 )
 
 # --------------------------------------------------
@@ -44,7 +48,12 @@ mod1, _ = Modulo.objects.get_or_create(
 lic1_1, _ = Licao.objects.get_or_create(
     modulo=mod1,
     ordem=1,
-    defaults={'titulo': 'Stack e Heap: onde vivem seus dados', 'duracao_minutos': 8}
+    defaults={
+        'titulo': 'Stack e Heap: onde vivem seus dados',
+        'descricao': 'Descubra a diferença entre alocação automática na Stack e alocação dinâmica de objetos no Heap.',
+        'icone': '🧠',
+        'duracao_minutos': 8
+    }
 )
 
 Etapa.objects.get_or_create(licao=lic1_1, ordem=1, defaults={
@@ -78,7 +87,7 @@ Etapa.objects.get_or_create(licao=lic1_1, ordem=3, defaults={
         'Porque o Django bloqueia acesso concorrente a arquivos python',
         'Porque são apagadas da memória a cada requisição',
     ],
-    'resposta_correta': 'Porque por serem imutáveis no Heap, nenhum worker pode alterar seu valor e causar race condition',
+    'resposta_correta': 'Porque por serem imutáveis no Heap, nenhum worker alterando seu valor e causando race condition',
 })
 
 Etapa.objects.get_or_create(licao=lic1_1, ordem=4, defaults={
@@ -99,8 +108,14 @@ Etapa.objects.get_or_create(licao=lic1_1, ordem=4, defaults={
 lic1_2, _ = Licao.objects.get_or_create(
     modulo=mod1,
     ordem=2,
-    defaults={'titulo': 'Valor vs Referência & A Imutabilidade do QueryDict', 'duracao_minutos': 10}
+    defaults={
+        'titulo': 'Valor vs Referência & A Imutabilidade do QueryDict',
+        'descricao': 'Aprenda como Python passa argumentos por referência e como mutabilidade gera bugs invisíveis em requisições.',
+        'icone': '🐍',
+        'duracao_minutos': 10
+    }
 )
+
 
 Etapa.objects.get_or_create(licao=lic1_2, ordem=2, defaults={
     'tipo': 'slide',

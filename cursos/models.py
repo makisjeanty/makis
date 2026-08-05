@@ -33,6 +33,8 @@ class Curso(models.Model):
 class Modulo(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='modulos')
     titulo = models.CharField(max_length=200, verbose_name='Título do Módulo')
+    descricao = models.TextField(blank=True, verbose_name='Descrição do Módulo')
+    icone = models.CharField(max_length=50, default='📌', help_text='Emoji ou símbolo do capítulo: 🐍, 🧱, ⚡, 🤖, 💾')
     ordem = models.PositiveIntegerField(default=1)
 
     class Meta:
@@ -41,12 +43,14 @@ class Modulo(models.Model):
         verbose_name_plural = 'Módulos'
 
     def __str__(self):
-        return f"{self.curso.titulo} - {self.titulo}"
+        return f"{self.icone} {self.curso.titulo} - {self.titulo}"
 
 
 class Licao(models.Model):
     modulo = models.ForeignKey(Modulo, on_delete=models.CASCADE, related_name='licoes')
     titulo = models.CharField(max_length=200, verbose_name='Título da Lição')
+    descricao = models.TextField(blank=True, verbose_name='Descrição da Lição')
+    icone = models.CharField(max_length=50, default='🎯', help_text='Emoji ou símbolo do tópico: 🐍, ⚡, 🎯, 🧠, ⚙️')
     ordem = models.PositiveIntegerField(default=1)
     duracao_minutos = models.PositiveIntegerField(default=5)
 
@@ -56,7 +60,8 @@ class Licao(models.Model):
         verbose_name_plural = 'Lições'
 
     def __str__(self):
-        return f"{self.modulo.titulo} -> {self.titulo}"
+        return f"{self.icone} {self.modulo.titulo} -> {self.titulo}"
+
 
 
 class Etapa(models.Model):
