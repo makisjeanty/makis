@@ -509,16 +509,37 @@ Etapa.objects.get_or_create(licao=lic3_1, ordem=1, defaults={
     ),
 })
 
-Etapa.objects.get_or_create(licao=lic3_1, ordem=2, defaults={
+Etapa.objects.get_or_create(licao=lic3_1, ordem=3, defaults={
+    'tipo': 'slide',
+    'titulo': 'Fábrica de Decorators: Por que 3 Níveis de Aninhamento?',
+    'conteudo': (
+        '• Decorator Simples (2 níveis): def dec(func) -> def wrapper(*args) -> executa func().\n'
+        '• Decorator com Argumentos (3 níveis): Exemplo @ratelimit(rate="5/m").\n'
+        '  1. Nível 1 (Fábrica): Recebe as configurações (rate="5/m").\n'
+        '  2. Nível 2 (Decorator): Recebe a função alvo (view).\n'
+        '  3. Nível 3 (Wrapper): Executa a cada requisição capturando as configurações da Closure.'
+    ),
+})
+
+Etapa.objects.get_or_create(licao=lic3_1, ordem=4, defaults={
+    'tipo': 'slide',
+    'titulo': 'Generators e Avaliação Preguiçosa (Lazy Iterators)',
+    'conteudo': (
+        '• yield: Transforma uma função em um Generator. Em vez de calcular e retornar uma lista completa na memória RAM, devolve um item por vez sob demanda.\n'
+        '• Aplicação no Django: Post.objects.all().iterator(chunk_size=1000) busca milhares de registros em lotes, prevenindo estouro de memória RAM (OOM) na VPS.'
+    ),
+})
+
+Etapa.objects.get_or_create(licao=lic3_1, ordem=5, defaults={
     'tipo': 'quiz',
-    'pergunta': 'O que é uma Closure em Python?',
+    'pergunta': 'Qual é a vantagem do uso de .iterator() em QuerySets grandes do Django?',
     'opcoes_json': [
-        'Uma função interna que preserva o acesso a variáveis do escopo da função externa onde foi criada',
-        'Um método especial para fechar conexões de banco de dados',
-        'Uma função que só pode ser executada uma única vez',
-        'Um erro de compilação quando esquecemos do return',
+        'Busca registros do banco sob demanda (Lazy) usando geradores, evitando carregar milhares de objetos de uma só vez na memória RAM',
+        'Faz com que as buscas no banco fiquem 100x mais rápidas sem índice',
+        'Converte o banco de dados em um dicionário',
+        'Apaga os registros automaticamente após o uso',
     ],
-    'resposta_correta': 'Uma função interna que preserva o acesso a variáveis do escopo da função externa onde foi criada',
+    'resposta_correta': 'Busca registros do banco sob demanda (Lazy) usando geradores, evitando carregar milhares de objetos de uma só vez na memória RAM',
 })
 
 Etapa.objects.get_or_create(licao=lic3_1, ordem=1, defaults={
