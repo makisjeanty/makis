@@ -164,13 +164,40 @@ Etapa.objects.get_or_create(licao=lic1_2, ordem=4, defaults={
 })
 
 # --------------------------------------------------
-# Lição 1.3 — Mutabilidade e o Garbage Collector
+# Lição 1.3 — Mutabilidade, Aliasing e o Perigo dos Defaults
 # --------------------------------------------------
 lic1_3, _ = Licao.objects.get_or_create(
     modulo=mod1,
     ordem=3,
-    defaults={'titulo': 'Mutabilidade e Garbage Collector', 'duracao_minutos': 7}
+    defaults={'titulo': 'Mutabilidade, Aliasing e o Perigo dos Defaults', 'duracao_minutos': 8}
 )
+
+Etapa.objects.get_or_create(licao=lic1_3, ordem=1, defaults={
+    'tipo': 'slide',
+    'titulo': 'Aliasing e Mutabilidade: Dois nomes, um mesmo objeto',
+    'conteudo': (
+        'Aliasing ocorre quando duas variáveis guardam a referência para O MESMO objeto no Heap.\n'
+        'a = [1, 2]\n'
+        'b = a\n'
+        'b.append(3) # "a" também passa a ser [1, 2, 3]!\n\n'
+        'Pegadinha clássica em funções:\n'
+        'def add(item, lista=[]): # PERIGO! A lista [] é alocada no import e reusada em TODAS as chamadas!\n\n'
+        'Por isso no Django Models usamos default=timezone.now (callable sem parênteses) '
+        'e NUNCA default=timezone.now() (que congelaria o timestamp no momento da importação).'
+    ),
+})
+
+Etapa.objects.get_or_create(licao=lic1_3, ordem=2, defaults={
+    'tipo': 'quiz',
+    'pergunta': 'Por que devemos passar "default=timezone.now" (sem parênteses) em um Field do Django?',
+    'opcoes_json': [
+        'Para passar a referência da função (callable), garantindo que timezone.now() seja executado a cada novo registro',
+        'Porque parênteses não são permitidos em modelos Django',
+        'Para forçar a data a ser tratada como string imutável',
+        'Não há diferença entre timezone.now e timezone.now()',
+    ],
+    'resposta_correta': 'Para passar a referência da função (callable), garantindo que timezone.now() seja executado a cada novo registro',
+})
 
 Etapa.objects.get_or_create(licao=lic1_3, ordem=1, defaults={
     'tipo': 'slide',
