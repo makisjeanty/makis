@@ -6,42 +6,44 @@
 {% block content %}
 <style>
     .academy-container {
-        max-width: 540px;
+        max-width: 600px;
         margin: 0 auto;
         padding-top: 6.5rem;
-        padding-bottom: 7rem;
+        padding-bottom: 7.5rem;
     }
     
+    /* Card Header Estilo Dashboard Neumórfico Dark */
     .course-header-card {
-        background: linear-gradient(145deg, rgba(48, 48, 46, 0.95), rgba(38, 38, 36, 0.98));
-        border: 1px solid rgba(204, 120, 92, 0.35);
+        background: linear-gradient(145deg, rgba(42, 42, 40, 0.95), rgba(28, 28, 26, 0.98));
+        border: 1px solid rgba(204, 120, 92, 0.3);
         border-radius: 28px;
         padding: 2rem;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(204, 120, 92, 0.1);
-        backdrop-filter: blur(12px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), 0 0 35px rgba(204, 120, 92, 0.08);
+        backdrop-filter: blur(16px);
     }
     
     .node-path-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 3rem;
+        gap: 3.5rem;
         position: relative;
         padding: 3.5rem 0;
     }
 
+    /* Linha Conectora com Efeito Neón Gradiente */
     .node-path-line {
         position: absolute;
         width: 6px;
-        background: linear-gradient(180deg, rgba(204, 120, 92, 0.5), rgba(255,255,255,0.05));
+        background: linear-gradient(180deg, var(--accent) 0%, rgba(204, 120, 92, 0.3) 50%, rgba(255,255,255,0.05) 100%);
         top: 2rem;
         bottom: 2rem;
         left: 50%;
         transform: translateX(-50%);
         z-index: 0;
         border-radius: 999px;
+        box-shadow: 0 0 15px rgba(204, 120, 92, 0.3);
     }
-
 
     .node-item {
         position: relative;
@@ -51,66 +53,80 @@
         align-items: center;
     }
 
-    /* Alterna posição visual no caminho serpenteado */
+    /* Alterna posição no caminho serpenteado */
     .node-item:nth-child(even) {
-        transform: translateX(35px);
+        transform: translateX(42px);
     }
     .node-item:nth-child(odd) {
-        transform: translateX(-35px);
+        transform: translateX(-42px);
     }
 
+    /* Botão do Nó da Trilha */
     .node-button {
-        width: 80px;
-        height: 80px;
-        border-radius: 24px;
+        width: 84px;
+        height: 84px;
+        border-radius: 26px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.8rem;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         position: relative;
-        box-shadow: 0 8px 0 rgba(0,0,0,0.4);
         text-decoration: none;
     }
 
+    /* Nó Ativo (Em Andamento com Pulse e 3D) */
     .node-button--active {
         background: linear-gradient(135deg, var(--accent), var(--accent-light));
-        border: 3px solid #ff9f75;
-        box-shadow: 0 8px 0 #9e4e37, 0 0 20px rgba(204, 120, 92, 0.4);
+        border: 3px solid #FF9F75;
+        box-shadow: 0 10px 0 #8E4430, 0 0 30px rgba(204, 120, 92, 0.5);
         color: white;
     }
 
     .node-button--active:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 0 #9e4e37, 0 0 30px rgba(204, 120, 92, 0.6);
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 14px 0 #8E4430, 0 0 40px rgba(204, 120, 92, 0.7);
     }
 
-    .node-button--locked {
-        background: #1e1e28;
-        border: 2px solid #2d2d3d;
-        color: #555566;
-        box-shadow: 0 6px 0 #12121a;
-        cursor: not-allowed;
-    }
-
+    /* Nó Concluído (Emerald Success) */
     .node-button--completed {
-        background: #10b981;
-        border: 3px solid #34d399;
+        background: linear-gradient(135deg, #10B981, #34D399);
+        border: 3px solid #6EE7B7;
         color: white;
-        box-shadow: 0 8px 0 #059669;
+        box-shadow: 0 10px 0 #047857, 0 0 25px rgba(16, 185, 129, 0.4);
     }
 
-    .node-title-badge {
-        background: rgba(20, 20, 28, 0.9);
-        border: 1px solid var(--line);
-        padding: 4px 12px;
-        border-radius: 12px;
-        font-size: 0.75rem;
+    .node-button--completed:hover {
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 14px 0 #047857, 0 0 35px rgba(16, 185, 129, 0.6);
+    }
+
+    /* Distintivo de Título do Nó */
+    .node-title-card {
+        background: rgba(28, 28, 34, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 6px 14px;
+        border-radius: 14px;
+        font-size: 0.8rem;
         font-weight: 700;
-        margin-top: 10px;
+        margin-top: 12px;
         white-space: nowrap;
-        color: var(--text);
+        color: #F2F0E9;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(8px);
+    }
+
+    /* Header de Módulo (Milestone) */
+    .module-milestone-header {
+        position: relative;
+        z-index: 10;
+        margin: 1.5rem 0;
+        background: linear-gradient(135deg, rgba(38, 38, 48, 0.95), rgba(24, 24, 30, 0.98));
+        border: 1px solid rgba(204, 120, 92, 0.4);
+        padding: 0.75rem 1.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(204, 120, 92, 0.15);
     }
 
     .academy-nav-bar {
@@ -118,9 +134,9 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background: rgba(15, 15, 22, 0.95);
-        backdrop-filter: blur(12px);
-        border-top: 1px solid var(--line);
+        background: rgba(18, 18, 24, 0.95);
+        backdrop-filter: blur(16px);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
         padding: 12px 0;
         z-index: 50;
     }
@@ -128,65 +144,82 @@
 
 <div class="academy-container px-4">
     <!-- Header da Trilha -->
-    <div class="course-header-card mb-6 text-left">
-        <div class="flex items-center gap-3 mb-2">
-            <span class="text-3xl">{{ curso.icone }}</span>
+    <div class="course-header-card mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <a href="{% url 'cursos:lista' %}" class="inline-flex items-center gap-1.5 text-xs font-bold lw-muted hover:text-white transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                <span>Voltar às Trilhas</span>
+            </a>
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider" style="background: rgba(204, 120, 92, 0.15); color: var(--accent); border: 1px solid rgba(204, 120, 92, 0.3);">
+                {{ curso.get_nivel_display }}
+            </span>
+        </div>
+
+        <div class="flex items-start gap-4 mb-4">
+            <span class="text-4xl p-3 rounded-2xl" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">{{ curso.icone }}</span>
             <div>
-                <span class="text-xs uppercase font-mono font-bold tracking-wider" style="color: var(--accent-light);">{{ curso.titulo }}</span>
-                <h1 class="text-xl font-extrabold text-white" style="font-family: 'Space Grotesk', sans-serif;">
-                    {% if modulos.first %}{{ modulos.first.titulo }}{% else %}Introdução{% endif %}
+                <h1 class="text-2xl sm:text-3xl font-bold text-white mb-1" style="font-family: 'Space Grotesk', sans-serif;">
+                    {{ curso.titulo }}
                 </h1>
+                <p class="lw-muted text-xs sm:text-sm leading-relaxed">
+                    {{ curso.descricao }}
+                </p>
             </div>
         </div>
-        <div class="w-full bg-neutral-800 h-2 rounded-full overflow-hidden mt-4">
-            <div class="h-full bg-amber-500 rounded-full" style="width: 25%;"></div>
+
+        <!-- Barra de Progresso da Trilha -->
+        <div class="pt-2 border-t border-neutral-700/40">
+            <div class="flex items-center justify-between text-xs font-bold mb-2">
+                <span class="text-neutral-300">Progresso da Trilha</span>
+                <span style="color: var(--accent-light);">100% Prático</span>
+            </div>
+            <div class="w-full bg-neutral-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-neutral-700/50">
+                <div class="h-full rounded-full transition-all duration-500" style="width: 35%; background: linear-gradient(90deg, var(--accent), var(--accent-light));"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Caminho Interativo de Nós (Nodes Path Organizado por Módulo) -->
+    <!-- Caminho Serpenteado de Nós (Nodes Path) por Módulo -->
     <div class="node-path-container">
         <div class="node-path-line"></div>
 
         {% for modulo in modulos %}
-            <!-- Header do Módulo -->
-            <div class="relative z-10 my-4 text-center">
-                <span class="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg" 
-                      style="background: rgba(30, 30, 40, 0.95); color: var(--accent-light); border: 1px solid rgba(204, 120, 92, 0.3);">
-                    Módulo {{ modulo.ordem }}: {{ modulo.titulo }}
-                </span>
+            <!-- Marco do Módulo (Milestone Header) -->
+            <div class="module-milestone-header text-center">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest block mb-0.5" style="color: var(--accent-light);">MÓDULO {{ modulo.ordem }}</span>
+                <h2 class="text-sm font-bold text-white">{{ modulo.titulo }}</h2>
             </div>
 
             {% for licao in modulo.licoes.all %}
             <div class="node-item">
                 {% if forloop.parentloop.first and forloop.first %}
-                <!-- Nó Ativo (Play) -->
+                <!-- Lição Atual / Ativa (Destaque Terracota) -->
                 <a href="{% url 'cursos:licao' licao.id %}" class="node-button node-button--active" aria-label="Iniciar {{ licao.titulo }}">
-                    <svg class="w-8 h-8 fill-current ml-1" viewBox="0 0 24 24">
+                    <svg class="w-9 h-9 fill-current ml-1" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>
                     </svg>
                 </a>
-                <span class="node-title-badge" style="color: var(--accent-light);">▶ {{ licao.titulo }}</span>
-                {% elif forloop.parentloop.first and forloop.counter == 2 %}
-                <!-- Nó Desbloqueado/Próximo -->
-                <a href="{% url 'cursos:licao' licao.id %}" class="node-button node-button--active" style="filter: brightness(0.85);" title="{{ licao.titulo }}">
-                    <svg class="w-7 h-7 fill-current ml-1" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                </a>
-                <span class="node-title-badge" style="color: var(--text);">▶ {{ licao.titulo }}</span>
+                <div class="node-title-card flex items-center gap-1.5" style="border-color: rgba(204, 120, 92, 0.4);">
+                    <span class="w-2 h-2 rounded-full animate-ping bg-amber-400"></span>
+                    <span style="color: var(--accent-light);">{{ licao.titulo }}</span>
+                </div>
                 {% else %}
-                <!-- Outros Nós da Trilha -->
-                <a href="{% url 'cursos:licao' licao.id %}" class="node-button node-button--active" style="filter: brightness(0.75);" title="{{ licao.titulo }}">
-                    <svg class="w-7 h-7 fill-current ml-1" viewBox="0 0 24 24">
+                <!-- Próximas Lições Liberadas -->
+                <a href="{% url 'cursos:licao' licao.id %}" class="node-button node-button--completed" aria-label="Acessar {{ licao.titulo }}">
+                    <svg class="w-7 h-7 fill-current ml-0.5" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>
                     </svg>
                 </a>
-                <span class="node-title-badge opacity-90">▶ {{ licao.titulo }}</span>
+                <div class="node-title-card">
+                    <span>{{ licao.titulo }}</span>
+                </div>
                 {% endif %}
             </div>
             {% endfor %}
         {% empty %}
-        <div class="text-center py-8 lw-muted">Nenhuma lição cadastrada ainda nesta trilha.</div>
+        <div class="text-center py-12 lw-card" style="border-radius: 20px;">
+            <p class="lw-muted">Nenhuma lição cadastrada ainda nesta trilha.</p>
+        </div>
         {% endfor %}
     </div>
 </div>
@@ -196,15 +229,11 @@
     <div class="max-w-md mx-auto flex items-center justify-around text-center text-xs">
         <a href="{% url 'cursos:lista' %}" class="flex flex-col items-center gap-1 text-amber-500 font-bold">
             <span class="text-lg">🎓</span>
-            <span>Aprender</span>
+            <span>Trilhas</span>
         </a>
-        <a href="#" class="flex flex-col items-center gap-1 lw-muted opacity-70 hover:opacity-100">
+        <a href="{% url 'cursos:trilha' curso.slug %}" class="flex flex-col items-center gap-1 lw-muted opacity-70 hover:opacity-100">
             <span class="text-lg">⚡</span>
-            <span>Prática</span>
-        </a>
-        <a href="#" class="flex flex-col items-center gap-1 lw-muted opacity-70 hover:opacity-100">
-            <span class="text-lg">🏆</span>
-            <span>Ranking</span>
+            <span>Aulas</span>
         </a>
         <a href="{% url 'accounts:sobre' %}" class="flex flex-col items-center gap-1 lw-muted opacity-70 hover:opacity-100">
             <span class="text-lg">👤</span>
