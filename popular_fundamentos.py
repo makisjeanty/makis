@@ -803,6 +803,6 @@ Etapa.objects.get_or_create(licao=lic5_3, ordem=4, defaults={
     'nome_arquivo': 'dunder_len.py',
 })
 
-print("✅ Trilha 'Fundamentos que Não Mudam' criada com sucesso!")
-print("   5 Pilares | 13 Lições | 46 Etapas")
+print("OK - Trilha 'Fundamentos que Nao Mudam' criada com sucesso!")
+print("   5 Pilares | 13 Licoes | 46 Etapas")
 print("   Slug: fundamentos-que-nao-mudam")
