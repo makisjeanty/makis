@@ -500,15 +500,27 @@ lic3_1, _ = Licao.objects.get_or_create(
 
 Etapa.objects.get_or_create(licao=lic3_1, ordem=1, defaults={
     'tipo': 'slide',
-    'titulo': 'Busca Linear: O(n) — funciona sempre, mas não escala',
+    'titulo': 'Big-O na Prática: Do Banco de Dados à Memória',
     'conteudo': (
-        'Busca linear percorre cada elemento do início ao fim até encontrar o alvo. '
-        'Melhor caso: O(1) — o elemento está na primeira posição. '
-        'Pior caso: O(n) — o elemento está no fim ou não existe. '
-        'Média: O(n/2) = O(n). '
-        'Funciona em qualquer lista, ordenada ou não. '
-        'Problema: com 1 milhão de itens, você pode fazer até 1 milhão de comparações.'
+        '• O(1) Constante: Acesso por chave em dict/set (via Tabela Hash).\n'
+        '  - Pegadinha: Se houver colisão de Hash em massa, a performance cai de O(1) para O(n)!\n'
+        '• O(log n) Logarítmico: Busca binária e índices de Banco de Dados.\n'
+        '  - Exemplo real: Post.objects.get(slug=slug) no MySQL usa índice B-Tree O(log n). Com 1 milhão de posts, acha em ~20 operações.\n'
+        '• O(n) Linear: Percorrer listas sem índice ou buscar registros em tabela sem chave indexada (Full Table Scan).\n'
+        '• O(n²) Quadrático: Loops aninhados ("for a in lista: for b in lista"). Quando vir um loop aninhado, sinta o cheiro de "isso devia usar dict".'
     ),
+})
+
+Etapa.objects.get_or_create(licao=lic3_1, ordem=2, defaults={
+    'tipo': 'quiz',
+    'pergunta': 'Qual é a complexidade de buscar um objeto por uma coluna indexada com B-Tree (como o slug no MySQL)?',
+    'opcoes_json': [
+        'O(log n) — elimina metades da árvore de índices a cada passo',
+        'O(n²) — precisa verificar todas as combinações',
+        'O(n) — sempre percorre a tabela do início ao fim',
+        'O(0) — não consome tempo de execução',
+    ],
+    'resposta_correta': 'O(log n) — elimina metades da árvore de índices a cada passo',
 })
 
 Etapa.objects.get_or_create(licao=lic3_1, ordem=2, defaults={
