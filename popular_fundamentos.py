@@ -343,14 +343,25 @@ lic2_2, _ = Licao.objects.get_or_create(
 
 Etapa.objects.get_or_create(licao=lic2_2, ordem=1, defaults={
     'tipo': 'slide',
-    'titulo': 'Dicionário é uma tabela hash — não um arquivo de texto',
+    'titulo': 'Tabelas Hash & O Erro "TypeError: unhashable type"',
     'conteudo': (
-        'Um dict em Python não guarda os pares chave-valor em ordem de inserção de forma ingênua. '
-        'Por baixo, existe uma tabela hash: cada chave passa por uma função hash que determina '
-        'em qual "balde" (bucket) o valor será guardado. '
-        'Resultado: acesso por chave em O(1) — independente de quantos itens o dict tem. '
-        'Desde Python 3.7, a ordem de inserção também é preservada como garantia da linguagem.'
+        '• Como o dict encontra tudo em O(1)? Ele passa a chave na função hash(chave), que gera um índice de memória direto.\n'
+        '• Por que list não pode ser chave de dict? Listas são mutáveis. Se alterássemos uma lista usada como chave, seu hash mudaria e o dict nunca mais encontraria a chave!\n'
+        '• Imutabilidade é requisito para Hash: str, int, float e tuple são hashable porque seus conteúdos nunca mudam.\n'
+        '• Dica: Use tuplas (1, 2) como chave quando precisar de sequências compostas em um dict.'
     ),
+})
+
+Etapa.objects.get_or_create(licao=lic2_2, ordem=2, defaults={
+    'tipo': 'quiz',
+    'pergunta': 'Por que tentar usar uma lista [1, 2] como chave de um dicionário gera um TypeError: unhashable type?',
+    'opcoes_json': [
+        'Porque listas são mutáveis e a alteração do seu conteúdo alteraria o hash, corrompendo as buscas O(1) do dicionário',
+        'Porque listas ocupam muita memória para o dicionário',
+        'Porque o dicionário só aceita chaves do tipo string',
+        'Porque listas não possuem índice numérico',
+    ],
+    'resposta_correta': 'Porque listas são mutáveis e a alteração do seu conteúdo alteraria o hash, corrompendo as buscas O(1) do dicionário',
 })
 
 Etapa.objects.get_or_create(licao=lic2_2, ordem=2, defaults={
