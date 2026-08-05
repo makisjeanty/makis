@@ -119,7 +119,7 @@ class MonitoriaTests(TestCase):
     def test_webhook_kiwify_token_invalido_retorna_403(self):
         """Webhook com token errado é bloqueado."""
         from unittest.mock import patch
-        with patch('core.views_monitoria.KIWIFY_TOKEN', 'token-real-secreto'):
+        with patch('core.views.KIWIFY_TOKEN', 'token-real-secreto'):
             resp = self.client.post(
                 reverse('webhook_kiwify') + '?token=token_errado',
                 data='{}',
@@ -140,7 +140,7 @@ class MonitoriaTests(TestCase):
             'Product': {'name': 'Kit Dev Pro'},
             'order_value': 9700,
         }
-        with patch('core.views_monitoria.KIWIFY_TOKEN', 'dev-token-local-123'):
+        with patch('core.views.KIWIFY_TOKEN', 'dev-token-local-123'):
             resp = self.client.post(
                 reverse('webhook_kiwify') + '?token=dev-token-local-123',
                 data=json.dumps(payload),
@@ -173,7 +173,7 @@ class MonitoriaTests(TestCase):
             'Product': {'name': 'Kit Dev Pro'},
             'order_value': 9700,
         }
-        with patch('core.views_monitoria.KIWIFY_TOKEN', 'dev-token-local-123'):
+        with patch('core.views.KIWIFY_TOKEN', 'dev-token-local-123'):
             resp = self.client.post(
                 reverse('webhook_kiwify') + '?token=dev-token-local-123',
                 data=json.dumps(payload),
@@ -186,7 +186,7 @@ class MonitoriaTests(TestCase):
         """Sem KIWIFY_TOKEN configurado no servidor, o webhook rejeita tudo (503), em vez de aceitar qualquer requisição."""
         from unittest.mock import patch
 
-        with patch('core.views_monitoria.KIWIFY_TOKEN', ''):
+        with patch('core.views.KIWIFY_TOKEN', ''):
             resp = self.client.post(
                 reverse('webhook_kiwify'),
                 data='{}',
