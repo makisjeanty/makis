@@ -281,26 +281,26 @@ lic2_1, _ = Licao.objects.get_or_create(
 
 Etapa.objects.get_or_create(licao=lic2_1, ordem=1, defaults={
     'tipo': 'slide',
-    'titulo': 'Notação Big-O: medindo o custo das operações',
+    'titulo': 'Notação Big-O & O Trade-off das Estruturas de Dados',
     'conteudo': (
-        'Big-O descreve como o tempo de execução cresce com o tamanho da entrada. '
-        'O(1) = constante: não importa se você tem 10 ou 10 milhões de itens, a operação é igualmente rápida. '
-        'O(n) = linear: dobrar a entrada dobra o tempo. '
-        'O(n²) = quadrático: dobrar a entrada quadruplica o tempo — evitar a qualquer custo em loops aninhados.'
+        '• list: Excelente para manter ordem e iterar. Mas buscar um item ("if item in lista") exige percorrer elemento por elemento — O(n).\n'
+        '• set & dict: Utilizam Tabelas Hash. Buscar um item ("if item in meu_set" ou "dict.get(chave)") é instantâneo — O(1).\n\n'
+        'Exemplo no seu Chat Consumer (chat/consumers.py):\n'
+        '• Iterar sobre a lista de headers scope["headers"] para achar "x-forwarded-for" é O(n).\n'
+        '• Converter para dict (dict(scope["headers"]).get(b"x-forwarded-for")) transforma a busca em O(1) instantâneo!'
     ),
 })
 
 Etapa.objects.get_or_create(licao=lic2_1, ordem=2, defaults={
-    'tipo': 'slide',
-    'titulo': 'Lista vs Set: mesma sintaxe, custo completamente diferente',
-    'conteudo': (
-        'if item in minha_lista: — O(n). Python percorre do início ao fim até achar ou desistir.\n'
-        'if item in meu_set: — O(1). Python calcula o hash do item e vai direto à posição.\n\n'
-        'No seu repo: em blog/views.py, quando você filtra posts por tag, '
-        'se as tags fossem verificadas num set em vez de queryset.filter(), '
-        'a busca seria O(1) independente do volume. '
-        'O QuerySet resolve isso no banco com índice — mas saber o custo da estrutura te ensina a respeitar os índices.'
-    ),
+    'tipo': 'quiz',
+    'pergunta': 'Qual é a diferença de complexidade ao buscar um elemento com o operador "in" dentro de uma list vs dentro de um set?',
+    'opcoes_json': [
+        'list é O(n) (percorre um a um), enquanto set é O(1) (lookup direto via Hash)',
+        'list é O(1) e set é O(n)',
+        'Ambas possuem a mesma velocidade de busca O(1)',
+        'set exige ordenação prévia O(n log n)',
+    ],
+    'resposta_correta': 'list é O(n) (percorre um a um), enquanto set é O(1) (lookup direto via Hash)',
 })
 
 Etapa.objects.get_or_create(licao=lic2_1, ordem=3, defaults={
