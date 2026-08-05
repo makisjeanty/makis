@@ -262,13 +262,21 @@
             document.getElementById('mascot-feedback').classList.add('hidden');
             
             if (etapaAtual === totalEtapas) {
+                // Notifica o backend de que a lição foi concluída
+                fetch("{% url 'cursos:concluir_licao' licao.id %}", { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
+                    .catch(() => {});
+
                 document.getElementById('btn-continuar').innerText = 'Concluir Lição 🎉';
                 document.getElementById('btn-continuar').onclick = function() {
-                    window.location.href = "{% url 'cursos:trilha' licao.modulo.curso.slug %}";
+                    fetch("{% url 'cursos:concluir_licao' licao.id %}", { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
+                        .finally(() => {
+                            window.location.href = "{% url 'cursos:trilha' licao.modulo.curso.slug %}";
+                        });
                 };
             }
         }
     }
+
 
     function verificarResposta(btn, opcao, respostaCorreta) {
         document.querySelectorAll('.quiz-option-card').forEach(card => {

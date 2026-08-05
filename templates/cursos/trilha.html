@@ -192,8 +192,19 @@
 
             {% for licao in modulo.licoes.all %}
             <div class="node-item">
-                {% if forloop.parentloop.first and forloop.first %}
-                <!-- Lição Atual / Ativa (Destaque Terracota) -->
+                {% if licao.concluidade %}
+                <!-- Lição Concluída (Emerald Green) -->
+                <a href="{% url 'cursos:licao' licao.id %}" class="node-button node-button--completed" title="{{ licao.titulo }} (Concluída)">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </a>
+                <div class="node-title-card flex items-center gap-1.5" style="border-color: rgba(16, 185, 129, 0.4);">
+                    <span class="text-emerald-400">✓ {{ licao.titulo }}</span>
+                </div>
+
+                {% elif licao.liberada %}
+                <!-- Lição Liberada / Próxima (Terracota Active) -->
                 <a href="{% url 'cursos:licao' licao.id %}" class="node-button node-button--active" aria-label="Iniciar {{ licao.titulo }}">
                     <svg class="w-9 h-9 fill-current ml-1" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>
@@ -203,19 +214,21 @@
                     <span class="w-2 h-2 rounded-full animate-ping bg-amber-400"></span>
                     <span style="color: var(--accent-light);">{{ licao.titulo }}</span>
                 </div>
+
                 {% else %}
-                <!-- Próximas Lições Liberadas -->
-                <a href="{% url 'cursos:licao' licao.id %}" class="node-button node-button--completed" aria-label="Acessar {{ licao.titulo }}">
-                    <svg class="w-7 h-7 fill-current ml-0.5" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
+                <!-- Lição Bloqueada (Cadeado Lock) -->
+                <div class="node-button node-button--locked opacity-60" style="background: #1e1e28; border: 2px solid #2d2d3d; color: #656577; cursor: not-allowed; box-shadow: 0 6px 0 #12121a;" title="Conclua as lições anteriores para desbloquear">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
-                </a>
-                <div class="node-title-card">
-                    <span>{{ licao.titulo }}</span>
+                </div>
+                <div class="node-title-card opacity-50">
+                    <span>🔒 {{ licao.titulo }}</span>
                 </div>
                 {% endif %}
             </div>
             {% endfor %}
+
         {% empty %}
         <div class="text-center py-12 lw-card" style="border-radius: 20px;">
             <p class="lw-muted">Nenhuma lição cadastrada ainda nesta trilha.</p>

@@ -91,3 +91,19 @@ class Etapa(models.Model):
 
     def __str__(self):
         return f"Lição {self.licao.id} - Etapa {self.ordem} ({self.get_tipo_display()})"
+
+
+class ProgressoLicao(models.Model):
+    session_key = models.CharField(max_length=100, db_index=True)
+    licao = models.ForeignKey(Licao, on_delete=models.CASCADE, related_name='progressos')
+    concluida = models.BooleanField(default=True)
+    data_conclusao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('session_key', 'licao')
+        verbose_name = 'Progresso de Lição'
+        verbose_name_plural = 'Progressos de Lições'
+
+    def __str__(self):
+        return f"Sessão {self.session_key[:8]}... - Lição {self.licao.titulo}"
+
