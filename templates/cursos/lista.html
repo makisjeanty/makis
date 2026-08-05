@@ -1,44 +1,91 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Makis Academy — Cursos Interativos & Trilhas de Aprendizado{% endblock %}
-{% block meta_description %}Aprenda Python, Django, Engenharia de IA e Arquitetura de Software com lições práticas e interativas.{% endblock %}
+{% block title %}Makis Academy — Trilhas Interativas de Engenharia & Código{% endblock %}
+{% block meta_description %}Aprenda Python, Django, Engenharia de IA e Arquitetura de Software com lições interativas, desafios práticos e feedback imediato.{% endblock %}
 
 {% block content %}
-<section class="lw-section" style="padding-top: 7rem;">
+<section class="lw-section" style="padding-top: 7.5rem; padding-bottom: 6rem;">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <span class="lw-pill mb-4" style="background: rgba(204, 120, 92, 0.15); color: var(--accent); border: 1px solid rgba(204, 120, 92, 0.3);">🎓 Makis Academy · Aprendizado Interativo</span>
-            <h1 class="lw-display text-4xl md:text-5xl mb-4 mt-2">Trilhas de Código & IA</h1>
-            <p class="lw-muted text-lg max-w-2xl mx-auto">Domine programação do zero ao nível avançado com lições em formato de desafios, quizes interativos e feedback em tempo real.</p>
+        
+        <!-- Hero Header da Academy -->
+        <div class="text-center mb-16 relative">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style="background: rgba(204, 120, 92, 0.12); border: 1px solid rgba(204, 120, 92, 0.3); backdrop-filter: blur(8px);">
+                <span class="w-2 h-2 rounded-full animate-pulse" style="background: var(--accent);"></span>
+                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--accent);">🎓 Makis Academy · Aprendizado Prático</span>
+            </div>
+            
+            <h1 class="lw-display text-4xl sm:text-5xl md:text-6xl mb-6 font-extrabold tracking-tight">
+                Trilhas Interativas de <span style="background: linear-gradient(135deg, var(--accent-light), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Código & IA</span>
+            </h1>
+            <p class="lw-muted text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
+                Aprenda arquitetura de software, programação que não expira e engenharia de IA através de lições dinâmicas, quizzes em tempo real e desafios de código.
+            </p>
         </div>
 
+        <!-- Grid de Cursos Moderno -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for curso in cursos %}
-            <div class="lw-card relative flex flex-col justify-between p-6 transition-all hover:-translate-y-1" style="background: linear-gradient(135deg, rgba(30, 30, 42, 0.9), rgba(20, 20, 28, 0.95)); border: 1px solid var(--line); border-radius: 20px;">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-4xl">{{ curso.icone }}</span>
-                        <span class="lw-badge uppercase text-[10px]" style="background: rgba(245, 158, 11, 0.15); color: var(--admin-gold); border: 1px solid rgba(245, 158, 11, 0.3);">{{ curso.get_nivel_display }}</span>
+            <div class="group relative flex flex-col justify-between p-7 transition-all duration-300 hover:-translate-y-2" 
+                 style="background: linear-gradient(145deg, rgba(48, 48, 46, 0.85), rgba(38, 38, 36, 0.95)); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+                
+                <!-- Glow Effect no Hover -->
+                <div class="absolute -inset-0.5 rounded-[24px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm pointer-events-none" 
+                     style="background: linear-gradient(135deg, rgba(204, 120, 92, 0.4), transparent);"></div>
+
+                <div class="relative z-10">
+                    <!-- Top Bar Card -->
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner" style="background: rgba(38, 38, 36, 0.9); border: 1px solid rgba(255,255,255,0.1);">
+                            {{ curso.icone }}
+                        </div>
+                        
+                        {% if curso.nivel == 'iniciante' %}
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider" style="background: rgba(154, 176, 146, 0.15); color: #9AB092; border: 1px solid rgba(154, 176, 146, 0.3);">Iniciante</span>
+                        {% elif curso.nivel == 'intermediario' %}
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3);">Intermediário</span>
+                        {% else %}
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider" style="background: rgba(204, 120, 92, 0.15); color: var(--accent); border: 1px solid rgba(204, 120, 92, 0.3);">Avançado</span>
+                        {% endif %}
                     </div>
-                    <h2 class="text-2xl font-extrabold text-white mb-2" style="font-family: 'Space Grotesk', sans-serif;">{{ curso.titulo }}</h2>
-                    <p class="lw-muted text-sm leading-relaxed mb-6">{{ curso.descricao }}</p>
+
+                    <!-- Título & Descrição -->
+                    <h2 class="text-2xl font-bold mb-3 group-hover:text-white transition-colors" style="font-family: 'Space Grotesk', sans-serif; color: #F2F0E9;">
+                        {{ curso.titulo }}
+                    </h2>
+                    <p class="lw-muted text-sm leading-relaxed mb-8">
+                        {{ curso.descricao }}
+                    </p>
                 </div>
 
-                <div>
-                    <div class="flex items-center justify-between text-xs lw-muted border-t border-neutral-800 pt-4 mb-4">
-                        <span>📚 {{ curso.modulos.count }} Módulos</span>
-                        <span>⚡ 100% Prático</span>
+                <!-- Footer Card -->
+                <div class="relative z-10 pt-4 border-t border-neutral-700/50">
+                    <div class="flex items-center justify-between text-xs lw-muted mb-5">
+                        <span class="flex items-center gap-1.5 font-medium">
+                            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            {{ curso.modulos.count }} Módulo{% if curso.modulos.count != 1 %}s{% endif %}
+                        </span>
+                        <span class="flex items-center gap-1.5 font-medium text-emerald-400">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            Prático Interativo
+                        </span>
                     </div>
-                    <a href="{% url 'cursos:trilha' curso.slug %}" class="lw-btn lw-btn--primary text-center w-full block py-3 text-sm font-bold">Iniciar Trilha ➔</a>
+
+                    <a href="{% url 'cursos:trilha' curso.slug %}" 
+                       class="lw-btn lw-btn--primary w-full py-3.5 text-sm font-bold flex items-center justify-center gap-2 group-hover:shadow-lg transition-all"
+                       style="border-radius: 14px;">
+                        <span>Acessar Trilha</span>
+                        <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </a>
                 </div>
             </div>
             {% empty %}
-            <div class="col-span-full text-center py-16 lw-card">
-                <p class="lw-muted">Nenhum curso disponível no momento.</p>
+            <div class="col-span-full text-center py-20 lw-card" style="border-radius: 24px;">
+                <p class="lw-muted text-lg">Nenhuma trilha publicada no momento.</p>
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
 {% endblock %}
+
