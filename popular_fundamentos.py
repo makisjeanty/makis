@@ -530,16 +530,70 @@ Etapa.objects.get_or_create(licao=lic3_1, ordem=4, defaults={
     ),
 })
 
-Etapa.objects.get_or_create(licao=lic3_1, ordem=5, defaults={
+# =============================================================================
+# PILAR 4 — Modelagem, Invariantes e Coesão
+# =============================================================================
+
+mod4, _ = Modulo.objects.get_or_create(
+    curso=curso,
+    ordem=4,
+    defaults={'titulo': 'Pilar 4: Modelagem e Arquitetura de Software'}
+)
+
+lic4_1, _ = Licao.objects.get_or_create(
+    modulo=mod4,
+    ordem=1,
+    defaults={'titulo': 'Entidades, Invariantes e Constraints', 'duracao_minutos': 8}
+)
+
+Etapa.objects.get_or_create(licao=lic4_1, ordem=1, defaults={
+    'tipo': 'slide',
+    'titulo': 'Modelagem: Entidades vs Valores & Invariantes',
+    'conteudo': (
+        '• Entidades: Têm identidade única no tempo (ex: PerfilUsuario, Compra, Topico).\n'
+        '• Value Objects: Definidos apenas por seus dados sem identidade (ex: e-mail, slug, ícone).\n'
+        '• Invariantes & Constraints: Invariante é uma regra de negócio que NUNCA pode ser violada (ex: um pedido Kiwify não pode ser processado 2 vezes).\n'
+        '  - Garantia: Usamos unique=True em referencia_externa no MySQL para forçar a regra no nível do banco.'
+    ),
+})
+
+# =============================================================================
+# PILAR 5 — Concorrência, Transações e Assincronismo (Asyncio / Channels)
+# =============================================================================
+
+mod5, _ = Modulo.objects.get_or_create(
+    curso=curso,
+    ordem=5,
+    defaults={'titulo': 'Pilar 5: Concorrência, Transações e Asyncio'}
+)
+
+lic5_1, _ = Licao.objects.get_or_create(
+    modulo=mod5,
+    ordem=1,
+    defaults={'titulo': 'Race Conditions, Cache Atômico e Event Loop', 'duracao_minutos': 10}
+)
+
+Etapa.objects.get_or_create(licao=lic5_1, ordem=1, defaults={
+    'tipo': 'slide',
+    'titulo': 'Race Conditions & Operações Atômicas no Cache',
+    'conteudo': (
+        '• Race Condition: Ocorre quando 2 requisições tentam ler e alterar o mesmo dado simultaneamente.\n'
+        '• Por que cache.get() + set() é perigoso? Permite janela de concorrência. Duas requisições lêem None ao mesmo tempo.\n'
+        '• Solução Atômica: No ChatConsumer, usamos cache.add() + cache.incr() em instruções atômicas no Redis O(1).\n'
+        '• Async/Await: No Channels, usamos await nas I/Os de rede para liberar o Event Loop enquanto a mensagem é transmitida.'
+    ),
+})
+
+Etapa.objects.get_or_create(licao=lic5_1, ordem=2, defaults={
     'tipo': 'quiz',
-    'pergunta': 'Qual é a vantagem do uso de .iterator() em QuerySets grandes do Django?',
+    'pergunta': 'Por que a operação de rate-limiting do chat usa "cache.add()" em vez de "if not cache.get(): cache.set()"?',
     'opcoes_json': [
-        'Busca registros do banco sob demanda (Lazy) usando geradores, evitando carregar milhares de objetos de uma só vez na memória RAM',
-        'Faz com que as buscas no banco fiquem 100x mais rápidas sem índice',
-        'Converte o banco de dados em um dicionário',
-        'Apaga os registros automaticamente após o uso',
+        'Porque cache.add() é atômico no Redis, impedindo que requisições concorrentes ultrapassem o limite na janela de leitura',
+        'Porque cache.get() consome muito espaço no banco MySQL',
+        'Porque o Python não suporta funções síncronas em cache',
+        'Porque cache.add() limpa o cache automaticamente',
     ],
-    'resposta_correta': 'Busca registros do banco sob demanda (Lazy) usando geradores, evitando carregar milhares de objetos de uma só vez na memória RAM',
+    'resposta_correta': 'Porque cache.add() é atômico no Redis, impedindo que requisições concorrentes ultrapassem o limite na janela de leitura',
 })
 
 Etapa.objects.get_or_create(licao=lic3_1, ordem=1, defaults={
