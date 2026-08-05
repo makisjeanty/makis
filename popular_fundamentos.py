@@ -60,25 +60,25 @@ Etapa.objects.get_or_create(licao=lic1_1, ordem=1, defaults={
 
 Etapa.objects.get_or_create(licao=lic1_1, ordem=2, defaults={
     'tipo': 'slide',
-    'titulo': 'Em Python, tudo é um objeto no Heap',
+    'titulo': 'Em Python, tudo é um objeto no Heap (Constantes vs Objetos)',
     'conteudo': (
         'Ao contrário de C, onde int x = 5 vai diretamente na stack, em Python '
         'até um simples inteiro é um objeto completo alocado no Heap — com contagem de referências, tipo, e valor. '
-        'A variável x na sua função guarda apenas uma referência (um ponteiro) para esse objeto. '
-        'Por isso id(x) te dá o endereço de memória real do objeto, não da variável.'
+        'No seu repo (core/antispam.py), TEMPO_MINIMO_SEGUNDOS = 3 é uma constante imutável no Heap. '
+        'Por ser imutável, ela é 100% thread-safe: múltiplos workers podem lê-la sem risco de race conditions.'
     ),
 })
 
 Etapa.objects.get_or_create(licao=lic1_1, ordem=3, defaults={
     'tipo': 'quiz',
-    'pergunta': 'Em Python, o que uma variável local de função realmente armazena?',
+    'pergunta': 'Por que constantes imutáveis como SALT_ANTISPAM em core/antispam.py são seguras em ambiente concorrente?',
     'opcoes_json': [
-        'O valor diretamente (como int em C)',
-        'Uma referência (ponteiro) para um objeto no Heap',
-        'O nome do tipo do dado',
-        'O tamanho em bytes do valor',
+        'Porque ficam na Stack do sistema operacional',
+        'Porque por serem imutáveis no Heap, nenhum worker pode alterar seu valor e causar race condition',
+        'Porque o Django bloqueia acesso concorrente a arquivos python',
+        'Porque são apagadas da memória a cada requisição',
     ],
-    'resposta_correta': 'Uma referência (ponteiro) para um objeto no Heap',
+    'resposta_correta': 'Porque por serem imutáveis no Heap, nenhum worker pode alterar seu valor e causar race condition',
 })
 
 Etapa.objects.get_or_create(licao=lic1_1, ordem=4, defaults={
@@ -99,17 +99,17 @@ Etapa.objects.get_or_create(licao=lic1_1, ordem=4, defaults={
 lic1_2, _ = Licao.objects.get_or_create(
     modulo=mod1,
     ordem=2,
-    defaults={'titulo': 'Valor vs Referência: o bug que todo mundo tem', 'duracao_minutos': 10}
+    defaults={'titulo': 'Valor vs Referência & A Imutabilidade do QueryDict', 'duracao_minutos': 10}
 )
 
 Etapa.objects.get_or_create(licao=lic1_2, ordem=1, defaults={
     'tipo': 'slide',
-    'titulo': 'Passagem por valor: a função recebe uma cópia',
+    'titulo': 'Imutabilidade na Prática: Por que request.POST é protegido?',
     'conteudo': (
-        'Tipos imutáveis em Python (int, float, str, tuple, bool) se comportam como "passagem por valor": '
-        'quando você passa x para uma função, a função trabalha com uma cópia do valor. '
-        'Modificar dentro da função não afeta x fora dela. '
-        'Exemplo: def dobrar(n): n = n * 2 — n local muda, mas a variável original permanece intacta.'
+        'No Django, request.POST é uma instância de QueryDict marcada com _mutable = False. '
+        'Se você tentar alterar request.POST["nome"] = "novo", o Django lança um AttributeError. '
+        'Essa proteção garante que nenhuma função ou middleware altere silenciosamente o payload HTTP original. '
+        'Para modificar os dados recebidos, você DEVE criar uma cópia mutável explícita usando request.POST.copy().'
     ),
 })
 
