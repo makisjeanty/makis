@@ -6,7 +6,7 @@
 {% block content %}
 <style>
     .quiz-runner-container {
-        max-width: 520px;
+        max-width: 600px;
         margin: 0 auto;
         padding-top: 5rem;
         padding-bottom: 8rem;
@@ -33,13 +33,13 @@
 
     /* Opção de Múltipla Escolha */
     .quiz-option-card {
-        background: rgba(30, 30, 42, 0.8);
+        background: rgba(38, 38, 48, 0.85);
         border: 2px solid var(--line);
-        border-radius: 16px;
+        border-radius: 18px;
         padding: 1.25rem 1.5rem;
         font-size: 1.05rem;
         font-weight: 600;
-        color: var(--text);
+        color: #F2F0E9;
         cursor: pointer;
         transition: all 0.2s ease;
         text-align: left;
@@ -47,21 +47,15 @@
     }
 
     .quiz-option-card:hover {
-        border-color: rgba(204, 120, 92, 0.5);
-        background: rgba(40, 40, 56, 0.9);
-    }
-
-    .quiz-option-card.selected {
-        border-color: #f59e0b;
-        background: rgba(245, 158, 11, 0.12);
-        box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+        border-color: rgba(204, 120, 92, 0.6);
+        background: rgba(48, 48, 60, 0.95);
     }
 
     .quiz-option-card.correct {
         border-color: #10b981 !important;
         background: rgba(16, 185, 129, 0.15) !important;
         color: #34d399 !important;
-        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3) !important;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.3) !important;
     }
 
     .quiz-option-card.wrong {
@@ -72,31 +66,22 @@
 
     /* Feedback Mascot Box */
     .mascot-feedback-box {
-        background: rgba(20, 20, 30, 0.95);
-        border: 1px solid var(--line);
+        background: rgba(24, 24, 34, 0.98);
+        border: 1px solid rgba(255,255,255,0.1);
         border-radius: 20px;
         padding: 1.25rem;
         display: flex;
-        items-center;
+        align-items: center;
         gap: 1rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    .mascot-speech-bubble {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 14px;
-        padding: 0.75rem 1rem;
-        font-weight: 700;
-        font-size: 0.95rem;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
     }
 
     /* Bloco de Código & Chips */
     .code-editor-box {
         background: #0f172a;
         border: 1px solid #1e293b;
-        border-radius: 16px;
-        padding: 1rem;
+        border-radius: 18px;
+        padding: 1.25rem;
         font-family: 'Space Mono', monospace;
     }
 
@@ -104,10 +89,10 @@
         background: #1e293b;
         border: 1px solid #334155;
         color: #e2e8f0;
-        padding: 8px 16px;
-        border-radius: 12px;
+        padding: 10px 20px;
+        border-radius: 14px;
         font-family: 'Space Mono', monospace;
-        font-size: 0.95rem;
+        font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s;
@@ -119,14 +104,13 @@
         color: white;
     }
 
-    /* Botão Continuar Laranja do Sistema */
     .btn-continuar {
         background: linear-gradient(135deg, #f59e0b, #cc785c);
         color: white;
         font-weight: 800;
         font-size: 1.1rem;
-        padding: 1rem 2rem;
-        border-radius: 16px;
+        padding: 1.1rem 2rem;
+        border-radius: 18px;
         width: 100%;
         text-align: center;
         box-shadow: 0 8px 0 #9e4e37, 0 0 20px rgba(245, 158, 11, 0.3);
@@ -142,90 +126,106 @@
 </style>
 
 <div class="quiz-runner-container px-4">
-    <!-- Top Bar com Barra de Progresso Laranja -->
+    <!-- Top Bar com Barra de Progresso em Laranja -->
     <div class="flex items-center gap-4 mb-8">
         <a href="{% url 'cursos:trilha' licao.modulo.curso.slug %}" class="text-neutral-400 hover:text-white text-2xl font-bold p-1">&times;</a>
         <div class="quiz-progress-bar">
-            <div id="progress-fill" class="quiz-progress-fill" style="width: 20%;"></div>
+            <div id="progress-fill" class="quiz-progress-fill" style="width: 10%;"></div>
         </div>
     </div>
 
-    <!-- Container das Etapas (Slides / Quizes / Código) -->
+    <!-- Container Dinâmico das Etapas Vindo do Banco -->
     <div id="etapas-wrapper" class="flex-1 flex flex-col justify-center my-4">
 
-        <!-- ETAPA 1: Slide de Teoria (Python é uma linguagem de programação fantástica...) -->
-        <div class="etapa-card space-y-6" data-etapa="1">
+        {% for etapa in etapas %}
+        
+        {% if etapa.tipo == 'slide' %}
+        <!-- ETAPA SLIDE DE TEORIA -->
+        <div class="etapa-card space-y-6 {% if not forloop.first %}hidden{% endif %}" data-etapa="{{ forloop.counter }}">
             <div class="text-center space-y-4">
-                <div class="inline-flex p-6 rounded-3xl" style="background: rgba(245, 158, 11, 0.1); border: 2px solid rgba(245, 158, 11, 0.3);">
-                    <span class="text-6xl">🐍🤖</span>
+                <div class="inline-flex p-5 rounded-3xl" style="background: rgba(204, 120, 92, 0.12); border: 2px solid rgba(204, 120, 92, 0.3);">
+                    <span class="text-5xl">💡</span>
                 </div>
                 <h2 class="text-2xl md:text-3xl font-extrabold text-white leading-snug" style="font-family: 'Space Grotesk', sans-serif;">
-                    Python é uma linguagem de programação fantástica tanto para iniciantes quanto para especialistas.
+                    {{ etapa.titulo }}
                 </h2>
-                <p class="lw-muted text-base leading-relaxed max-w-md mx-auto">
-                    É a linguagem escolhida por muitas empresas e uma escolha popular para projetos pessoais. Você pode usá-la para automatizar tarefas, criar inteligências artificiais e web apps!
-                </p>
+                <div class="lw-card p-6 text-left space-y-3 leading-relaxed text-sm md:text-base text-neutral-300 border border-neutral-700/60 rounded-2xl" style="background: rgba(30, 30, 40, 0.7);">
+                    {{ etapa.conteudo|linebreaks }}
+                </div>
             </div>
         </div>
 
-        <!-- ETAPA 2: Quiz de Múltipla Escolha (Para que os computadores usam variáveis?) -->
-        <div class="etapa-card space-y-6 hidden" data-etapa="2">
+        {% elif etapa.tipo == 'quiz' %}
+        <!-- ETAPA QUIZ MULTIPLA ESCOLHA -->
+        <div class="etapa-card space-y-6 {% if not forloop.first %}hidden{% endif %}" data-etapa="{{ forloop.counter }}">
             <div>
-                <span class="text-xs uppercase font-mono font-bold text-amber-400">Pergunta 1 de 3</span>
-                <h2 class="text-2xl font-extrabold text-white mt-1 mb-2">Para que os computadores usam variáveis?</h2>
-                <p class="text-sm lw-muted flex items-center gap-1">ℹ️ Toque na resposta correta</p>
+                <span class="text-xs uppercase font-mono font-bold text-amber-400">Desafio de Fixação</span>
+                <h2 class="text-xl md:text-2xl font-extrabold text-white mt-1 mb-2">{{ etapa.pergunta }}</h2>
+                <p class="text-xs lw-muted flex items-center gap-1">ℹ️ Escolha a alternativa correta:</p>
             </div>
 
             <div class="space-y-3">
-                <button class="quiz-option-card" onclick="selecionarOpcao(this, true)">
-                    Para armazenar informações para uso posterior
+                {% for opcao in etapa.opcoes_json %}
+                <button class="quiz-option-card" onclick="verificarResposta(this, '{{ opcao|escapejs }}', '{{ etapa.resposta_correta|escapejs }}')">
+                    {{ opcao }}
                 </button>
-                <button class="quiz-option-card" onclick="selecionarOpcao(this, false)">
-                    Para exibir informações diretamente na tela
-                </button>
+                {% endfor %}
             </div>
         </div>
 
-        <!-- ETAPA 3: Completar Código (Toque na palavra city...) -->
-        <div class="etapa-card space-y-6 hidden" data-etapa="3">
+        {% elif etapa.tipo == 'code' %}
+        <!-- ETAPA EXERCÍCIO DE CÓDIGO -->
+        <div class="etapa-card space-y-6 {% if not forloop.first %}hidden{% endif %}" data-etapa="{{ forloop.counter }}">
             <div>
                 <span class="text-xs uppercase font-mono font-bold text-amber-400">Prática de Código</span>
-                <h2 class="text-xl font-extrabold text-white mt-1 mb-2">Para criar uma variável, começamos digitando seu nome sem espaços.</h2>
-                <p class="text-sm lw-muted">Toque no trecho de código abaixo para preencher o script.py:</p>
+                <h2 class="text-xl font-extrabold text-white mt-1 mb-2">{{ etapa.titulo }}</h2>
+                <p class="text-sm lw-muted">{{ etapa.conteudo }}</p>
             </div>
 
-            <!-- Box do Editor script.py -->
             <div class="code-editor-box">
                 <div class="flex items-center justify-between text-xs text-slate-400 mb-2 border-b border-slate-800 pb-2 font-mono">
-                    <span>📄 script.py</span>
+                    <span>📄 {{ etapa.nome_arquivo|default:"script.py" }}</span>
                     <span class="text-emerald-400">● Python 3</span>
                 </div>
                 <div class="min-h-[50px] flex items-center gap-2">
-                    <span id="code-slot" class="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-amber-400 font-mono font-bold">___</span>
-                    <span class="text-slate-400 font-mono">= "Canoas"</span>
+                    <span id="code-slot-{{ forloop.counter }}" class="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-amber-400 font-mono font-bold">___</span>
+                    <span class="text-slate-400 font-mono"></span>
                 </div>
             </div>
 
-            <!-- Chips de Código Escolhíveis -->
-            <div class="flex gap-3 justify-center pt-2">
-                <button class="code-chip" onclick="preencherCodigo('home city')">home city</button>
-                <button class="code-chip" onclick="preencherCodigo('city')">city</button>
+            <div class="flex flex-wrap gap-3 justify-center pt-2">
+                {% for chip in etapa.opcoes_json %}
+                <button class="code-chip" onclick="preencherChip(this, '{{ chip|escapejs }}', '{{ etapa.resposta_correta|escapejs }}', '{{ forloop.parentloop.counter }}')">{{ chip }}</button>
+                {% endfor %}
             </div>
         </div>
 
-        <!-- ETAPA 4: Conclusão da Lição -->
-        <div class="etapa-card space-y-6 hidden text-center" data-etapa="4">
+        {% endif %}
+
+        {% empty %}
+        <!-- Caso a lição ainda não tenha etapas cadastradas -->
+        <div class="etapa-card space-y-6 text-center" data-etapa="1">
+            <div class="p-8 rounded-3xl space-y-4" style="background: rgba(30, 30, 40, 0.8); border: 1px solid var(--line);">
+                <span class="text-5xl block mb-2">🚧</span>
+                <h2 class="text-2xl font-bold text-white">Lição em Construção</h2>
+                <p class="lw-muted text-sm">O conteúdo desta lição está sendo preparado pelo instrutor.</p>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- ETAPA FINAL: Conclusão da Lição -->
+        <div class="etapa-card space-y-6 hidden text-center" data-etapa="{{ etapas.count|add:1 }}">
             <div class="p-8 rounded-3xl space-y-4" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(20, 20, 30, 0.95)); border: 2px solid var(--accent);">
                 <span class="text-6xl block mb-2">🎉</span>
                 <h2 class="text-3xl font-extrabold text-white">Lição Concluída!</h2>
-                <p class="text-amber-400 font-bold text-lg">+50 XP · 100% de Precisão</p>
-                <p class="lw-muted text-sm">Você dominou o conceito de variáveis em Python!</p>
+                <p class="text-amber-400 font-bold text-lg">+100 XP · Lição Dominada</p>
+                <p class="lw-muted text-sm">Você completou todas as etapas com sucesso!</p>
             </div>
         </div>
 
     </div>
 
-    <!-- Bot Feedback Box (Aparece ao responder a pergunta) -->
+    <!-- Bot Feedback Box -->
     <div id="mascot-feedback" class="mascot-feedback-box hidden mb-4">
         <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-2xl">
             🤖
@@ -236,7 +236,7 @@
         </div>
     </div>
 
-    <!-- Botão de Ação Laranja do Sistema -->
+    <!-- Botão de Ação Principal -->
     <div class="pt-4">
         <button id="btn-continuar" class="btn-continuar" onclick="proximaEtapa()">Continuar ➔</button>
     </div>
@@ -244,22 +244,21 @@
 
 <script>
     let etapaAtual = 1;
-    const totalEtapas = 4;
-    let opcaoSelecionada = false;
+    const totalEtapas = {{ etapas.count }} + 1;
 
     function proximaEtapa() {
         if (etapaAtual < totalEtapas) {
-            // Esconde etapa atual
-            document.querySelector(`.etapa-card[data-etapa="${etapaAtual}"]`).classList.add('hidden');
-            etapaAtual++;
-            // Mostra próxima etapa
-            document.querySelector(`.etapa-card[data-etapa="${etapaAtual}"]`).classList.remove('hidden');
+            const cardAtual = document.querySelector(`.etapa-card[data-etapa="${etapaAtual}"]`);
+            if (cardAtual) cardAtual.classList.add('hidden');
             
-            // Atualiza barra de progresso em Laranja
-            const pct = (etapaAtual / totalEtapas) * 100;
+            etapaAtual++;
+            
+            const proximoCard = document.querySelector(`.etapa-card[data-etapa="${etapaAtual}"]`);
+            if (proximoCard) proximoCard.classList.remove('hidden');
+            
+            const pct = Math.min(100, Math.round((etapaAtual / totalEtapas) * 100));
             document.getElementById('progress-fill').style.width = pct + '%';
             
-            // Esconde feedback do bot ao trocar de etapa
             document.getElementById('mascot-feedback').classList.add('hidden');
             
             if (etapaAtual === totalEtapas) {
@@ -271,42 +270,43 @@
         }
     }
 
-    function selecionarOpcao(el, eCorreta) {
+    function verificarResposta(btn, opcao, respostaCorreta) {
         document.querySelectorAll('.quiz-option-card').forEach(card => {
             card.classList.remove('selected', 'correct', 'wrong');
         });
 
-        if (eCorreta) {
-            el.classList.add('correct');
-            document.getElementById('mascot-status').innerText = 'Muito bem! 🎉';
+        if (opcao === respostaCorreta) {
+            btn.classList.add('correct');
+            document.getElementById('mascot-status').innerText = 'Correto! 🎉';
             document.getElementById('mascot-status').className = 'text-sm font-extrabold text-emerald-400 block';
-            document.getElementById('mascot-text').innerText = 'Sua resposta está correta. Vamos continuar assim.';
+            document.getElementById('mascot-text').innerText = 'Excelente raciocínio! Clique em Continuar.';
         } else {
-            el.classList.add('wrong');
-            document.getElementById('mascot-status').innerText = 'Ops! Quase lá... 💡';
+            btn.classList.add('wrong');
+            document.getElementById('mascot-status').innerText = 'Ops! Não é essa... 💡';
             document.getElementById('mascot-status').className = 'text-sm font-extrabold text-amber-400 block';
-            document.getElementById('mascot-text').innerText = 'Variáveis servem para armazenar dados na memória para reutilização.';
+            document.getElementById('mascot-text').innerText = `A resposta correta é: "${respostaCorreta}"`;
         }
 
         document.getElementById('mascot-feedback').classList.remove('hidden');
     }
 
-    function preencherCodigo(valor) {
-        const slot = document.getElementById('code-slot');
-        slot.innerText = valor;
-        if (valor === 'city') {
-            slot.className = 'px-3 py-1 bg-emerald-950 border border-emerald-500 rounded text-emerald-400 font-mono font-bold';
-            document.getElementById('mascot-status').innerText = 'Excelente! 🚀';
+    function preencherChip(btn, valor, respostaCorreta, etapaNum) {
+        const slot = document.getElementById(`code-slot-${etapaNum}`);
+        if (slot) slot.innerText = valor;
+
+        if (valor === respostaCorreta) {
+            if (slot) slot.className = 'px-3 py-1 bg-emerald-950 border border-emerald-500 rounded text-emerald-400 font-mono font-bold';
+            document.getElementById('mascot-status').innerText = 'Código Correto! 🚀';
             document.getElementById('mascot-status').className = 'text-sm font-extrabold text-emerald-400 block';
-            document.getElementById('mascot-text').innerText = 'Em Python, nomes de variáveis não podem conter espaços.';
-            document.getElementById('mascot-feedback').classList.remove('hidden');
+            document.getElementById('mascot-text').innerText = 'Você escolheu o operador / sintaxe exata!';
         } else {
-            slot.className = 'px-3 py-1 bg-red-950 border border-red-500 rounded text-red-400 font-mono font-bold';
-            document.getElementById('mascot-status').innerText = 'Ops! Nomes com espaço são inválidos em Python.';
+            if (slot) slot.className = 'px-3 py-1 bg-red-950 border border-red-500 rounded text-red-400 font-mono font-bold';
+            document.getElementById('mascot-status').innerText = 'Opção incorreta no código 💡';
             document.getElementById('mascot-status').className = 'text-sm font-extrabold text-red-400 block';
-            document.getElementById('mascot-text').innerText = 'Tente escolher a opção "city".';
-            document.getElementById('mascot-feedback').classList.remove('hidden');
+            document.getElementById('mascot-text').innerText = `A escolha correta seria: ${respostaCorreta}`;
         }
+        document.getElementById('mascot-feedback').classList.remove('hidden');
     }
 </script>
 {% endblock %}
+
