@@ -200,16 +200,28 @@ Etapa.objects.get_or_create(licao=lic1_3, ordem=1, defaults={
     ),
 })
 
-Etapa.objects.get_or_create(licao=lic1_3, ordem=2, defaults={
+Etapa.objects.get_or_create(licao=lic1_3, ordem=3, defaults={
+    'tipo': 'slide',
+    'titulo': 'Ciclo de Vida de Memória nas Views do Django & Garbage Collection',
+    'conteudo': (
+        '• Refcount: Quando uma view encerra sua execução, o frame da função na Stack é destruído. '
+        'Variáveis locais (strings, dicionários de contexto, listas temporárias) têm refcount = 0 e a memória Heap é liberada IMEDIATAMENTE.\n'
+        '• Ciclo da Requisição: Ao final do request (sinal request_finished), o Django limpa os handlers do middleware '
+        'e libera/fecha a conexão com o banco de dados MySQL para evitar vazamentos de memória e conexões presas.\n'
+        '• GC Cíclico: Trata apenas referências circulares (A aponta pra B e B aponta pra A) que o refcount simples não consegue zerar.'
+    ),
+})
+
+Etapa.objects.get_or_create(licao=lic1_3, ordem=4, defaults={
     'tipo': 'quiz',
-    'pergunta': 'Por que devemos passar "default=timezone.now" (sem parênteses) em um Field do Django?',
+    'pergunta': 'O que acontece com as variáveis locais (ex: strings, listas de formulário) criadas dentro de uma View Django quando a função retorna o HttpResponse?',
     'opcoes_json': [
-        'Para passar a referência da função (callable), garantindo que timezone.now() seja executado a cada novo registro',
-        'Porque parênteses não são permitidos em modelos Django',
-        'Para forçar a data a ser tratada como string imutável',
-        'Não há diferença entre timezone.now e timezone.now()',
+        'Permanecem na memória do servidor para a próxima requisição',
+        'Seu refcount cai para 0 com o fim do escopo da função e o CPython libera a memória no Heap imediatamente',
+        'São salvas automaticamente no banco de dados',
+        'Ficam aguardando o reinício do servidor Daphne',
     ],
-    'resposta_correta': 'Para passar a referência da função (callable), garantindo que timezone.now() seja executado a cada novo registro',
+    'resposta_correta': 'Seu refcount cai para 0 com o fim do escopo da função e o CPython libera a memória no Heap imediatamente',
 })
 
 Etapa.objects.get_or_create(licao=lic1_3, ordem=1, defaults={
