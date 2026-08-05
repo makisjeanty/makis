@@ -5,240 +5,318 @@
 
 {% block content %}
 <style>
-    .quiz-runner-container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding-top: 5rem;
-        padding-bottom: 8rem;
-        min-height: 90vh;
+    /* Layout Estilo Mimo.org App Web */
+    .mimo-runner-wrapper {
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        background: #121218;
+        color: #F3F4F6;
+        padding-top: 5rem;
+        padding-bottom: 7rem;
     }
 
-    .quiz-progress-bar {
-        height: 10px;
-        background: #1e1e2d;
+    .mimo-container {
+        max-width: 640px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 0 1.25rem;
+    }
+
+    /* Barra de Progresso Mimo com indicador de Vidas / Streaks */
+    .mimo-header {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .mimo-close-btn {
+        color: #9CA3AF;
+        font-size: 1.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: color 0.2s;
+        line-height: 1;
+    }
+
+    .mimo-close-btn:hover {
+        color: #FFFFFF;
+    }
+
+    .mimo-progress-track {
+        height: 14px;
+        background: #232330;
         border-radius: 999px;
         overflow: hidden;
         flex: 1;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
     }
 
-    .quiz-progress-fill {
+    .mimo-progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #f59e0b, #cc785c);
+        background: linear-gradient(90deg, #F59E0B, #EC4899, #8B5CF6);
         border-radius: 999px;
-        transition: width 0.4s ease;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Opção de Múltipla Escolha */
-    .quiz-option-card {
-        background: rgba(38, 38, 48, 0.85);
-        border: 2px solid var(--line);
-        border-radius: 18px;
+    /* Cards de Opções Mimo */
+    .mimo-option-card {
+        background: #1C1C28;
+        border: 2px solid #2D2D3F;
+        border-radius: 20px;
         padding: 1.25rem 1.5rem;
         font-size: 1.05rem;
         font-weight: 600;
-        color: #F2F0E9;
+        color: #E5E7EB;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         text-align: left;
         width: 100%;
-    }
-
-    .quiz-option-card:hover {
-        border-color: rgba(204, 120, 92, 0.6);
-        background: rgba(48, 48, 60, 0.95);
-    }
-
-    .quiz-option-card.correct {
-        border-color: #10b981 !important;
-        background: rgba(16, 185, 129, 0.15) !important;
-        color: #34d399 !important;
-        box-shadow: 0 0 20px rgba(16, 185, 129, 0.3) !important;
-    }
-
-    .quiz-option-card.wrong {
-        border-color: #ef4444 !important;
-        background: rgba(239, 68, 68, 0.15) !important;
-        color: #fca5a5 !important;
-    }
-
-    /* Feedback Mascot Box */
-    .mascot-feedback-box {
-        background: rgba(24, 24, 34, 0.98);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 20px;
-        padding: 1.25rem;
         display: flex;
         align-items: center;
         gap: 1rem;
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 4px 0 #151520;
     }
 
-    /* Bloco de Código & Chips */
-    .code-editor-box {
-        background: #0f172a;
-        border: 1px solid #1e293b;
-        border-radius: 18px;
-        padding: 1.25rem;
-        font-family: 'Space Mono', monospace;
+    .mimo-option-card:hover {
+        border-color: rgba(245, 158, 11, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 #151520;
+        background: #232332;
     }
 
-    .code-chip {
-        background: #1e293b;
-        border: 1px solid #334155;
-        color: #e2e8f0;
-        padding: 10px 20px;
-        border-radius: 14px;
+    .mimo-option-card.selected {
+        border-color: #F59E0B;
+        background: rgba(245, 158, 11, 0.12);
+        box-shadow: 0 4px 0 #9E4E37;
+    }
+
+    .mimo-option-card.correct {
+        border-color: #10B981 !important;
+        background: rgba(16, 185, 129, 0.15) !important;
+        color: #34D399 !important;
+        box-shadow: 0 4px 0 #047857 !important;
+    }
+
+    .mimo-option-card.wrong {
+        border-color: #EF4444 !important;
+        background: rgba(239, 68, 68, 0.15) !important;
+        color: #FCA5A5 !important;
+        box-shadow: 0 4px 0 #B91C1C !important;
+    }
+
+    /* Bloco IDE Mimo */
+    .mimo-ide-box {
+        background: #0B0F19;
+        border: 2px solid #1E293B;
+        border-radius: 22px;
+        padding: 1.5rem;
         font-family: 'Space Mono', monospace;
-        font-size: 1rem;
-        font-weight: 600;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .mimo-code-chip {
+        background: #1E293B;
+        border: 2px solid #334155;
+        color: #38BDF8;
+        padding: 10px 22px;
+        border-radius: 16px;
+        font-family: 'Space Mono', monospace;
+        font-size: 1.05rem;
+        font-weight: 700;
         cursor: pointer;
         transition: all 0.2s;
+        box-shadow: 0 4px 0 #0F172A;
     }
 
-    .code-chip:hover {
-        background: var(--accent);
-        border-color: var(--accent-light);
-        color: white;
+    .mimo-code-chip:hover {
+        background: #0284C7;
+        border-color: #38BDF8;
+        color: #FFFFFF;
+        transform: translateY(-2px);
     }
 
-    .btn-continuar {
-        background: linear-gradient(135deg, #f59e0b, #cc785c);
-        color: white;
+    /* Barra Fixa Inferior Mimo (Bottom Action Bar) */
+    .mimo-bottom-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #181824;
+        border-top: 2px solid #282838;
+        padding: 1.25rem 0;
+        z-index: 100;
+    }
+
+    .mimo-btn-continue {
+        background: linear-gradient(135deg, #10B981, #059669);
+        color: #FFFFFF;
         font-weight: 800;
-        font-size: 1.1rem;
-        padding: 1.1rem 2rem;
-        border-radius: 18px;
+        font-size: 1.15rem;
+        padding: 1rem 2rem;
+        border-radius: 20px;
         width: 100%;
         text-align: center;
-        box-shadow: 0 8px 0 #9e4e37, 0 0 20px rgba(245, 158, 11, 0.3);
-        transition: all 0.2s;
+        box-shadow: 0 6px 0 #047857;
         border: none;
         cursor: pointer;
+        transition: all 0.2s;
     }
 
-    .btn-continuar:hover {
+    .mimo-btn-continue:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 0 #9e4e37, 0 0 30px rgba(245, 158, 11, 0.5);
+        box-shadow: 0 8px 0 #047857;
+    }
+
+    .mimo-btn-continue:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #047857;
+    }
+
+    /* Drawer de Feedback do Mascot Mimo */
+    .mimo-mascot-drawer {
+        border-radius: 20px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        margin-bottom: 1rem;
+        animation: slideUp 0.3s ease-out forwards;
+    }
+
+    .mimo-mascot-drawer--success {
+        background: rgba(16, 185, 129, 0.15);
+        border: 2px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .mimo-mascot-drawer--error {
+        background: rgba(239, 68, 68, 0.15);
+        border: 2px solid rgba(239, 68, 68, 0.4);
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
 </style>
 
-<div class="quiz-runner-container px-4">
-    <!-- Top Bar com Barra de Progresso em Laranja -->
-    <div class="flex items-center gap-4 mb-8">
-        <a href="{% url 'cursos:trilha' licao.modulo.curso.slug %}" class="text-neutral-400 hover:text-white text-2xl font-bold p-1">&times;</a>
-        <div class="quiz-progress-bar">
-            <div id="progress-fill" class="quiz-progress-fill" style="width: 10%;"></div>
+<div class="mimo-runner-wrapper">
+    <div class="mimo-container">
+        <!-- Top Bar com Progresso e Fechamento -->
+        <div class="mimo-header">
+            <a href="{% url 'cursos:trilha' licao.modulo.curso.slug %}" class="mimo-close-btn" aria-label="Sair">&times;</a>
+            <div class="mimo-progress-track">
+                <div id="progress-fill" class="mimo-progress-fill" style="width: 15%;"></div>
+            </div>
+            <div class="flex items-center gap-1 font-extrabold text-amber-400 text-sm">
+                <span>🔥</span>
+                <span>+100 XP</span>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal Dinâmico das Etapas -->
+        <div id="etapas-wrapper" class="py-4">
+            {% for etapa in etapas %}
+
+            {% if etapa.tipo == 'slide' %}
+            <!-- SLIDE TEÓRICO MIMO -->
+            <div class="etapa-card space-y-6 {% if not forloop.first %}hidden{% endif %}" data-etapa="{{ forloop.counter }}">
+                <div class="text-center space-y-5">
+                    <div class="inline-flex p-6 rounded-3xl" style="background: rgba(245, 158, 11, 0.15); border: 2px solid rgba(245, 158, 11, 0.3);">
+                        <span class="text-6xl">📘</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight" style="font-family: 'Space Grotesk', sans-serif;">
+                        {{ etapa.titulo }}
+                    </h1>
+                    <div class="bg-[#1C1C28] p-6 text-left space-y-3 leading-relaxed text-base text-gray-300 border 2px border-[#2D2D3F] rounded-2xl shadow-lg">
+                        {{ etapa.conteudo|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            {% elif etapa.tipo == 'quiz' %}
+            <!-- QUIZ INTERATIVO MIMO -->
+            <div class="etapa-card space-y-6 {% if not forloop.first %}hidden{% endif %}" data-etapa="{{ forloop.counter }}">
+                <div>
+                    <span class="text-xs uppercase font-mono font-bold text-amber-400 tracking-wider">Desafio de Fixação</span>
+                    <h2 class="text-2xl font-extrabold text-white mt-1 mb-2" style="font-family: 'Space Grotesk', sans-serif;">{{ etapa.pergunta }}</h2>
+                    <p class="text-xs text-gray-400">Toque na alternativa correta abaixo:</p>
+                </div>
+
+                <div class="space-y-3">
+                    {% for opcao in etapa.opcoes_json %}
+                    <button class="mimo-option-card" onclick="verificarResposta(this, '{{ opcao|escapejs }}', '{{ etapa.resposta_correta|escapejs }}')">
+                        <span class="w-7 h-7 rounded-full bg-[#2A2A3C] border border-[#3E3E56] flex items-center justify-center text-xs font-bold text-amber-400">{{ forloop.counter }}</span>
+                        <span>{{ opcao }}</span>
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% elif etapa.tipo == 'code' %}
+            <!-- EXERCÍCIO DE CÓDIGO MIMO -->
+            <div class="etapa-card space-y-6 {% if not forloop.first %}hidden{% endif %}" data-etapa="{{ forloop.counter }}">
+                <div>
+                    <span class="text-xs uppercase font-mono font-bold text-sky-400 tracking-wider">Prática no IDE</span>
+                    <h2 class="text-xl font-extrabold text-white mt-1 mb-2">{{ etapa.titulo }}</h2>
+                    <p class="text-sm text-gray-400 mb-4">{{ etapa.conteudo }}</p>
+                </div>
+
+                <div class="mimo-ide-box">
+                    <div class="flex items-center justify-between text-xs text-slate-400 mb-3 border-b border-slate-800 pb-2 font-mono">
+                        <span class="flex items-center gap-1.5 font-bold text-gray-300">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            {{ etapa.nome_arquivo|default:"main.py" }}
+                        </span>
+                        <span class="text-amber-400 font-bold">Python 3</span>
+                    </div>
+                    <div class="min-h-[60px] flex items-center gap-2">
+                        <span id="code-slot-{{ forloop.counter }}" class="px-4 py-2 bg-slate-900 border-2 border-dashed border-sky-500 rounded-xl text-sky-300 font-mono font-bold text-lg">___</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-3 justify-center pt-3">
+                    {% for chip in etapa.opcoes_json %}
+                    <button class="mimo-code-chip" onclick="preencherChip(this, '{{ chip|escapejs }}', '{{ etapa.resposta_correta|escapejs }}', '{{ forloop.parentloop.counter }}')">{{ chip }}</button>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% empty %}
+            <div class="etapa-card text-center py-12">
+                <p class="text-gray-400">Nenhuma etapa cadastrada ainda nesta lição.</p>
+            </div>
+            {% endfor %}
+
+            <!-- ETAPA CONCLUÍDA FINAL -->
+            <div class="etapa-card space-y-6 hidden text-center" data-etapa="{{ etapas.count|add:1 }}">
+                <div class="p-8 rounded-3xl space-y-4 bg-[#1C1C28] border-2 border-emerald-500 shadow-2xl">
+                    <span class="text-7xl block mb-2">🏆</span>
+                    <h2 class="text-3xl font-extrabold text-white">Lição Concluída!</h2>
+                    <p class="text-emerald-400 font-extrabold text-lg">+100 XP · Conhecimento Consolidado</p>
+                    <p class="text-gray-300 text-sm">Você deu mais um passo importante na sua jornada de engenharia!</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Container Dinâmico das Etapas Vindo do Banco -->
-    <div id="etapas-wrapper" class="flex-1 flex flex-col justify-center my-4">
-
-        {% for etapa in etapas %}
-        
-        {% if etapa.tipo == 'slide' %}
-        <!-- ETAPA SLIDE DE TEORIA -->
-        <div class="etapa-card space-y-6 {% if not forloop.first %}hidden{% endif %}" data-etapa="{{ forloop.counter }}">
-            <div class="text-center space-y-4">
-                <div class="inline-flex p-5 rounded-3xl" style="background: rgba(204, 120, 92, 0.12); border: 2px solid rgba(204, 120, 92, 0.3);">
-                    <span class="text-5xl">💡</span>
-                </div>
-                <h2 class="text-2xl md:text-3xl font-extrabold text-white leading-snug" style="font-family: 'Space Grotesk', sans-serif;">
-                    {{ etapa.titulo }}
-                </h2>
-                <div class="lw-card p-6 text-left space-y-3 leading-relaxed text-sm md:text-base text-neutral-300 border border-neutral-700/60 rounded-2xl" style="background: rgba(30, 30, 40, 0.7);">
-                    {{ etapa.conteudo|linebreaks }}
-                </div>
-            </div>
-        </div>
-
-        {% elif etapa.tipo == 'quiz' %}
-        <!-- ETAPA QUIZ MULTIPLA ESCOLHA -->
-        <div class="etapa-card space-y-6 {% if not forloop.first %}hidden{% endif %}" data-etapa="{{ forloop.counter }}">
-            <div>
-                <span class="text-xs uppercase font-mono font-bold text-amber-400">Desafio de Fixação</span>
-                <h2 class="text-xl md:text-2xl font-extrabold text-white mt-1 mb-2">{{ etapa.pergunta }}</h2>
-                <p class="text-xs lw-muted flex items-center gap-1">ℹ️ Escolha a alternativa correta:</p>
-            </div>
-
-            <div class="space-y-3">
-                {% for opcao in etapa.opcoes_json %}
-                <button class="quiz-option-card" onclick="verificarResposta(this, '{{ opcao|escapejs }}', '{{ etapa.resposta_correta|escapejs }}')">
-                    {{ opcao }}
-                </button>
-                {% endfor %}
-            </div>
-        </div>
-
-        {% elif etapa.tipo == 'code' %}
-        <!-- ETAPA EXERCÍCIO DE CÓDIGO -->
-        <div class="etapa-card space-y-6 {% if not forloop.first %}hidden{% endif %}" data-etapa="{{ forloop.counter }}">
-            <div>
-                <span class="text-xs uppercase font-mono font-bold text-amber-400">Prática de Código</span>
-                <h2 class="text-xl font-extrabold text-white mt-1 mb-2">{{ etapa.titulo }}</h2>
-                <p class="text-sm lw-muted">{{ etapa.conteudo }}</p>
-            </div>
-
-            <div class="code-editor-box">
-                <div class="flex items-center justify-between text-xs text-slate-400 mb-2 border-b border-slate-800 pb-2 font-mono">
-                    <span>📄 {{ etapa.nome_arquivo|default:"script.py" }}</span>
-                    <span class="text-emerald-400">● Python 3</span>
-                </div>
-                <div class="min-h-[50px] flex items-center gap-2">
-                    <span id="code-slot-{{ forloop.counter }}" class="px-3 py-1 bg-slate-800 border border-slate-700 rounded text-amber-400 font-mono font-bold">___</span>
-                    <span class="text-slate-400 font-mono"></span>
+    <!-- Bottom Fixed Action Bar Mimo -->
+    <div class="mimo-bottom-bar">
+        <div class="mimo-container">
+            <!-- Drawer de Feedback -->
+            <div id="mascot-feedback" class="mimo-mascot-drawer hidden mimo-mascot-drawer--success">
+                <div class="text-3xl" id="mascot-icon">🎉</div>
+                <div>
+                    <span id="mascot-status" class="text-sm font-extrabold block text-emerald-400">Muito bem!</span>
+                    <span id="mascot-text" class="text-xs text-gray-300">Resposta correta. Toque em Continuar.</span>
                 </div>
             </div>
 
-            <div class="flex flex-wrap gap-3 justify-center pt-2">
-                {% for chip in etapa.opcoes_json %}
-                <button class="code-chip" onclick="preencherChip(this, '{{ chip|escapejs }}', '{{ etapa.resposta_correta|escapejs }}', '{{ forloop.parentloop.counter }}')">{{ chip }}</button>
-                {% endfor %}
-            </div>
+            <button id="btn-continuar" class="mimo-btn-continue" onclick="proximaEtapa()">Continuar ➔</button>
         </div>
-
-        {% endif %}
-
-        {% empty %}
-        <!-- Caso a lição ainda não tenha etapas cadastradas -->
-        <div class="etapa-card space-y-6 text-center" data-etapa="1">
-            <div class="p-8 rounded-3xl space-y-4" style="background: rgba(30, 30, 40, 0.8); border: 1px solid var(--line);">
-                <span class="text-5xl block mb-2">🚧</span>
-                <h2 class="text-2xl font-bold text-white">Lição em Construção</h2>
-                <p class="lw-muted text-sm">O conteúdo desta lição está sendo preparado pelo instrutor.</p>
-            </div>
-        </div>
-        {% endfor %}
-
-        <!-- ETAPA FINAL: Conclusão da Lição -->
-        <div class="etapa-card space-y-6 hidden text-center" data-etapa="{{ etapas.count|add:1 }}">
-            <div class="p-8 rounded-3xl space-y-4" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(20, 20, 30, 0.95)); border: 2px solid var(--accent);">
-                <span class="text-6xl block mb-2">🎉</span>
-                <h2 class="text-3xl font-extrabold text-white">Lição Concluída!</h2>
-                <p class="text-amber-400 font-bold text-lg">+100 XP · Lição Dominada</p>
-                <p class="lw-muted text-sm">Você completou todas as etapas com sucesso!</p>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Bot Feedback Box -->
-    <div id="mascot-feedback" class="mascot-feedback-box hidden mb-4">
-        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-2xl">
-            🤖
-        </div>
-        <div>
-            <span id="mascot-status" class="text-sm font-extrabold text-emerald-400 block">Muito bem!</span>
-            <span id="mascot-text" class="text-xs text-neutral-300">Vamos continuar assim.</span>
-        </div>
-    </div>
-
-    <!-- Botão de Ação Principal -->
-    <div class="pt-4">
-        <button id="btn-continuar" class="btn-continuar" onclick="proximaEtapa()">Continuar ➔</button>
     </div>
 </div>
 
@@ -262,12 +340,12 @@
             document.getElementById('mascot-feedback').classList.add('hidden');
             
             if (etapaAtual === totalEtapas) {
-                // Notifica o backend de que a lição foi concluída
                 fetch("{% url 'cursos:concluir_licao' licao.id %}", { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
                     .catch(() => {});
 
-                document.getElementById('btn-continuar').innerText = 'Concluir Lição 🎉';
-                document.getElementById('btn-continuar').onclick = function() {
+                const btn = document.getElementById('btn-continuar');
+                btn.innerText = 'Concluir Lição 🏆';
+                btn.onclick = function() {
                     fetch("{% url 'cursos:concluir_licao' licao.id %}", { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
                         .finally(() => {
                             window.location.href = "{% url 'cursos:trilha' licao.modulo.curso.slug %}";
@@ -277,44 +355,63 @@
         }
     }
 
-
     function verificarResposta(btn, opcao, respostaCorreta) {
-        document.querySelectorAll('.quiz-option-card').forEach(card => {
+        document.querySelectorAll('.mimo-option-card').forEach(card => {
             card.classList.remove('selected', 'correct', 'wrong');
         });
 
+        const drawer = document.getElementById('mascot-feedback');
+        const icon = document.getElementById('mascot-icon');
+        const status = document.getElementById('mascot-status');
+        const text = document.getElementById('mascot-text');
+
         if (opcao === respostaCorreta) {
             btn.classList.add('correct');
-            document.getElementById('mascot-status').innerText = 'Correto! 🎉';
-            document.getElementById('mascot-status').className = 'text-sm font-extrabold text-emerald-400 block';
-            document.getElementById('mascot-text').innerText = 'Excelente raciocínio! Clique em Continuar.';
+            drawer.className = 'mimo-mascot-drawer mimo-mascot-drawer--success';
+            icon.innerText = '🎉';
+            status.innerText = 'Excelente!';
+            status.className = 'text-sm font-extrabold block text-emerald-400';
+            text.innerText = 'Você acertou em cheio. Toque em Continuar.';
         } else {
             btn.classList.add('wrong');
-            document.getElementById('mascot-status').innerText = 'Ops! Não é essa... 💡';
-            document.getElementById('mascot-status').className = 'text-sm font-extrabold text-amber-400 block';
-            document.getElementById('mascot-text').innerText = `A resposta correta é: "${respostaCorreta}"`;
+            drawer.className = 'mimo-mascot-drawer mimo-mascot-drawer--error';
+            icon.innerText = '💡';
+            status.innerText = 'Quase lá...';
+            status.className = 'text-sm font-extrabold block text-red-400';
+            text.innerText = `A opção correta era: "${respostaCorreta}"`;
         }
 
-        document.getElementById('mascot-feedback').classList.remove('hidden');
+        drawer.classList.remove('hidden');
     }
 
     function preencherChip(btn, valor, respostaCorreta, etapaNum) {
         const slot = document.getElementById(`code-slot-${etapaNum}`);
         if (slot) slot.innerText = valor;
 
+        const drawer = document.getElementById('mascot-feedback');
+        const icon = document.getElementById('mascot-icon');
+        const status = document.getElementById('mascot-status');
+        const text = document.getElementById('mascot-text');
+
         if (valor === respostaCorreta) {
-            if (slot) slot.className = 'px-3 py-1 bg-emerald-950 border border-emerald-500 rounded text-emerald-400 font-mono font-bold';
-            document.getElementById('mascot-status').innerText = 'Código Correto! 🚀';
-            document.getElementById('mascot-status').className = 'text-sm font-extrabold text-emerald-400 block';
-            document.getElementById('mascot-text').innerText = 'Você escolheu o operador / sintaxe exata!';
+            if (slot) slot.className = 'px-4 py-2 bg-emerald-950 border-2 border-emerald-500 rounded-xl text-emerald-300 font-mono font-bold text-lg';
+            drawer.className = 'mimo-mascot-drawer mimo-mascot-drawer--success';
+            icon.innerText = '🚀';
+            status.innerText = 'Sintaxe Perfeita!';
+            status.className = 'text-sm font-extrabold block text-emerald-400';
+            text.innerText = 'O código executou com sucesso.';
         } else {
-            if (slot) slot.className = 'px-3 py-1 bg-red-950 border border-red-500 rounded text-red-400 font-mono font-bold';
-            document.getElementById('mascot-status').innerText = 'Opção incorreta no código 💡';
-            document.getElementById('mascot-status').className = 'text-sm font-extrabold text-red-400 block';
-            document.getElementById('mascot-text').innerText = `A escolha correta seria: ${respostaCorreta}`;
+            if (slot) slot.className = 'px-4 py-2 bg-red-950 border-2 border-red-500 rounded-xl text-red-300 font-mono font-bold text-lg';
+            drawer.className = 'mimo-mascot-drawer mimo-mascot-drawer--error';
+            icon.innerText = '⚠️';
+            status.innerText = 'Opção Incorreta';
+            status.className = 'text-sm font-extrabold block text-red-400';
+            text.innerText = `O elemento correto é: ${respostaCorreta}`;
         }
-        document.getElementById('mascot-feedback').classList.remove('hidden');
+
+        drawer.classList.remove('hidden');
     }
 </script>
 {% endblock %}
+
 
