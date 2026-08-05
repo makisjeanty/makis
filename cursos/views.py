@@ -1,5 +1,7 @@
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from .models import Curso, Modulo, Licao, ProgressoLicao
+
 
 
 def lista_cursos(request):
