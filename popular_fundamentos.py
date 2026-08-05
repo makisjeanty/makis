@@ -102,15 +102,29 @@ lic1_2, _ = Licao.objects.get_or_create(
     defaults={'titulo': 'Valor vs Referência & A Imutabilidade do QueryDict', 'duracao_minutos': 10}
 )
 
-Etapa.objects.get_or_create(licao=lic1_2, ordem=1, defaults={
+Etapa.objects.get_or_create(licao=lic1_2, ordem=2, defaults={
     'tipo': 'slide',
-    'titulo': 'Imutabilidade na Prática: Por que request.POST é protegido?',
+    'titulo': 'Identidade vs Igualdade: is vs ==',
     'conteudo': (
-        'No Django, request.POST é uma instância de QueryDict marcada com _mutable = False. '
-        'Se você tentar alterar request.POST["nome"] = "novo", o Django lança um AttributeError. '
-        'Essa proteção garante que nenhuma função ou middleware altere silenciosamente o payload HTTP original. '
-        'Para modificar os dados recebidos, você DEVE criar uma cópia mutável explícita usando request.POST.copy().'
+        '== compara VALOR (método __eq__): verifica se o conteúdo dos objetos é idêntico.\n'
+        'is compara IDENTIDADE (endereço no Heap): verifica se ambas as variáveis apontam para O MESMO objeto.\n\n'
+        'Exemplo clássico:\n'
+        '• "bot" == "bot" (True - mesmo texto)\n'
+        '• Em Singletons como None, True e False, use sempre "is" (ex: if resultado is None:). '
+        'Como só existe uma instância de None na memória, "is" compara apenas os ponteiros em O(1).'
     ),
+})
+
+Etapa.objects.get_or_create(licao=lic1_2, ordem=3, defaults={
+    'tipo': 'quiz',
+    'pergunta': 'Por que devemos usar "x is None" em vez de "x == None"?',
+    'opcoes_json': [
+        'Porque "is" compara o endereço de memória do Singleton None em O(1), sendo mais rápido e imune a sobrescritas de __eq__',
+        'Porque "==" não funciona com a palavra None',
+        'Porque "is" converte None para booleano automaticamente',
+        'Não há diferença, é apenas estilo de código',
+    ],
+    'resposta_correta': 'Porque "is" compara o endereço de memória do Singleton None em O(1), sendo mais rápido e imune a sobrescritas de __eq__',
 })
 
 Etapa.objects.get_or_create(licao=lic1_2, ordem=2, defaults={
