@@ -418,16 +418,27 @@ lic2_3, _ = Licao.objects.get_or_create(
 
 Etapa.objects.get_or_create(licao=lic2_3, ordem=1, defaults={
     'tipo': 'slide',
-    'titulo': 'Stack (Pilha): LIFO — o último que entra é o primeiro que sai',
+    'titulo': 'Pilha (LIFO) vs Fila (FIFO) na Prática e na Logística',
     'conteudo': (
-        'Uma pilha funciona como uma pilha de pratos: você adiciona no topo e retira do topo. '
-        'LIFO = Last In, First Out. '
-        'Em Python, uma list com .append() e .pop() é uma stack perfeita. '
-        'Onde você já usa stack sem saber: '
-        'a Call Stack do Python é exatamente isso — cada função chamada empilha um frame, '
-        'e ao retornar o frame é desempilhado. '
-        'Quando você vê "Traceback (most recent call last)", está lendo a stack de cima para baixo.'
+        '• FILA (FIFO - First In, First Out): O primeiro a entrar é o primeiro a sair.\n'
+        '  - Na Logística: Separação de pedidos de e-commerce (o pedido mais antigo tem prioridade).\n'
+        '  - Na Tecnologia: Filas assíncronas de e-mails, WebSockets no Django Channels e Celery.\n\n'
+        '• PILHA (LIFO - Last In, First Out): O último a entrar é o primeiro a sair.\n'
+        '  - Na Logística: Carregamento de caminhão de entregas (a última caixa colocada na porta é a primeira a ser entregue na primeira parada).\n'
+        '  - Na Tecnologia: Call Stack do Python, botão Undo (Ctrl+Z) e avaliação de expressões.'
     ),
+})
+
+Etapa.objects.get_or_create(licao=lic2_3, ordem=2, defaults={
+    'tipo': 'quiz',
+    'pergunta': 'Um caminhão de entregas que atende 3 cidades precisa descarregar a última caixa colocada na porta primeiro. Qual estrutura de dados modela este comportamento?',
+    'opcoes_json': [
+        'Pilha (LIFO - Last In, First Out)',
+        'Fila (FIFO - First In, First Out)',
+        'Tabela Hash (Dict)',
+        'Árvore Binária de Busca',
+    ],
+    'resposta_correta': 'Pilha (LIFO - Last In, First Out)',
 })
 
 Etapa.objects.get_or_create(licao=lic2_3, ordem=2, defaults={
