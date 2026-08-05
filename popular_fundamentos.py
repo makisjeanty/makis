@@ -152,15 +152,28 @@ Etapa.objects.get_or_create(licao=lic1_2, ordem=3, defaults={
 })
 
 Etapa.objects.get_or_create(licao=lic1_2, ordem=4, defaults={
-    'tipo': 'code',
-    'titulo': 'Cópia segura de uma lista',
+    'tipo': 'slide',
+    'titulo': 'Cópia Rasa vs Cópia Profunda (Shallow vs Deep Copy)',
     'conteudo': (
-        'Para evitar que uma função modifique a lista original, você precisa passar uma cópia. '
-        'Qual sintaxe cria uma cópia rasa (shallow copy) de uma lista em Python?'
+        '• Cópia Rasa (.copy()): Cria um novo container, mas mantêm as referências dos objetos internos.\n'
+        '• Cópia Profunda (copy.deepcopy()): Copia o container E recursivamente copia todos os objetos internos.\n\n'
+        'Cenário real no Django:\n'
+        '1. request.POST.copy() faz uma cópia rasa mutável do QueryDict para permitir edições sem alterar a requisição HTTP original.\n'
+        '2. Cuidado com dicionários aninhados: dict.copy() copia apenas a chave externa. '
+        'Modificar um dicionário interno mutável altera o original e pode vazar estado entre requisições!'
     ),
-    'opcoes_json': ['lista.copy()', 'lista.clone()', 'copy(lista)', 'lista[:]'],
-    'resposta_correta': 'lista.copy()',
-    'nome_arquivo': 'copia_lista.py',
+})
+
+Etapa.objects.get_or_create(licao=lic1_2, ordem=5, defaults={
+    'tipo': 'quiz',
+    'pergunta': 'Se fizermos "novo = original.copy()" em um dicionário que contém uma lista interna ("itens": [1, 2]), o que acontece se fizermos "novo["itens"].append(3)"?',
+    'opcoes_json': [
+        'Apenas o novo dicionário é alterado',
+        'Ambos os dicionários serão alterados, pois a lista interna mantinha a mesma referência na memória (cópia rasa)',
+        'O Python lança um erro de cópia inválida',
+        'A lista original é apagada',
+    ],
+    'resposta_correta': 'Ambos os dicionários serão alterados, pois a lista interna mantinha a mesma referência na memória (cópia rasa)',
 })
 
 # --------------------------------------------------
