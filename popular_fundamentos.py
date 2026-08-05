@@ -352,16 +352,27 @@ Etapa.objects.get_or_create(licao=lic2_2, ordem=1, defaults={
     ),
 })
 
-Etapa.objects.get_or_create(licao=lic2_2, ordem=2, defaults={
+Etapa.objects.get_or_create(licao=lic2_2, ordem=3, defaults={
+    'tipo': 'slide',
+    'titulo': 'Módulo Collections: defaultdict, Counter e deque',
+    'conteudo': (
+        '• defaultdict(list): Agrupa dados sem precisar testar "if chave not in dict". Se a chave não existir, cria a lista vazia automaticamente.\n'
+        '  - Exemplo real: Agrupar habilidades por categoria em accounts/views.py (defaultdict(list)).\n'
+        '• Counter: Conta ocorrências de elementos em O(n) instantaneamente (ex: Counter(["django", "python", "django"]) -> {"django": 2, "python": 1}).\n'
+        '• deque: Fila de alta performance. Permite popleft() e append() em O(1), enquanto list.pop(0) é O(n).'
+    ),
+})
+
+Etapa.objects.get_or_create(licao=lic2_2, ordem=4, defaults={
     'tipo': 'quiz',
-    'pergunta': 'Por que tentar usar uma lista [1, 2] como chave de um dicionário gera um TypeError: unhashable type?',
+    'pergunta': 'Qual é a principal vantagem de usar "defaultdict(list)" em relação a um dicionário comum ({}) para agrupar dados por chave?',
     'opcoes_json': [
-        'Porque listas são mutáveis e a alteração do seu conteúdo alteraria o hash, corrompendo as buscas O(1) do dicionário',
-        'Porque listas ocupam muita memória para o dicionário',
-        'Porque o dicionário só aceita chaves do tipo string',
-        'Porque listas não possuem índice numérico',
+        'Inicializa automaticamente uma lista vazia quando acessamos uma chave inexistente, dispensando testes com if/else',
+        'Converte todas as chaves em inteiros automaticamente',
+        'Impeça que novos elementos sejam adicionados',
+        'Salva os dados no banco de dados automaticamente',
     ],
-    'resposta_correta': 'Porque listas são mutáveis e a alteração do seu conteúdo alteraria o hash, corrompendo as buscas O(1) do dicionário',
+    'resposta_correta': 'Inicializa automaticamente uma lista vazia quando acessamos uma chave inexistente, dispensando testes com if/else',
 })
 
 Etapa.objects.get_or_create(licao=lic2_2, ordem=2, defaults={
